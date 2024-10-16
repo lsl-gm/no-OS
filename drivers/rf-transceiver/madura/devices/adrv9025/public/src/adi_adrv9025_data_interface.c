@@ -2429,7 +2429,7 @@ int32_t adi_adrv9025_DfrmPrbsErrCountGet(adi_adrv9025_Device_t*              dev
         ADI_ERROR_RETURN(device->common.error.newAction);
 
         /* Create the errorStatus. Note that there is no inverted value flag specific to sample mode */
-        counters->errorStatus[0] = (prbsInvalidDataFlag << 1) & (prbsErrorFlag << 2);
+        counters->errorStatus[0] = (prbsInvalidDataFlag << 1) | (prbsErrorFlag << 2);
     }
     else if (counters->sampleSource == ADI_ADRV9025_PRBSCHECK_LANEDATA)
     {
