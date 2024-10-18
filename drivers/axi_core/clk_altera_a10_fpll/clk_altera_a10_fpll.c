@@ -42,6 +42,7 @@
 #include <limits.h>
 #include "io.h"
 #include "no_os_util.h"
+#include "no_os_delay.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include "clk_altera_a10_fpll.h"
