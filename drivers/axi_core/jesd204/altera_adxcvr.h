@@ -108,6 +108,8 @@ struct adxcvr_init {
 	uint32_t atx_pll_base;
 	uint32_t lane_rate_khz;
 	uint32_t parent_rate_khz;
+	/** Export no-OS output clock */
+	bool export_no_os_clk;
 };
 
 /**
