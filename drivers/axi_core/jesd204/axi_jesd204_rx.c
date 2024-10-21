@@ -198,12 +198,6 @@ int32_t axi_jesd204_rx_lane_clk_enable(struct axi_jesd204_rx *jesd)
 	axi_jesd204_rx_write(jesd, JESD204_RX_REG_SYSREF_STATUS, 0x3);
 	axi_jesd204_rx_write(jesd, JESD204_RX_REG_LINK_DISABLE, 0x0);
 
-	// immediately read status bits:
-	uint32_t link_disabled,link_state;
-	axi_jesd204_rx_read(jesd, JESD204_RX_REG_LINK_DISABLE, &link_disabled);
-	axi_jesd204_rx_read(jesd, JESD204_RX_REG_LINK_STATE, &link_state);
-	printf("%s reg[0xC0] = 0x%08x reg[C4] = 0x%08x\n",__func__,link_disabled,link_state);
-
 	return 0;
 }
 
