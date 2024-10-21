@@ -461,6 +461,7 @@ int32_t adxcvr_init(struct adxcvr **ad_xcvr,
 	adxcvr_read(xcvr, ADXCVR_REG_SYNTH_CONF, &synth_conf);
 
 	xcvr->is_transmit = (bool)(synth_conf & 0x100);
+	printf("   Xcvr detected as %s\n",xcvr->is_transmit?"Transmit":"Receive");
 	xcvr->lanes_per_link = synth_conf & 0xff;
 
 	for (i = 0; i < xcvr->lanes_per_link; i++)
@@ -486,6 +487,9 @@ int32_t adxcvr_init(struct adxcvr **ad_xcvr,
 		if (ret)
 			goto err;
 	}
+
+	printf("%s: %s Lanes %ld lane_rate_khz %lu Parent Rate = %ld\n",__func__, xcvr->is_transmit?"TX":"RX",xcvr->lanes_per_link,
+	                       xcvr->lane_rate_khz,xcvr->parent_rate_khz); // MJW DEBUG
 
 	*ad_xcvr = xcvr;
 

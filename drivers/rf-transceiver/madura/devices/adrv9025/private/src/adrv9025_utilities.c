@@ -217,11 +217,13 @@ int32_t adrv9025_CalsInit(adi_adrv9025_Device_t*   device,
     /* Run Init Cals */
     recoveryAction = adi_adrv9025_InitCalsRun(device,
                                               initCals);
+    printf("%s:%d adi_adrv9025_InitCalsRun returns %d\n",__func__,__LINE__,recoveryAction);
     ADI_ERROR_RETURN(device->common.error.newAction);
 
     recoveryAction = adi_adrv9025_InitCalsWait(device,
                                                INIT_CALS_TIMEOUT_MS,
                                                &initCalsError);
+    printf("%s:%d adi_adrv9025_InitCalsWait returns %d\n",__func__,__LINE__,recoveryAction);
     ADI_ERROR_RETURN(device->common.error.newAction);
 
     return recoveryAction;

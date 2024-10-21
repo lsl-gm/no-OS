@@ -592,6 +592,11 @@ static int adrv9025_jesd204_setup_stage1(struct jesd204_dev *jdev,
 
 		return adrv9025_dev_err(phy);
 	}
+	else
+	{
+		pr_debug("%s:%d MCS status GOOD 0x%x (after %d SysRef loops)\n", __func__, __LINE__,mcsStatus,i);
+	}
+
 
 	return JESD204_STATE_CHANGE_DONE;
 }
@@ -606,22 +611,33 @@ static int adrv9025_jesd204_setup_stage2(struct jesd204_dev *jdev,
 	pr_debug("%s:%d reason %s\n", __func__, __LINE__,
 		 jesd204_state_op_reason_str(reason));
 
+	printf("\n\n***%s:%d ***************************************************\n", __func__, __LINE__);
+
 	if (reason != JESD204_STATE_OP_REASON_INIT)
 		return JESD204_STATE_CHANGE_DONE;
 
 	/* MCS end sequence*/
 	ret = adi_adrv9025_MultichipSyncSet(phy->madDevice, ADI_DISABLE);
+
+	printf(" %s:%d After adi_adrv9025_MultichipSyncSet %d\n", __func__, __LINE__,ret);
+
 	if (ret)
 		return adrv9025_dev_err(phy);
 
 	/* Post MCS */
 	ret = adi_adrv9025_PostMcsInit(phy->madDevice,
 				       &phy->adrv9025PostMcsInitInst);
+
+	printf(" %s:%d After adi_adrv9025_PostMcsInit %d\n", __func__, __LINE__,ret);
+
 	if (ret)
 		return adrv9025_dev_err(phy);
 
 	ret = adi_adrv9025_SerializerReset(
 		      phy->madDevice, phy->deviceInitStruct.clocks.serdesPllVcoFreq_kHz);
+
+	printf(" %s:%d After adi_adrv9025_SerializerReset %d\n", __func__, __LINE__,ret);
+
 	if (ret)
 		return adrv9025_dev_err(phy);
 
@@ -802,8 +818,8 @@ static int adrv9025_jesd204_link_running(struct jesd204_dev *jdev,
 	adi_adrv9025_DeframerStatus_t deframerStatus;
 	uint8_t deframerLinkCondition = 0;
 
-	pr_debug("%s:%d link_num %u reason %s\n", __func__, __LINE__,
-		 lnk->link_id, jesd204_state_op_reason_str(reason));
+	pr_debug("%s:%d link_num %u reason %s source_id %d\n", __func__, __LINE__,
+		 lnk->link_id, jesd204_state_op_reason_str(reason),priv->link[lnk->link_id].source_id);
 
 	if (reason != JESD204_STATE_OP_REASON_INIT)
 		return JESD204_STATE_CHANGE_DONE;
@@ -833,8 +849,8 @@ static int adrv9025_jesd204_link_running(struct jesd204_dev *jdev,
 			       &deframerLinkCondition);
 
 		if ((deframerStatus.status & 0x7F) != 0x7) /* Ignore Valid ILAS checksum */
-			pr_warning("Link%u deframerStatus 0x%X\n",
-				   lnk->link_id, deframerStatus.status);
+			pr_warning("Link%u deframerStatus 0x%X deframerLinkCondition 0x%X\\n",
+				   lnk->link_id, deframerStatus.status,deframerLinkCondition);
 
 		/* Kick off SERDES tracking cal if lanes are up */
 		ret = adi_adrv9025_TrackingCalsEnableSet(
@@ -1242,20 +1258,30 @@ int32_t adrv9025_init(struct adrv9025_rf_phy **dev,
 	strncpy(phy->platformFiles.streamImageFile, init_param->streamImageFile,
 		sizeof(phy->platformFiles.streamImageFile));
 
+	printf("%s: about to call adrv9025_setup \n\r",__func__);
+
 	ret = adrv9025_setup(phy);
 	if (ret < 0) {
 		pr_err("%s: adrv9025_setup failed (%d)\n", __func__, ret);
 		goto error_agc_config;
+	}
+	else
+	{
+		printf("%s : adrv9025_setup SUCCESS \n",__func__);
 	}
 
 	ret = jesd204_dev_register(&phy->jdev, &jesd204_adrv9025_init);
 	if (ret)
 		goto error_agc_config;
 
+	printf("%s: about to call jesd204_dev_priv \n\r",__func__);
+
 	priv = jesd204_dev_priv(phy->jdev);
 	priv->phy = phy;
 
 	*dev = phy;
+
+	printf("%s: COMPLETED OK \n\r",__func__);
 
 	return 0;
 error_agc_config:
@@ -1343,19 +1369,29 @@ int adrv9025_setup(struct adrv9025_rf_phy *phy)
 		phy->platformFiles.txAttenTableFileArrSize++;
 	}
 
+	printf("%s 1 before clock enable\n",__func__);
+
 	ret = no_os_clk_enable(phy->dev_clk);
 	if (ret)
 		return ret;
+
+	printf("%s 2 after clock enable %s\n",__func__,phy->dev_clk?"":"SKIPPED");
 
 	adi_common_LogLevelSet(&phy->madDevice->common,
 			       ADI_HAL_LOG_ALL);
 
 	ret = adi_adrv9025_HwOpen(phy->madDevice, adrv9025_spi_settings_get());
+
+	printf("%s 3 after adi_adrv9025_HwOpen %d\n",__func__,ret);
+
 	if (ret)
 		return adrv9025_dev_err(phy);
 
 	ret = adi_adrv9025_ConfigFileLoad(phy->madDevice, "ActiveUseCase.profile",
 					  &phy->deviceInitStruct);
+
+	printf("%s 4 after adi_adrv9025_ConfigFileLoad %d\n",__func__,ret);
+
 	if (ret)
 		return adrv9025_dev_err(phy);
 

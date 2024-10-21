@@ -39,6 +39,7 @@ int32_t adi_adrv9025_InitCalsRun(adi_adrv9025_Device_t*   device,
 
     static const uint8_t CAL_CHANNEL_ALL_MASK = 0x0F;
 
+    printf("++%s:%d BEGIN Calibrating 0x%08x on Chans 0x%x\n",__func__,__LINE__,initCals->calMask,initCals->channelMask);
     ADI_NULL_DEVICE_PTR_RETURN(device);
 
     ADI_FUNCTION_ENTRY_LOG(&device->common,
@@ -118,6 +119,21 @@ int32_t adi_adrv9025_InitCalsWait(adi_adrv9025_Device_t* device,
                                                    ADI_ADRV9025_INITCALSWAIT_INTERVAL_US);
     errFlag = (cmdStatusByte >> 1);
 
+    //printf("  ++%s:%d adi_adrv9025_CpuCmdStatusWait : recoveryAction %d errFlag %d\n",__func__,__LINE__,recoveryAction,errFlag);
+
+    if (cmdStatusByte & 1) // Pending after timeout
+    {
+    	uint8_t areCalsRunning=0;
+    	uint8_t errorFlag=0;
+    	uint32_t local_ret;
+    	local_ret = adi_adrv9025_InitCalsCheckCompleteGet(device,&areCalsRunning,&errorFlag);
+    	printf("%s:%d InitCalCheckComplete(%s,%d): still Running %d errFlag 0x%X \n",__func__,__LINE__,local_ret==0?"OK":"Failed",local_ret,areCalsRunning,errorFlag);
+
+    	adi_adrv9025_InitCalStatus_t initStatus = {0}; // for status results
+    	local_ret = adi_adrv9025_InitCalsDetailedStatusGet(device,&initStatus);
+    	printf("%s:%d adi_adrv9025_InitCalsDetailedStatusGet(%s,%d): initErrCode 0x%X initErrCal 0x%X DurationuSec %d (Running Cals %d mask 0x%08x)\n",__func__,__LINE__,local_ret==0?"OK":"Failed",local_ret,
+    			initStatus.initErrCode,initStatus.initErrCal,initStatus.calsDurationUsec,initStatus.calsSincePowerUp[0],initStatus.calsLastRun[0]);
+    }
 
 
     /* Don't update errorFlag if SPI error because errorFlag could be a random */

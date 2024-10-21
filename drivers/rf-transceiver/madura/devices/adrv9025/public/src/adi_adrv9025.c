@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /**
 * \file adi_adrv9025.c
 * \brief Contains Adrv9025 features related function implementation defined in
@@ -63,8 +64,6 @@ int32_t adi_adrv9025_HwOpen(adi_adrv9025_Device_t*      device,
 
     recoveryAction = adi_common_hal_HwOpen(&device->common);
 
-
-
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
     {
         switch (recoveryAction)
@@ -115,6 +114,7 @@ int32_t adi_adrv9025_HwOpen(adi_adrv9025_Device_t*      device,
     /* Toggle RESETB pin, Configure and Verify SPI */
 
     recoveryAction = adi_adrv9025_HwReset(device);
+
     ADI_ERROR_REPORT(&device->common,
                      ADI_COMMON_ERRSRC_API,
                      ADI_COMMON_ERR_API_FAIL,
@@ -200,6 +200,7 @@ int32_t adi_adrv9025_HwReset(adi_adrv9025_Device_t* device)
 
     /* check that the hardware is available */
     recoveryAction = adi_adrv9025_HwVerify(device);
+
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
     {
         return device->common.error.newAction;
@@ -207,6 +208,7 @@ int32_t adi_adrv9025_HwReset(adi_adrv9025_Device_t* device)
     /* toggle RESETB on device with matching spi chip select index */
     recoveryAction = adi_common_hal_HwReset(&device->common,
                                             RESETB_LEVEL_LOW);
+
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
     {
         ADI_ERROR_REPORT(&device->common,
@@ -220,8 +222,6 @@ int32_t adi_adrv9025_HwReset(adi_adrv9025_Device_t* device)
 
     recoveryAction = adi_common_hal_Wait_ms(&device->common,
                                             RESETB_WAIT_MS);
-
-
 
 
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
@@ -531,8 +531,6 @@ int32_t adi_adrv9025_Initialize(adi_adrv9025_Device_t* device,
 
     adrv9025_CpuInitialize(device);
 
-
-
     adrv9025_MasterBiasSet(device);
     ADI_ERROR_RETURN(device->common.error.newAction);
 
@@ -556,10 +554,13 @@ int32_t adi_adrv9025_Initialize(adi_adrv9025_Device_t* device,
     adi_adrv9025_ProfilesVerify(device,
                                 init);
     ADI_ERROR_RETURN(device->common.error.newAction);
+    printf(">>>>>> %s:%d After adi_adrv9025_ProfilesVerify %d\n",__func__,__LINE__,0/*recoveryAction*/);
 
     adrv9025_ClocksSet(device,
                        init);
     ADI_ERROR_RETURN(device->common.error.newAction);
+
+    printf(">>>>>> %s:%d Program FIRs %d\n",__func__,__LINE__,0/*recoveryAction*/);
 
     /* Program FIR filters */
     if (device->devStateInfo.profilesValid & ADI_ADRV9025_TX_PROFILE_VALID)
@@ -688,7 +689,6 @@ int32_t adi_adrv9025_Initialize(adi_adrv9025_Device_t* device,
     device->devStateInfo.extDpdCaptureTriggerGpio = ADI_ADRV9025_GPIO_INVALID;
 
     device->devStateInfo.extDpdLutSwapModeEn = (uint8_t)0;
-
     return (device->common.error.newAction);
 }
 
@@ -1088,8 +1088,10 @@ int32_t adi_adrv9025_SpiVerify(adi_adrv9025_Device_t* device)
     static const uint8_t VENDOR_ID_0   = 0x56;
     static const uint8_t VENDOR_ID_1   = 0x04;
 
+    printf("%s: 1 ***** Verify HW is available ***\n\r",__func__);
     /* check that the hardware is available */
     int32_t recoveryAction = adi_adrv9025_HwVerify(device);
+    printf("%s: 1a %d\n\r",__func__,recoveryAction);
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
     {
         return device->common.error.newAction;
@@ -1117,8 +1119,6 @@ int32_t adi_adrv9025_SpiVerify(adi_adrv9025_Device_t* device)
                          ADRV9025_ADDR_VENDOR_ID_1,
                          &spiReg);
 
-
-
     if (spiReg != VENDOR_ID_1)
     {
         ADI_ERROR_REPORT(&device->common,
@@ -1129,6 +1129,8 @@ int32_t adi_adrv9025_SpiVerify(adi_adrv9025_Device_t* device)
                          "Cannot read from a low SPI address\n");
         ADI_ERROR_RETURN(device->common.error.newAction);
     }
+
+    printf("%s: 1b ***** CONFIRM ADRV Vendor IDs Read OK ***\n\r",__func__);
 
     /* Check SPI write - SCRATCHPAD : Data = 10110110 */
     spiReg = 0;

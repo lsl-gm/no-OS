@@ -18,6 +18,8 @@
 #include <linux/string.h>
 #endif
 #include <string.h>
+#include <time.h> // for calibration debug
+
 #include "adi_adrv9025_utilities.h"
 #include "adi_adrv9025_error.h"
 #include "adi_adrv9025_hal.h"
@@ -805,6 +807,10 @@ int32_t adi_adrv9025_RxGainTableLoad(adi_adrv9025_Device_t* device,
 #ifdef __GNUC__
     rxGainTableFilePointer = fopen(rxGainTablePath,
                                    "r");
+#ifdef FILEDEBUG
+    printf("%s:%d Rx Gain Table file %s \n",__func__,__LINE__,rxGainTablePath);
+#endif
+
 #else
     if (fopen_s(&rxGainTableFilePointer, rxGainTablePath, "r") != 0)
     {
@@ -1476,6 +1482,7 @@ int32_t adi_adrv9025_PreMcsInit_v2(adi_adrv9025_Device_t*          device,
 
     ADI_FUNCTION_ENTRY_LOG(&device->common,
                            ADI_COMMON_LOG_API);
+    printf(">>> %s:%d STARTING FN\n",__func__,__LINE__);
 
     /* If Write Cache is off, overwrite it to be HW_RMW to allow bf field write's during broadcast */
     if (device->common.cacheInfo.wrCacheState == (uint8_t)ADRV9025_WR_CACHE_OFF)
@@ -1497,6 +1504,9 @@ int32_t adi_adrv9025_PreMcsInit_v2(adi_adrv9025_Device_t*          device,
     /* Setup SPI controller, master bias, enable pin pads, Load PFIRs */
     recoveryAction = adi_adrv9025_Initialize(device,
                                              init);
+
+    printf(">>> %s:%d After adi_adrv9025_Initialize %d\n",__func__,__LINE__,recoveryAction);
+
     ADI_ERROR_REPORT(&device->common,
                      ADI_COMMON_ERRSRC_API,
                      ADI_COMMON_ERR_API_FAIL,
@@ -1543,6 +1553,8 @@ int32_t adi_adrv9025_PreMcsInit_v2(adi_adrv9025_Device_t*          device,
                                        wrOnlyRestore,
                                        recoveryAction);
     ADI_ERROR_RETURN(device->common.error.newAction);
+
+    printf(">>> %s:%d AFter loaded ARM image\n",__func__,__LINE__);
 
     /* Load Rx gain table for requested channels */
     for (i = 0; i < rxGainTableFileArrSize; i++)
@@ -1886,6 +1898,8 @@ int32_t adi_adrv9025_PreMcsInit_NonBroadCast(adi_adrv9025_Device_t* device,
     return device->common.error.newAction;
 }
 
+#define DEBUG_CALIB_TIME
+
 int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
                                  adi_adrv9025_PostMcsInit_t* utilityInit)
 {
@@ -1907,7 +1921,6 @@ int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
     ADI_FUNCTION_ENTRY_LOG(&device->common, ADI_COMMON_LOG_API);
 
     ADI_NULL_PTR_RETURN(&device->common, utilityInit);
-
     /*******************************HB2_IN BIT TOGGLE ************************************/
     /* Enable the Rx Channels to setup AGC overload thresholds */
     recoveryAction = adi_adrv9025_RxTxEnableSet(device, rxEnableRegs, (uint32_t)ADI_ADRV9025_TXOFF);
@@ -1956,7 +1969,15 @@ int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
     ADI_ERROR_RETURN(device->common.error.newAction);
 
     /*Initialize cals*/
+#ifdef DEBUG_CALIB_TIME
+    struct timespec tms_start,tms_end;
+    clock_gettime(CLOCK_REALTIME,&tms_start);
+#endif
     recoveryAction = adrv9025_CalsInit(device, &utilityInit->initCals);
+#ifdef DEBUG_CALIB_TIME
+    clock_gettime(CLOCK_REALTIME,&tms_end);
+    printf("%s:%d ++++++++ Calibration (CalMask 0x%08x, Chans 0x%x) took %ld seconds ++++++++++++++\n",__func__,__LINE__,utilityInit->initCals.calMask,utilityInit->initCals.channelMask,tms_end.tv_sec-tms_start.tv_sec);
+#endif
     ADI_ERROR_REPORT(&device->common,
                      ADI_COMMON_ERRSRC_API,
                      ADI_COMMON_ERR_API_FAIL,
@@ -1978,10 +1999,11 @@ int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
     return device->common.error.newAction;
 }
 
+
 int32_t adi_adrv9025_CalsInit(adi_adrv9025_Device_t*   device,
                           adi_adrv9025_InitCals_t* initCals)
 {
-       return adrv9025_CalsInit(device, initCals);
+	return adrv9025_CalsInit(device, initCals);
 }
 
 int32_t adi_adrv9025_AdcProfilesInit(adi_adrv9025_Device_t*      device,
@@ -2279,7 +2301,6 @@ int32_t adi_adrv9025_ConfigFileLoad(adi_adrv9025_Device_t* device,
         ADI_ERROR_CLOSE_RETURN(device->common.error.newAction,
             initConifgJsonfilePtr);
     }
-
 
     recoveryAction = adrv9025_JsonFindEndOfFile(device,
                                                 initConifgJsonfilePtr,

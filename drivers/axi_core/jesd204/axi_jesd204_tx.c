@@ -194,6 +194,12 @@ uint32_t axi_jesd204_tx_status_read(struct axi_jesd204_tx *jesd)
 
 	printf("%s status:\n", jesd->name);
 
+	printf("  LINK_STATE LINK_STATUS SYSREF_STAT LINK_CLK_RATIO SYSREF_CONF REG_CONF0\n" ); // MJW DEBUG
+	printf("  0x%08lx    0x%08lx     0x%08lx     0x%08lx        0x%08lx     0x%08lx\n",link_disabled,link_status,sysref_status,clock_ratio,sysref_config,link_config0 ); // MJW DEBUG
+	uint32_t link_disabled_req;// MJW DEBUG
+	axi_jesd204_tx_read(jesd, JESD204_TX_REG_LINK_DISABLE, &link_disabled_req);// MJW DEBUG
+	printf("   JESD204_TX_REG_LINK_DISABLE = 0x%08lx\n",link_disabled_req); // MJW DEBUG
+
 	printf("\tLink is %s\n", (link_disabled & 0x1) ? "disabled" : "enabled");
 
 	if (clock_ratio == 0) {

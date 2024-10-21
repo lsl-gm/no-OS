@@ -204,6 +204,9 @@ int jesd204_link_get_rate(struct jesd204_link *lnk, uint64_t *lane_rate_hz)
 	       encoding_n * lnk->sample_rate;
 	no_os_do_div(&rate, lnk->num_lanes * encoding_d * sample_rate_div);
 
+	printf("  %s %lld %d %lld %d (from %d %d %lld %lld)\n",__func__,rate,lnk->num_lanes,encoding_d,sample_rate_div,
+			lnk->num_converters,lnk->bits_per_sample,encoding_n,lnk->sample_rate);
+
 	*lane_rate_hz = rate;
 
 	return 0;
@@ -234,6 +237,8 @@ int jesd204_link_get_device_clock(struct jesd204_link *lnk,
 	ret = jesd204_link_get_rate(lnk, &lane_rate_hz);
 	if (ret)
 		return ret;
+
+	printf ("%s %lld %d\n",__func__,lane_rate_hz,lnk->jesd_version);
 
 	switch (lnk->jesd_version) {
 	case JESD204_VERSION_C:
