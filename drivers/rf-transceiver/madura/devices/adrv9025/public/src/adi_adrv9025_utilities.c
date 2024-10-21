@@ -1978,6 +1978,12 @@ int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
     return device->common.error.newAction;
 }
 
+int32_t adi_adrv9025_CalsInit(adi_adrv9025_Device_t*   device,
+                          adi_adrv9025_InitCals_t* initCals)
+{
+       return adrv9025_CalsInit(device, initCals);
+}
+
 int32_t adi_adrv9025_AdcProfilesInit(adi_adrv9025_Device_t*      device,
                                      adi_adrv9025_Init_t*        init,
                                      adi_adrv9025_AdcProfiles_t* adcProfile)
