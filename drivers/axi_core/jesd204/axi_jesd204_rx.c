@@ -49,6 +49,7 @@
 /******************************************************************************/
 /********************** Macros and Constants Definitions **********************/
 /******************************************************************************/
+
 #define JESD204_RX_REG_VERSION			0x00
 #define JESD204_RX_REG_MAGIC			0x0c
 
@@ -72,10 +73,15 @@
 
 #define JESD204_RX_REG_LINK_CONF0		0x210
 
+#define JESD204_RX_REG_LINK_CONF1		0x214
+#define JESD204_RX_REG_LINK_CONF1_DESCRAMBLER_DISABLE	NO_OS_BIT(0)
+
 #define JESD204_RX_REG_LINK_CONF4		0x21C
 
 #define JESD204_RX_REG_LINK_CONF2		0x240
 #define JESD204_RX_LINK_CONF2_BUFFER_EARLY_RELEASE	NO_OS_BIT(16)
+
+#define JESD204_RX_REG_LINK_CONF3		0x244
 
 #define JESD204_RX_REG_LINK_STATUS		0x280
 #define JESD204_LINK_STATUS_DATA		3
@@ -86,6 +92,7 @@
 			no_os_field_get(JESD204_EMB_STATE_MASK, x)
 #define JESD204_RX_REG_LANE_LATENCY(x)	(((x) * 32) + 0x304)
 #define JESD204_RX_REG_LANE_ERRORS(x)	(((x) * 32) + 0x308)
+#define JESD204_RX_REG_LANE_FRAME_ALIGN_ERROR(x)  (((x) * 32) + 0x30c)
 #define JESD204_RX_REG_ILAS(x, y)		(((x) * 32 + (y) * 4) + 0x310)
 
 #define JESD204_TX_REG_ILAS(x, y)		\
@@ -301,6 +308,19 @@ int32_t axi_jesd204_rx_get_lane_errors(struct axi_jesd204_rx *jesd,
 }
 
 /**
+ * @brief Read the JESD204 RX Frame Alignment Errors.
+ * @param jesd - The JESD204 RX Device Structure.
+ * @param lane - The lane ID.
+ * @param errors - The errors read from the device.
+ * @return Returns 0 in case of success or negative error code otherwise.
+ */
+int32_t axi_jesd204_rx_get_lane_frame_align_errors(struct axi_jesd204_rx *jesd,
+				       uint32_t lane, uint32_t *errors)
+{
+	return axi_jesd204_rx_read(jesd, JESD204_RX_REG_LANE_FRAME_ALIGN_ERROR(lane), errors);
+}
+
+/**
  * @brief Read JESD204 RX Lane Info for 8b10b enconding
  * @param jesd - The device structure.
  * @param lane - Lane ID.
@@ -424,6 +444,11 @@ int32_t axi_jesd204_rx_laneinfo_read(struct axi_jesd204_rx *jesd, uint32_t lane)
 	if (PCORE_VERSION_MINOR(jesd->version) >= 2) {
 		axi_jesd204_rx_get_lane_errors(jesd, lane, &errors);
 		printf("Errors: %"PRIu32"\n", errors);
+	}
+
+    if (PCORE_VERSION_MINOR(jesd->version) >= 2) {
+		axi_jesd204_rx_get_lane_frame_align_errors(jesd, lane, &errors);
+		printf("Frame Alignment Errors: %"PRIu32"\n", errors);
 	}
 
 	if (jesd->encoder == JESD204_ENCODER_8B10B)
@@ -760,6 +785,7 @@ static int axi_jesd204_rx_jesd204_link_enable(struct jesd204_dev *jdev,
 		       __func__, lnk->link_id, ret);
 		return ret;
 	}
+
 	axi_jesd204_rx_write(jesd, JESD204_RX_REG_SYSREF_STATUS, 0x3);
 	axi_jesd204_rx_write(jesd, JESD204_RX_REG_LINK_DISABLE, 0x0);
 #if 0

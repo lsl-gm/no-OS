@@ -49,6 +49,7 @@
 /******************************************************************************/
 /********************** Macros and Constants Definitions **********************/
 /******************************************************************************/
+
 #define JESD204_TX_REG_VERSION			0x00
 #define JESD204_TX_REG_MAGIC			0x0c
 
@@ -65,10 +66,14 @@
 
 #define JESD204_TX_REG_SYSREF_CONF		0x100
 #define JESD204_TX_REG_SYSREF_CONF_SYSREF_DISABLE	NO_OS_BIT(0)
+#define JESD204_TX_REG_SYSREF_CONF_SYSREF_ONESHOT	NO_OS_BIT(1)
 
 #define JESD204_TX_REG_SYSREF_LMFC_OFFSET	0x104
 
 #define JESD204_TX_REG_SYSREF_STATUS	0x108
+
+#define JESD204_TX_REG_LINK_CONF1			0x214
+#define JESD204_TX_REG_LINK_CONF1_SCRAMBLER_DISABLE	NO_OS_BIT(0)
 
 #define JESD204_TX_REG_CONF0			0x210
 
@@ -231,14 +236,15 @@ uint32_t axi_jesd204_tx_status_read(struct axi_jesd204_tx *jesd)
 		printf("%s"
 		       "\tLink status: %s\n"
 		       "\tSYSREF captured: %s\n"
-		       "\tSYSREF alignment error: %s\n",
+		       "\tSYSREF alignment error: %s : OneShot %s\n",
 		       jesd->encoder == JESD204_ENCODER_64B66B ? "" :
 		       status,
 		       axi_jesd204_tx_link_status_label[link_status & 0x3],
 		       (sysref_config & JESD204_TX_REG_SYSREF_CONF_SYSREF_DISABLE) ?
 		       "disabled" : (sysref_status & 1) ? "Yes" : "No",
 		       (sysref_config & JESD204_TX_REG_SYSREF_CONF_SYSREF_DISABLE) ?
-		       "disabled" : (sysref_status & 2) ? "Yes" : "No");
+		       "disabled" : (sysref_status & 2) ? "Yes" : "No",
+		       (sysref_config & JESD204_TX_REG_SYSREF_CONF_SYSREF_ONESHOT) ? "Enabled":"Disabled");
 	} else {
 		printf("\tExternal reset is %s\n",
 		       (link_disabled & 0x2) ? "asserted" : "deasserted");
@@ -433,10 +439,26 @@ int32_t axi_jesd204_tx_apply_config(struct axi_jesd204_tx *jesd,
 	val |= (config->octets_per_frame - 1) << 16;
 
 	if (config->subclass == JESD204_SUBCLASS_0)
+	{
 		axi_jesd204_tx_write(jesd, JESD204_TX_REG_SYSREF_CONF,
-				     JESD204_TX_REG_SYSREF_CONF_SYSREF_DISABLE);
+							JESD204_TX_REG_SYSREF_CONF_SYSREF_DISABLE);
+	}
+	else
+	{
+		if (config->sysref.mode == JESD204_SYSREF_ONESHOT)
+		{
+			axi_jesd204_tx_write(jesd, JESD204_TX_REG_SYSREF_CONF,
+								 JESD204_TX_REG_SYSREF_CONF_SYSREF_ONESHOT);
+		}
+	}
 
 	axi_jesd204_tx_write(jesd, JESD204_TX_REG_CONF0, val);
+
+	if (config->scrambling == 0)
+	{
+		axi_jesd204_tx_write(jesd, JESD204_TX_REG_LINK_CONF1,
+							JESD204_TX_REG_LINK_CONF1_SCRAMBLER_DISABLE);
+	}
 
 	if (jesd->config.version >= ADI_AXI_PCORE_VER(1, 6, 'a')) {
 		val = octets_per_multiframe / jesd->tpl_data_path_width - 1;
@@ -450,7 +472,14 @@ int32_t axi_jesd204_tx_apply_config(struct axi_jesd204_tx *jesd,
 			if (i >= config->num_lanes)
 				i = 0;
 
-			lane_id = config->lane_ids[i++];
+			if (config->lane_ids)
+			{
+				lane_id = config->lane_ids[i++];
+			}
+			else
+			{
+				lane_id = lane;
+			}
 			axi_jesd204_tx_set_lane_ilas(jesd, config, lane_id, lane);
 		}
 	}
