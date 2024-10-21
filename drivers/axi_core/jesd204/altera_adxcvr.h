@@ -97,6 +97,8 @@ struct adxcvr {
 	uint32_t lane_rate_khz;
 	uint32_t parent_rate_khz;
 	bool initial_recalc;
+	/** Exported no-OS output clock */
+	struct no_os_clk_desc *clk_out;
 };
 
 struct adxcvr_init {
@@ -107,6 +109,11 @@ struct adxcvr_init {
 	uint32_t lane_rate_khz;
 	uint32_t parent_rate_khz;
 };
+
+/**
+ * @brief adxcvr clock ops
+ */
+extern const struct no_os_clk_platform_ops adxcvr_clk_ops;
 
 /******************************************************************************/
 /************************ Functions Declarations ******************************/
