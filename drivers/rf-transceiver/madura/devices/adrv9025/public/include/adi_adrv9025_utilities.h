@@ -311,6 +311,26 @@ int32_t adi_adrv9025_PostMcsInit(adi_adrv9025_Device_t*      device,
                                  adi_adrv9025_PostMcsInit_t* utilityInit);
 
 /**
+* \brief This utility function commands the ARM processor to run init cals
+*
+* The init cals to run are communicated via a mask passed to this function
+*
+* \dep_begin
+* \dep{device->common.devHalInfo}
+* \dep_end
+*
+* \param device Pointer to the ADRV9025 device data structure containing settings
+* \param initCals Pointer to ADRV9025 cals init settings structure
+*
+* \retval ADI_COMMON_ACT_WARN_RESET_LOG Recovery action for log reset
+* \retval ADI_COMMON_ACT_ERR_CHECK_PARAM Recovery action for bad parameter check
+* \retval ADI_COMMON_ACT_ERR_RESET_INTERFACE Recovery action for SPI reset required
+* \retval ADI_COMMON_ACT_NO_ACTION Function completed successfully, no action required
+*/
+int32_t adi_adrv9025_CalsInit(adi_adrv9025_Device_t*   device,
+                          adi_adrv9025_InitCals_t* initCals);
+
+/**
 * \brief This utility function initialize the ADC Profiles
 *
 * The ADC profiles is initialize using fix profile with ADC bandwidth and ADC clock.
