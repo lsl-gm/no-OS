@@ -565,7 +565,7 @@ static int axi_jesd204_rx_apply_config(struct axi_jesd204_rx *jesd,
 
 	if (config->scrambling == 0)
 	{
-		axi_jesd204_tx_write(jesd, JESD204_RX_REG_LINK_CONF1,
+		axi_jesd204_rx_write(jesd, JESD204_RX_REG_LINK_CONF1,
 							JESD204_RX_REG_LINK_CONF1_DESCRAMBLER_DISABLE);
 	}
 
