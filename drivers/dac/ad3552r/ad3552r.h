@@ -35,19 +35,11 @@
 #ifndef _AD3552R_H_
 #define _AD3552R_H_
 
-/*****************************************************************************/
-/***************************** Include Files *********************************/
-/*****************************************************************************/
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "no_os_spi.h"
 #include "no_os_gpio.h"
 #include "no_os_crc8.h"
-
-/*****************************************************************************/
-/******************** Macros and Constants Definitions ***********************/
-/*****************************************************************************/
 
 /* Register addresses */
 /* Primary address space */
@@ -168,15 +160,17 @@
 /* Maximum number of channels in this family of devices */
 #define AD3552R_MAX_NUM_CH		2
 
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
-
 enum ad3552r_id {
 	AD3541R_ID,
 	AD3542R_ID,
 	AD3551R_ID,
 	AD3552R_ID
+};
+
+enum ad3552r_io_mode {
+	AD3552R_SPI,
+	AD3552R_DUAL_SPI,
+	AD3552R_QUAD_SPI,
 };
 
 enum ad3552r_ch_vref_select {
@@ -238,10 +232,10 @@ enum ad3552r_sdio_drive_strength {
 };
 
 enum num_channels {
-	AD3541R_NUM_CHANNELS=1,
-	AD3542R_NUM_CHANNELS=2,
-	AD3551R_NUM_CHANNELS=1,
-	AD3552R_NUM_CHANNELS=2
+	AD3541R_NUM_CHANNELS = 1,
+	AD3542R_NUM_CHANNELS = 2,
+	AD3551R_NUM_CHANNELS = 1,
+	AD3552R_NUM_CHANNELS = 2
 };
 
 #define AD3552R_CH_OUTPUT_RANGE_CUSTOM 100
@@ -392,12 +386,18 @@ struct ad3552r_desc {
 	struct no_os_spi_desc *spi;
 	struct no_os_gpio_desc *ldac;
 	struct no_os_gpio_desc *reset;
+	struct axi_clkgen *clkgen;
+	struct axi_dac  *ad3552r_core_ip;
+	struct axi_dmac *dmac_ip;
 	struct ad3552r_ch_data ch_data[AD3552R_MAX_NUM_CH];
+	uint8_t axi_xfer_size;
 	uint8_t crc_table[NO_OS_CRC8_TABLE_SIZE];
 	uint8_t chip_id;
+	uint8_t num_spi_data_lanes;
 	uint8_t crc_en : 1;
 	uint8_t is_simultaneous : 1;
 	uint8_t single_transfer : 1;
+	uint8_t axi: 1;
 };
 
 struct ad3552r_custom_output_range_cfg {
@@ -443,11 +443,17 @@ struct ad3552r_init_param {
 	bool crc_en;
 	bool is_simultaneous;
 	bool single_transfer;
+	/* Set for AXI qspi controller in use */
+	bool axi_qspi_controller;
+	/* Set AXI clock rate */
+	int axi_clkgen_rate;
+	/* Points to struct axi_clkgen_init for clkgen ip init params */
+	struct axi_clkgen_init *clkgen_ip;
+	/* Points to struct axi_dac_init for AXI ip init params */
+	struct axi_dac_init *ad3552r_core_ip;
+	/* Points to struct axi_dmac_init for AXI DMAC init params */
+	struct axi_dmac_init *dmac_ip;
 };
-
-/*****************************************************************************/
-/************************* Functions Declarations ****************************/
-/*****************************************************************************/
 
 uint8_t ad3552r_reg_len(uint8_t addr);
 
@@ -509,4 +515,9 @@ int32_t ad3552r_write_samples(struct ad3552r_desc *desc, uint16_t *data,
 			      enum ad3552r_write_mode mode);
 
 int32_t ad3552r_simulatneous_update_enable(struct ad3552r_desc *desc);
+
+/* DMA buffering, fast mode, AXI QSPI */
+int32_t ad3552r_axi_write_data(struct ad3552r_desc *desc, uint32_t *buf,
+			       uint16_t samples, bool cyclic, int cyclic_secs);
+
 #endif /* _AD3552R_H_ */

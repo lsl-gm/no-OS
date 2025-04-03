@@ -31,18 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <malloc.h>
 #include "admv8818.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include "no_os_units.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 static const unsigned long long freq_range_hpf[4][2] = {
 	{1750000000ULL, 3550000000ULL},
@@ -57,10 +50,6 @@ static const unsigned long long freq_range_lpf[4][2] = {
 	{7000000000, 13000000000},
 	{12550000000, 18500000000}
 };
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief Writes data to ADMV8818 over SPI.
@@ -101,7 +90,7 @@ int admv8818_spi_read(struct admv8818_dev *dev, uint16_t reg_addr,
 	buff[2] = 0;
 
 	ret = no_os_spi_write_and_read(dev->spi_desc, buff, ADMV8818_BUFF_SIZE_BYTES);
-	if(ret)
+	if (ret)
 		return ret;
 
 	*data = buff[1];
@@ -298,7 +287,7 @@ int admv8818_read_lpf_freq(struct admv8818_dev *dev, unsigned long long *freq)
 
 	lpf_band = no_os_field_get(ADMV8818_SW_OUT_WR0_MSK, data);
 	if (!lpf_band || lpf_band > 4) {
-		*freq= 0;
+		*freq = 0;
 		return ret;
 	}
 
@@ -357,19 +346,15 @@ int admv8818_init(struct admv8818_dev **device,
 	if (ret)
 		goto error_dev;
 
-	ret = admv8818_spi_update_bits(dev, ADMV8818_REG_SPI_CONFIG_A,
-				       ADMV8818_SOFTRESET_N_MSK |
-				       ADMV8818_SOFTRESET_MSK,
-				       no_os_field_prep(ADMV8818_SOFTRESET_N_MSK, 1) |
-				       no_os_field_prep(ADMV8818_SOFTRESET_MSK, 1));
+	ret = admv8818_spi_write(dev, ADMV8818_REG_SPI_CONFIG_A,
+				 no_os_field_prep(ADMV8818_SOFTRESET_N_MSK, 1) |
+				 no_os_field_prep(ADMV8818_SOFTRESET_MSK, 1));
 	if (ret)
 		goto error_spi;
 
-	ret = admv8818_spi_update_bits(dev, ADMV8818_REG_SPI_CONFIG_A,
-				       ADMV8818_SDOACTIVE_N_MSK |
-				       ADMV8818_SDOACTIVE_MSK,
-				       no_os_field_prep(ADMV8818_SDOACTIVE_N_MSK, 1) |
-				       no_os_field_prep(ADMV8818_SDOACTIVE_MSK, 1));
+	ret = admv8818_spi_write(dev, ADMV8818_REG_SPI_CONFIG_A,
+				 no_os_field_prep(ADMV8818_SDOACTIVE_N_MSK, 1) |
+				 no_os_field_prep(ADMV8818_SDOACTIVE_MSK, 1));
 	if (ret)
 		goto error_spi;
 

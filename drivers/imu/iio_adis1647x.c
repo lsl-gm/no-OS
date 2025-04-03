@@ -31,17 +31,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "iio_adis1647x.h"
 #include "no_os_alloc.h"
 #include "no_os_units.h"
-
-/******************************************************************************/
-/************************** Variable Definitions ******************************/
-/******************************************************************************/
 
 static const char * const adis1647x_rang_mdl_txt[] = {
 	[ADIS1647X_ID_NO_OFFSET(ADIS16477_1)] = "+/-125_degrees_per_sec",
@@ -90,19 +82,19 @@ static struct scan_type adis1647x_iio_temp_scan_type = {
 };
 
 static struct iio_channel adis1647x_channels[] = {
-	ADIS_GYRO_CHAN		(X, 	ADIS_GYRO_X, 		1647x, adis_iio_anglvel_attrs),
-	ADIS_GYRO_CHAN		(Y, 	ADIS_GYRO_Y, 		1647x, adis_iio_anglvel_attrs),
-	ADIS_GYRO_CHAN		(Z, 	ADIS_GYRO_Z, 		1647x, adis_iio_anglvel_attrs),
-	ADIS_ACCEL_CHAN		(X,	ADIS_ACCEL_X, 		1647x, adis_iio_accel_attrs),
-	ADIS_ACCEL_CHAN		(Y,	ADIS_ACCEL_Y, 		1647x, adis_iio_accel_attrs),
-	ADIS_ACCEL_CHAN		(Z,	ADIS_ACCEL_Z, 		1647x, adis_iio_accel_attrs),
-	ADIS_TEMP_CHAN		(ADIS_TEMP, 			1647x, adis_iio_temp_attrs),
-	ADIS_DELTA_ANGL_CHAN	(X, 	ADIS_DELTA_ANGL_X, 	1647x, adis_iio_delta_angl_attrs),
-	ADIS_DELTA_ANGL_CHAN	(Y, 	ADIS_DELTA_ANGL_Y, 	1647x, adis_iio_delta_angl_attrs),
-	ADIS_DELTA_ANGL_CHAN	(Z, 	ADIS_DELTA_ANGL_Z, 	1647x, adis_iio_delta_angl_attrs),
-	ADIS_DELTA_VEL_CHAN	(X, 	ADIS_DELTA_VEL_X, 	1647x, adis_iio_delta_vel_attrs),
-	ADIS_DELTA_VEL_CHAN	(Y, 	ADIS_DELTA_VEL_Y, 	1647x, adis_iio_delta_vel_attrs),
-	ADIS_DELTA_VEL_CHAN	(Z, 	ADIS_DELTA_VEL_Z, 	1647x, adis_iio_delta_vel_attrs),
+	ADIS_GYRO_CHAN(X, 	ADIS_GYRO_X, 		1647x, adis_iio_anglvel_attrs),
+	ADIS_GYRO_CHAN(Y, 	ADIS_GYRO_Y, 		1647x, adis_iio_anglvel_attrs),
+	ADIS_GYRO_CHAN(Z, 	ADIS_GYRO_Z, 		1647x, adis_iio_anglvel_attrs),
+	ADIS_ACCEL_CHAN(X,	ADIS_ACCEL_X, 		1647x, adis_iio_accel_attrs),
+	ADIS_ACCEL_CHAN(Y,	ADIS_ACCEL_Y, 		1647x, adis_iio_accel_attrs),
+	ADIS_ACCEL_CHAN(Z,	ADIS_ACCEL_Z, 		1647x, adis_iio_accel_attrs),
+	ADIS_TEMP_CHAN(ADIS_TEMP, 			1647x, adis_iio_temp_attrs),
+	ADIS_DELTA_ANGL_CHAN(X, 	ADIS_DELTA_ANGL_X, 	1647x, adis_iio_delta_angl_attrs),
+	ADIS_DELTA_ANGL_CHAN(Y, 	ADIS_DELTA_ANGL_Y, 	1647x, adis_iio_delta_angl_attrs),
+	ADIS_DELTA_ANGL_CHAN(Z, 	ADIS_DELTA_ANGL_Z, 	1647x, adis_iio_delta_angl_attrs),
+	ADIS_DELTA_VEL_CHAN(X, 	ADIS_DELTA_VEL_X, 	1647x, adis_iio_delta_vel_attrs),
+	ADIS_DELTA_VEL_CHAN(Y, 	ADIS_DELTA_VEL_Y, 	1647x, adis_iio_delta_vel_attrs),
+	ADIS_DELTA_VEL_CHAN(Z, 	ADIS_DELTA_VEL_Z, 	1647x, adis_iio_delta_vel_attrs),
 };
 
 static struct iio_attribute adis1647x_debug_attrs[] = {
@@ -367,10 +359,6 @@ static struct iio_device adis1647x_iio_dev = {
 	.debug_reg_read 	= (int32_t (*)())adis_iio_read_reg,
 	.debug_reg_write 	= (int32_t (*)())adis_iio_write_reg,
 };
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Initialize adis1647x iio device.

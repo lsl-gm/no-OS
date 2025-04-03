@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 
 #include "iio_example.h"
@@ -45,10 +42,6 @@
 #include "no_os_gpio.h"
 #include "no_os_print_log.h"
 #include "iio_app.h"
-
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 
 /**
  * @brief IIO example main execution.
@@ -78,8 +71,8 @@ int iio_example_main()
 		return ret;
 
 	struct iio_app_device iio_devices[] = {
-		IIO_APP_DEVICE( "pulsar_adc", dev,
-				dev->iio_dev, &adc_buff, NULL, NULL)
+		IIO_APP_DEVICE("pulsar_adc", dev,
+			       dev->iio_dev, &adc_buff, NULL, NULL)
 	};
 
 	app_init_param.devices = iio_devices;

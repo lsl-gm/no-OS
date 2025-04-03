@@ -31,30 +31,21 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-#include "iio_example.h"
 #include "iio_adxrs290.h"
 #include "common_data.h"
+#include "iio_app.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define MAX_SIZE_BASE_ADDR		3000
 static uint8_t in_buff[MAX_SIZE_BASE_ADDR];
 #define GYRO_DDR_BASEADDR		((uint32_t)in_buff)
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief IIO example main execution.
  *
  * @return ret - Result of the example execution. If working correctly, will
  *               execute continuously function iio_app_run and will not return.
 *******************************************************************************/
-int iio_example_main()
+int example_main()
 {
 	int ret;
 	struct adxrs290_dev *adxrs290_desc;

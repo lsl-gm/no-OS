@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "no_os_spi.h"
@@ -50,19 +46,11 @@
 #include "uc_settings.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
 #define FPGA_SYSREF_CLK	0
 #define FPGA_GLBL_CLK	1
 #define FPGA_REF_CLK	3
 #define ADC_SYSREF_CLK	12
 #define ADC_REF_CLK	13
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Initialize the clocking app.
@@ -96,13 +84,13 @@ int32_t app_clocking_init(struct app_clocking **app,
 	ad9528_param.pdata->channels = &ad9528_channels[0];
 
 	ret = ad9528_init(&ad9528_param);
-	if(ret) {
+	if (ret) {
 		pr_err("error: %"PRId32" ad9528_init() \n", ret);
 		goto error_0;
 	}
 
 	// ad9528 channel defaults
-	for(uint8_t ch = 0; ch < ad9528_param.pdata->num_channels; ch++) {
+	for (uint8_t ch = 0; ch < ad9528_param.pdata->num_channels; ch++) {
 		ad9528_channels[ch].channel_num = ch;
 		ad9528_channels[ch].output_dis = 1;
 	}
@@ -185,7 +173,7 @@ int32_t app_clocking_init(struct app_clocking **app,
 	ad9528_param.gpio_resetb = NULL;
 
 	ret = ad9528_setup(&app_clocking->clkchip_device, ad9528_param);
-	if(ret < 0) {
+	if (ret < 0) {
 		pr_err("error: %"PRId32" ad9528_setup()\n", ret);
 		goto error_0;
 	}
@@ -199,16 +187,16 @@ int32_t app_clocking_init(struct app_clocking **app,
 
 	ret = ad9528_clk_set_rate(app_clocking->clkchip_device, FPGA_GLBL_CLK,
 				  fpga_glb_clk);
-	if(ret < 0)
+	if (ret < 0)
 		goto error_1;
 
 	ret = ad9528_clk_set_rate(app_clocking->clkchip_device, FPGA_REF_CLK,
 				  fpga_ref_clk);
-	if(ret < 0)
+	if (ret < 0)
 		goto error_1;
 	ret = ad9528_clk_set_rate(app_clocking->clkchip_device, ADC_REF_CLK,
 				  dev_ref_clk);
-	if(ret < 0)
+	if (ret < 0)
 		goto error_1;
 
 	for (n = 64; n > 0; n--) {
@@ -228,12 +216,12 @@ int32_t app_clocking_init(struct app_clocking **app,
 
 	ret = ad9528_clk_set_rate(app_clocking->clkchip_device, FPGA_SYSREF_CLK,
 				  sys_ref_rate);
-	if(ret < 0)
+	if (ret < 0)
 		goto error_1;
 
 	ret = ad9528_clk_set_rate(app_clocking->clkchip_device, ADC_SYSREF_CLK,
 				  sys_ref_rate);
-	if(ret < 0)
+	if (ret < 0)
 		goto error_1;
 	*app = app_clocking;
 

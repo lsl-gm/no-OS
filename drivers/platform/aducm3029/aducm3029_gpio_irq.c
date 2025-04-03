@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <errno.h>
 #include <drivers/gpio/adi_gpio.h>
 #include <stdlib.h>
@@ -49,10 +45,6 @@
 #include "no_os_list.h"
 #include "no_os_util.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Call the user defined callback when a read/write operation completed.
@@ -69,7 +61,7 @@ static void aducm_gpio_callback(void *ctx, uint32_t event, void *pins)
 	uint16_t *pinints = pins;
 
 	while (*pinints) {
-		key.irq_id = no_os_find_first_set_bit((uint32_t)*pinints);
+		key.irq_id = no_os_find_first_set_bit((uint32_t) * pinints);
 		if (key.irq_id == 32)
 			break;
 		*pinints &= ~NO_OS_BIT(key.irq_id);
@@ -392,7 +384,7 @@ static int aducm_gpio_irq_enable(struct no_os_irq_ctrl_desc *desc,
 		return -EINVAL;
 
 	if (desc->irq_ctrl_id == ADUCM_XINT_SOFT_CTRL) {
-		if(irq_id > ADI_XINT_EVENT_INT3)
+		if (irq_id > ADI_XINT_EVENT_INT3)
 			return -EINVAL;
 
 		ret = no_os_list_read_find(extra->actions, (void **)&action,
@@ -400,7 +392,7 @@ static int aducm_gpio_irq_enable(struct no_os_irq_ctrl_desc *desc,
 		if (ret)
 			return -ENODEV;
 
-		switch(action->trig_lv) {
+		switch (action->trig_lv) {
 		case NO_OS_IRQ_LEVEL_LOW:
 			return adi_xint_EnableIRQ(irq_id, ADI_XINT_IRQ_LOW_LEVEL);
 		case NO_OS_IRQ_LEVEL_HIGH:
@@ -439,7 +431,7 @@ static int aducm_gpio_irq_disable(struct no_os_irq_ctrl_desc *desc,
 		return -EINVAL;
 
 	if (desc->irq_ctrl_id == ADUCM_XINT_SOFT_CTRL) {
-		if(irq_id > ADI_XINT_EVENT_INT3)
+		if (irq_id > ADI_XINT_EVENT_INT3)
 			return -EINVAL;
 		return adi_xint_DisableIRQ(irq_id);
 	}
@@ -506,7 +498,7 @@ static int aducm_gpio_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
 	switch (desc->irq_ctrl_id) {
 	case ADUCM_XINT_SOFT_CTRL:
 		/* available values for irq-id are 0-3 equivalent to ADI_XINT_EVENT_INT0-ADI_XINT_EVENT_INT3 */
-		switch(irq_id) {
+		switch (irq_id) {
 		case ADI_XINT_EVENT_INT0:
 			NVIC_SetPriority(XINT_EVT0_IRQn, priority_level);
 			break;

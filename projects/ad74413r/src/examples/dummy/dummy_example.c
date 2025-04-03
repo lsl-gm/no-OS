@@ -31,25 +31,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-#include "dummy_example.h"
 #include "common_data.h"
 #include "ad74413r.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief Dummy example main execution.
  *
  * @return ret - Result of the example execution. If working correctly, will
  *               execute continuously the while(1) loop and will not return.
 *******************************************************************************/
-int dummy_example_main()
+int example_main()
 {
 	int ret;
 	uint8_t val;
@@ -63,6 +56,14 @@ int dummy_example_main()
 	};
 
 	struct ad74413r_decimal result[3];
+
+	struct no_os_uart_desc *uart_desc;
+
+	ret = no_os_uart_init(&uart_desc, &ad74413r_uart_ip);
+	if (ret)
+		return ret;
+
+	no_os_uart_stdio(uart_desc);
 
 	ret = ad74413r_init(&ad74413r_desc, &ad74413r_ip);
 	if (ret)
@@ -136,10 +137,10 @@ int dummy_example_main()
 
 	while (1) {
 		/* Clear the screen. */
-		pr_info("%c",27);
-		pr_info("%c",'[');
-		pr_info("%c",'2');
-		pr_info("%c",'J');
+		pr_info("%c", 27);
+		pr_info("%c", '[');
+		pr_info("%c", '2');
+		pr_info("%c", 'J');
 
 		ret = ad74413r_gpo_get(ad74413r_desc, AD74413R_CH_A, &val);
 		if (ret)

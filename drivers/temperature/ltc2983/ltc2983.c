@@ -31,19 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <errno.h>
 #include "ltc2983.h"
 #include "no_os_alloc.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /******************************************************************************/
 
 /**
@@ -458,7 +451,7 @@ static int __ltc2983_chan_custom_sensor_assign(struct ltc2983_desc *device,
 	int ret;
 	uint32_t i;
 	uint8_t raw_array[6];
-	uint8_t step = custom->is_steinhart? 4 : 3;
+	uint8_t step = custom->is_steinhart ? 4 : 3;
 
 	if (device->custom_addr_ptr + (custom->len * step) >
 	    LTC2983_CUST_SENS_TBL_SIZE)

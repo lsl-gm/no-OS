@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include "linux_uart.h"
@@ -45,10 +42,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
-
 /**
  * @struct linux_uart_desc
  * @brief Linux platform specific UART descriptor
@@ -59,10 +52,6 @@ struct linux_uart_desc {
 	/** structure containing the terminal flags/settings */
 	struct termios *terminal;
 };
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Initialize the UART communication peripheral.
@@ -117,7 +106,7 @@ static int32_t linux_uart_init(struct no_os_uart_desc **desc,
 
 	cfmakeraw(linux_desc->terminal);
 
-	switch(param->baud_rate) {
+	switch (param->baud_rate) {
 	case 50:
 		speed = B50;
 		break;
@@ -171,7 +160,7 @@ static int32_t linux_uart_init(struct no_os_uart_desc **desc,
 	cfsetospeed(linux_desc->terminal, speed);
 
 	linux_desc->terminal->c_cflag &= ~CSIZE;
-	switch(param->size) {
+	switch (param->size) {
 	case NO_OS_UART_CS_5:
 		linux_desc->terminal->c_cflag |= CS5;
 		break;
@@ -191,7 +180,7 @@ static int32_t linux_uart_init(struct no_os_uart_desc **desc,
 
 	linux_desc->terminal->c_cflag &= ~PARENB;
 	linux_desc->terminal->c_cflag &= ~PARODD;
-	switch(param->parity) {
+	switch (param->parity) {
 	case NO_OS_UART_PAR_NO:
 		break;
 	case NO_OS_UART_PAR_ODD:

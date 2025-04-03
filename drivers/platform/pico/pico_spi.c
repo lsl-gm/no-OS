@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
-
 #include "no_os_error.h"
 #include "no_os_util.h"
 #include "no_os_spi.h"
@@ -44,19 +40,9 @@
 #include "no_os_delay.h"
 #include "hardware/resets.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define PICO_SPI_MAX_INSTANCES	2U
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 static uint64_t last_slave_id[PICO_SPI_MAX_INSTANCES];
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 static int pico_spi_config(struct no_os_spi_desc *desc)
 {
@@ -254,14 +240,14 @@ int32_t pico_spi_transfer(struct no_os_spi_desc *desc,
 			spi_write_read_blocking(pico_spi->spi_instance, msgs[i].tx_buff,
 						msgs[i].rx_buff, msgs[i].bytes_number);
 
-		if(msgs[i].cs_delay_last)
+		if (msgs[i].cs_delay_last)
 			no_os_udelay(msgs[i].cs_delay_last);
 
 		if (msgs[i].cs_change)
 			/* De-assert CS */
 			gpio_put(pico_spi->spi_cs_pin, 1);
 
-		if(msgs[i].cs_change_delay)
+		if (msgs[i].cs_change_delay)
 			no_os_udelay(msgs[i].cs_change_delay);
 	}
 

@@ -31,15 +31,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "iio_pqm.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #define PQM_VOLTAGE_CHANNEL(_idx, _scan_idx, _name)                            \
   {                                                                            \
@@ -55,16 +47,38 @@
     .attributes = current_pqm_attributes, .ch_out = false                      \
   }
 
-/******************************************************************************/
-/************************ Variable Declarations *******************************/
-/******************************************************************************/
+#define PQM_EVENT_CHANNEL(_idx, _scan_idx, _name, _attrb_def)			\
+{										\
+    .name = _name, .ch_type = IIO_COUNT, .channel = _idx,                       \
+    .scan_index = _scan_idx, .indexed = true,                                   \
+    .scan_type = 0, .attributes = _attrb_def,                      		\
+    .ch_out = true                                                              \
+}
+
+#define EVENT_COMMON_ATTR                                                       \
+{                                                                               \
+        .name = "countEvent",                                                   \
+        .show = read_ch_attr,                                                   \
+        .priv = CHAN_EVENT_COUNT,                                               \
+},                                                                              \
+{                                                                               \
+        .name = "startTime",                                                    \
+        .show = read_ch_attr,                                                   \
+        .priv = CHAN_EVENT_START_TIME,                                          \
+},                                                                              \
+{                                                                               \
+        .name = "endTime",                                                      \
+        .show = read_ch_attr,                                                   \
+        .priv = CHAN_EVENT_END_TIME,                                            \
+},                                                                              \
+{                                                                               \
+        .name = "durationInCycles",                                             \
+        .show = read_ch_attr,                                                   \
+        .priv = CHAN_EVENT_DURATION_IN_CYCL,                                    \
+}
 
 volatile bool configChanged = false;
 volatile bool processData = true;
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief utility function for computing next upcoming channel.
@@ -155,7 +169,7 @@ int read_pqm_attr(void *device, char *buf, uint32_t len,
 					pqlibExample.exampleConfig.msvThreshold);
 		case V_CONSEL:
 			return snprintf(buf, len,
-					pqm_v_consel_available[(int)(desc->pqm_global_attr[V_CONSEL])]);
+					pqm_v_consel_available[pqlibExample.exampleConfig.vconsel]);
 		case V_CONSEL_AVAILABLE:
 			strcpy(buf, "");
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_v_consel_available); i++) {
@@ -166,7 +180,7 @@ int read_pqm_attr(void *device, char *buf, uint32_t len,
 			return strlen(buf);
 		case FLICKER_MODEL:
 			return snprintf(buf, len,
-					pqm_flicker_model_available[(int)(desc->pqm_global_attr[FLICKER_MODEL])]);
+					pqm_flicker_model_available[pqlibExample.exampleConfig.flickerModel]);
 		case FLICKER_MODEL_AVAILABLE:
 			strcpy(buf, "");
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_flicker_model_available); i++) {
@@ -176,9 +190,8 @@ int read_pqm_attr(void *device, char *buf, uint32_t len,
 			}
 			return strlen(buf);
 		case NOMINAL_FREQUENCY:
-			return snprintf(buf, len,
-					pqm_nominal_frequency_available[(int)(
-								desc->pqm_global_attr[NOMINAL_FREQUENCY])]);
+			return snprintf(buf, len, "%" PRIu32 "",
+					pqlibExample.exampleConfig.nominalFrequency);
 		case NOMINAL_FREQUENCY_AVAILABLE:
 			strcpy(buf, "");
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_nominal_frequency_available); i++) {
@@ -190,7 +203,7 @@ int read_pqm_attr(void *device, char *buf, uint32_t len,
 		case PROCESS_DATA:
 			return snprintf(buf, len, "%s", (processData) ? "1" : "0");
 		case FW_VERSION_NR:
-			return snprintf (buf, len, "%.1f", FW_VERSION);
+			return snprintf(buf, len, "%.1f", FW_VERSION);
 		default:
 			return snprintf(buf, len, "%.2f", desc->pqm_global_attr[attr_id]);
 		}
@@ -268,7 +281,7 @@ int write_pqm_attr(void *device, char *buf, uint32_t len,
 		case V_CONSEL:
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_v_consel_available); i++) {
 				if (strcmp(buf, pqm_v_consel_available[i]) == 0) {
-					desc->pqm_global_attr[attr_id] = i;
+					pqlibExample.exampleConfig.vconsel = i;
 					return len;
 				}
 			}
@@ -276,7 +289,7 @@ int write_pqm_attr(void *device, char *buf, uint32_t len,
 		case FLICKER_MODEL:
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_flicker_model_available); i++) {
 				if (strcmp(buf, pqm_flicker_model_available[i]) == 0) {
-					desc->pqm_global_attr[attr_id] = i;
+					pqlibExample.exampleConfig.flickerModel = i;
 					return len;
 				}
 			}
@@ -284,17 +297,29 @@ int write_pqm_attr(void *device, char *buf, uint32_t len,
 		case NOMINAL_FREQUENCY:
 			for (int i = 0; i < NO_OS_ARRAY_SIZE(pqm_nominal_frequency_available); i++) {
 				if (strcmp(buf, pqm_nominal_frequency_available[i]) == 0) {
-					desc->pqm_global_attr[attr_id] = i;
+					pqlibExample.exampleConfig.nominalFrequency = value;
 					return len;
 				}
 			}
 			return -EINVAL;
 		case PROCESS_DATA:
 			configChanged = false;
-			if (!strcmp (buf, "1"))
+			if (!strcmp(buf, "1"))
 				processData = true;
-			else
+			else {
 				processData = false;
+				// Empty waveform iio buffer
+				int tmp_ret;
+				uint8_t tmp_buff[ADI_PQLIB_WAVEFORM_BLOCK_SIZE
+						 * ADI_PQLIB_TOTAL_WAVEFORM_CHANNELS
+						 * sizeof(uint16_t)];
+				do {
+					tmp_ret = no_os_cb_read(pqlibExample.no_os_cb_desc, tmp_buff,
+								ADI_PQLIB_WAVEFORM_BLOCK_SIZE
+								* ADI_PQLIB_TOTAL_WAVEFORM_CHANNELS
+								* sizeof(uint16_t));
+				} while (!tmp_ret);
+			}
 		default:
 			desc->pqm_global_attr[attr_id] = value;
 		}
@@ -352,8 +377,8 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 
 		case CHAN_HARMONICS:
 			strcpy(buf, "");
-			// Adding fundamental waveform, 100% always
-			sprintf(buffTmp, "%f", 100.0f);
+			// Adding fundamental waveform, 0% & 100% always
+			sprintf(buffTmp, "%f %f", 0.0f, 100.0f);
 			strcat(buf, buffTmp);
 			strcat(buf, " ");
 
@@ -370,8 +395,8 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 
 		case CHAN_INTER_HARMONICS:
 			strcpy(buf, "");
-			// Adding fundamental waveform, 100% always
-			sprintf(buffTmp, "%f", 100.0f);
+			// Adding fundamental waveform, 0% & 100% always
+			sprintf(buffTmp, "%f %f", 0.0f, 100.0f);
 			strcat(buf, buffTmp);
 			strcat(buf, " ");
 
@@ -387,14 +412,14 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 			return strlen(buf);
 
 		case CHAN_SCALE:
-			return snprintf(buf, len, "%.2f",
+			return snprintf(buf, len, "%.5f",
 					(pqlibExample.exampleConfig.voltageScale /
 					 ((float)(RESAMPLED_WAVEFORM_FULL_SCALE))));
 
 		case CHAN_OFFSET:
 			return snprintf(buf, len, "%" PRIu32 "", 0);
 		case CHAN_THD:
-			return snprintf (
+			return snprintf(
 				       buf, len, "%f",
 				       ((float)(pqlibExample.output->params1012Cycles
 						.voltageParams[channel->ch_num]
@@ -416,6 +441,14 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 							.voltageParams[channel->ch_num]
 							.udod.uRmsOver,
 							pqlibExample.exampleConfig.voltageScale));
+
+		case CHAN_VOLTAGE_MAGNITUDE1012:
+			return snprintf(buf, len, "%" PRIu16 "",
+					pqlibExample.output->msvMagnitude[channel->ch_num].magnitude1012);
+
+		case CHAN_VOLTAGE_MAX_MAGNITUDE:
+			return snprintf(buf, len, "%" PRIu16 "",
+					pqlibExample.output->msvMagnitude[channel->ch_num].maxMagnitude);
 
 		default:
 			return snprintf(buf, len, "%" PRIu32 "",
@@ -448,8 +481,8 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 
 		case CHAN_HARMONICS:
 			strcpy(buf, "");
-			// Adding fundamental waveform, 100% always
-			sprintf(buffTmp, "%f", 100.0f);
+			// Adding fundamental waveform, 0% & 100% always
+			sprintf(buffTmp, "%f %f", 0.0f, 100.0f);
 			strcat(buf, buffTmp);
 			strcat(buf, " ");
 
@@ -466,8 +499,8 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 
 		case CHAN_INTER_HARMONICS:
 			strcpy(buf, "");
-			// Adding fundamental waveform, 100% always
-			sprintf(buffTmp, "%f", 100.0f);
+			// Adding fundamental waveform, 0% & 100% always
+			sprintf(buffTmp, "%f %f", 0.0f, 100.0f);
 			strcat(buf, buffTmp);
 			strcat(buf, " ");
 
@@ -482,7 +515,7 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 			}
 			return strlen(buf);
 		case CHAN_SCALE:
-			return snprintf(buf, len, "%.2f",
+			return snprintf(buf, len, "%.5f",
 					(pqlibExample.exampleConfig.currentScale /
 					 (float)(RESAMPLED_WAVEFORM_FULL_SCALE)));
 
@@ -490,7 +523,7 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 			return snprintf(buf, len, "%" PRIu32 "", 0);
 
 		case CHAN_THD:
-			return snprintf (
+			return snprintf(
 				       buf, len, "%f",
 				       (float)(pqlibExample.output->params1012Cycles
 					       .currentParams[channel->ch_num]
@@ -502,11 +535,74 @@ int read_ch_attr(void *device, char *buf, uint32_t len,
 				       buf, len, "%" PRIu32 "",
 				       desc->pqm_ch_attr[channel->ch_num + VOLTAGE_CH_NUMBER][attr_id]);
 		}
-
+	case IIO_COUNT:
+		switch (channel->ch_num) {
+		case 0: // Dips
+			switch (attr_id) {
+			case CHAN_EVENT_COUNT:
+				return snprintf(buf, len, "%" PRIu8 "", pqlibExample.output->events.dipCount);
+			case CHAN_EVENT_START_TIME:
+				return (prepara_string(EVENT_DIPS, CHAN_EVENT_START_TIME, buf));
+			case CHAN_EVENT_END_TIME:
+				return (prepara_string(EVENT_DIPS, CHAN_EVENT_END_TIME, buf));
+			case CHAN_EVENT_DURATION_IN_CYCL:
+				return (prepara_string(EVENT_DIPS, CHAN_EVENT_DURATION_IN_CYCL, buf));
+			case CHAN_EVENT_MIN_MAG:
+				return (prepara_string(EVENT_DIPS, CHAN_EVENT_MIN_MAG, buf));
+			default:
+				return -EINVAL;
+			}
+		case 1: // Swells
+			switch (attr_id) {
+			case CHAN_EVENT_COUNT:
+				return snprintf(buf, len, "%" PRIu8 "", pqlibExample.output->events.swellCount);
+			case CHAN_EVENT_START_TIME:
+				return (prepara_string(EVENT_SWELL, CHAN_EVENT_START_TIME, buf));
+			case CHAN_EVENT_END_TIME:
+				return (prepara_string(EVENT_SWELL, CHAN_EVENT_END_TIME, buf));
+			case CHAN_EVENT_DURATION_IN_CYCL:
+				return (prepara_string(EVENT_SWELL, CHAN_EVENT_DURATION_IN_CYCL, buf));
+			case CHAN_EVENT_MAX_MAG:
+				return (prepara_string(EVENT_SWELL, CHAN_EVENT_MAX_MAG, buf));
+			default:
+				return -EINVAL;
+			}
+		case 2: // RVC
+			switch (attr_id) {
+			case CHAN_EVENT_COUNT:
+				return snprintf(buf, len, "%" PRIu8 "", pqlibExample.output->events.rvcCount);
+			case CHAN_EVENT_START_TIME:
+				return (prepara_string(EVENT_RVC, CHAN_EVENT_START_TIME, buf));
+			case CHAN_EVENT_END_TIME:
+				return (prepara_string(EVENT_RVC, CHAN_EVENT_END_TIME, buf));
+			case CHAN_EVENT_DURATION_IN_CYCL:
+				return (prepara_string(EVENT_RVC, CHAN_EVENT_DURATION_IN_CYCL, buf));
+			case CHAN_EVENT_DELTA_U_MAX:
+				return (prepara_string(EVENT_RVC, CHAN_EVENT_DELTA_U_MAX, buf));
+			case CHAN_EVENT_DELTA_U_SS:
+				return (prepara_string(EVENT_RVC, CHAN_EVENT_DELTA_U_SS, buf));
+			default:
+				return -EINVAL;
+			}
+		case 3: // Intrpt
+			switch (attr_id) {
+			case CHAN_EVENT_COUNT:
+				return snprintf(buf, len, "%" PRIu8 "", pqlibExample.output->events.intrpCount);
+			case CHAN_EVENT_START_TIME:
+				return (prepara_string(EVENT_INTRPS, CHAN_EVENT_START_TIME, buf));
+			case CHAN_EVENT_END_TIME:
+				return (prepara_string(EVENT_INTRPS, CHAN_EVENT_END_TIME, buf));
+			case CHAN_EVENT_DURATION_IN_CYCL:
+				return (prepara_string(EVENT_INTRPS, CHAN_EVENT_DURATION_IN_CYCL, buf));
+			default:
+				return -EINVAL;
+			}
+		default:
+			return -EINVAL;
+		}
 	default:
 		return -EINVAL;
 	}
-	return -EINVAL;
 }
 
 /**
@@ -628,6 +724,16 @@ struct iio_attribute voltage_pqm_attributes[] = {
 		.name = "plt",
 		.show = read_ch_attr,
 		.priv = CHAN_VOLTAGE_PLT,
+	},
+	{
+		.name = "magnitude1012",
+		.show = read_ch_attr,
+		.priv = CHAN_VOLTAGE_MAGNITUDE1012,
+	},
+	{
+		.name = "maxMagnitude",
+		.show = read_ch_attr,
+		.priv = CHAN_VOLTAGE_MAX_MAGNITUDE,
 	},
 
 
@@ -874,19 +980,66 @@ struct iio_attribute global_pqm_attributes[] = {
 	END_ATTRIBUTES_ARRAY,
 }; // global attributes for device
 
-struct scan_type pqm_scan_type = {.sign = 'd',
+struct iio_attribute event_pqm_dips_attribute[] = {
+	EVENT_COMMON_ATTR,
+	{
+		.name = "minMag",
+		.show = read_ch_attr,
+		.priv = CHAN_EVENT_MIN_MAG,
+	},
+	END_ATTRIBUTES_ARRAY,
+}; // event channel attribute for dips events
+
+struct iio_attribute event_pqm_swell_attribute[] = {
+	EVENT_COMMON_ATTR,
+	{
+		.name = "maxMag",
+		.show = read_ch_attr,
+		.priv = CHAN_EVENT_MAX_MAG,
+	},
+	END_ATTRIBUTES_ARRAY,
+}; // event channel attribute for swell events
+
+struct iio_attribute event_pqm_rvc_attribute[] = {
+	EVENT_COMMON_ATTR,
+	{
+		.name = "deltaUmax",
+		.show = read_ch_attr,
+		.priv = CHAN_EVENT_DELTA_U_MAX,
+	},
+	{
+		.name = "deltaUss",
+		.show = read_ch_attr,
+		.priv = CHAN_EVENT_DELTA_U_SS,
+	},
+	END_ATTRIBUTES_ARRAY,
+}; // event channel attribute for rvc events
+
+struct iio_attribute event_pqm_intrpr_attribute[] = {
+	EVENT_COMMON_ATTR,
+	END_ATTRIBUTES_ARRAY,
+}; // event channel attribute
+
+struct scan_type pqm_scan_type = {.sign = 's',
 	.realbits = 16,
 	.storagebits = 16,
 	.shift = 0,
 	.is_big_endian =
 		true
-}; // generic channel definition
+}; // generic waveform channel definition
 
 static struct iio_channel iio_pqm_channels[] = {
-	PQM_CURRENT_CHANNEL(0, 1, "ia"), PQM_VOLTAGE_CHANNEL(0, 2, "ua"),
-	PQM_CURRENT_CHANNEL(1, 3, "ib"), PQM_VOLTAGE_CHANNEL(1, 4, "ub"),
-	PQM_CURRENT_CHANNEL(2, 5, "ic"), PQM_VOLTAGE_CHANNEL(2, 6, "uc"),
+	PQM_CURRENT_CHANNEL(0, 1, "ia"),
+	PQM_VOLTAGE_CHANNEL(0, 2, "ua"),
+	PQM_CURRENT_CHANNEL(1, 3, "ib"),
+	PQM_VOLTAGE_CHANNEL(1, 4, "ub"),
+	PQM_CURRENT_CHANNEL(2, 5, "ic"),
+	PQM_VOLTAGE_CHANNEL(2, 6, "uc"),
 	PQM_CURRENT_CHANNEL(3, 7, "in"),
+	PQM_EVENT_CHANNEL(0, 8, "dips", event_pqm_dips_attribute),
+	PQM_EVENT_CHANNEL(1, 9, "swells", event_pqm_swell_attribute),
+	PQM_EVENT_CHANNEL(2, 10, "rvc", event_pqm_rvc_attribute),
+	PQM_EVENT_CHANNEL(3, 11, "intrpt", event_pqm_intrpr_attribute),
 }; // channel definitions for device
 
 struct iio_device pqm_iio_descriptor = {

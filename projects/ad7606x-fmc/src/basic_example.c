@@ -31,9 +31,6 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <string.h>
 
 #include <xil_cache.h>
@@ -43,10 +40,6 @@
 #include "common_data.h"
 
 #include "no_os_print_log.h"
-
-/******************************************************************************/
-/************************ Variables & Definitions *****************************/
-/******************************************************************************/
 
 #define AD7606X_FMC_SAMPLE_NO		1000
 
@@ -79,6 +72,12 @@ int main(void)
 		return ret;
 	}
 
+	ret = ad7606_capture_pre_enable(dev);
+	if (ret) {
+		pr_err("Error pre-enabling buffers\n");
+		goto error;
+	}
+
 	memset(buf, 0, AD7606X_FMC_SAMPLE_NO * sizeof(uint32_t));
 	ret = ad7606_read_samples(dev, buf, AD7606X_FMC_SAMPLE_NO);
 	if (ret < 0) {
@@ -94,7 +93,7 @@ int main(void)
 
 	sign_bit = ad7606_get_resolution_bits(dev) - 1;
 
-	for (i = 0; i < AD7606X_FMC_SAMPLE_NO; i+= ch) {
+	for (i = 0; i < AD7606X_FMC_SAMPLE_NO; i += ch) {
 		for (ch = 0; ch < 8; ch++) {
 			int32_t sample = no_os_sign_extend32(buf[i + ch], sign_bit);
 			int mvolts = sample * scales[ch];
@@ -106,6 +105,7 @@ int main(void)
 	pr_info("Capture done. \n");
 
 error:
+	ad7606_capture_post_disable(dev);
 	ad7606_remove(dev);
 
 	Xil_DCacheDisable();

@@ -32,9 +32,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -44,9 +41,6 @@
 #include "xilinx_transceiver.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define OUT_DIV_ADDR			0x88
 #define OUT_DIV_TX_OFFSET		0x4
 #define OUT_DIV_RX_OFFSET		0x0
@@ -440,8 +434,8 @@ static unsigned int xilinx_xcvr_qpll_sel(struct xilinx_xcvr *xcvr,
 static void xilinx_xcvr_setup_cpll_vco_range(struct xilinx_xcvr *xcvr,
 		uint32_t *vco_max)
 {
-	if  ((xcvr->type == XILINX_XCVR_TYPE_US_GTH3) |
-	     (xcvr->type == XILINX_XCVR_TYPE_US_GTH4)) {
+	if ((xcvr->type == XILINX_XCVR_TYPE_US_GTH3) |
+	    (xcvr->type == XILINX_XCVR_TYPE_US_GTH4)) {
 		if ((xcvr->voltage < 850))
 			*vco_max = 4250000;
 		else if ((xcvr->speed_grade / 10) == 1)

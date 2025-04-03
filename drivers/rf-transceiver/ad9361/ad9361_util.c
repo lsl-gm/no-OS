@@ -31,16 +31,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "ad9361_util.h"
 #include "string.h"
 #include "no_os_delay.h"
 
-/******************************************************************************/
-/*************************** Macros Definitions *******************************/
-/******************************************************************************/
 #define NO_OS_BITS_PER_LONG		32
 
 /***************************************************************************//**
@@ -113,16 +107,16 @@ uint32_t clk_get_rate(struct ad9361_rf_phy *phy,
 /***************************************************************************//**
  * @brief clk_set_rate
 *******************************************************************************/
-int32_t no_os_clk_set_rate(struct ad9361_rf_phy *phy,
-			   struct refclk_scale *clk_priv,
-			   uint32_t rate)
+int32_t clk_set_rate(struct ad9361_rf_phy *phy,
+		     struct refclk_scale *clk_priv,
+		     uint32_t rate)
 {
 	uint32_t source;
 	int32_t i;
 	uint32_t round_rate;
 
 	source = clk_priv->source;
-	if(phy->clks[source]->rate != rate) {
+	if (phy->clks[source]->rate != rate) {
 		switch (source) {
 		case TX_REFCLK:
 		case RX_REFCLK:
@@ -182,25 +176,25 @@ int32_t no_os_clk_set_rate(struct ad9361_rf_phy *phy,
 		default:
 			break;
 		}
-		for(i = BB_REFCLK; i < BBPLL_CLK; i++) {
+		for (i = BB_REFCLK; i < BBPLL_CLK; i++) {
 			phy->clks[i]->rate = ad9361_clk_factor_recalc_rate(phy->ref_clk_scale[i],
 					     phy->clk_refin->rate);
 		}
 		phy->clks[BBPLL_CLK]->rate = ad9361_bbpll_recalc_rate(
 						     phy->ref_clk_scale[BBPLL_CLK],
 						     phy->clks[phy->ref_clk_scale[BBPLL_CLK]->parent_source]->rate);
-		for(i = ADC_CLK; i < RX_RFPLL_INT; i++) {
+		for (i = ADC_CLK; i < RX_RFPLL_INT; i++) {
 			phy->clks[i]->rate = ad9361_clk_factor_recalc_rate(phy->ref_clk_scale[i],
 					     phy->clks[phy->ref_clk_scale[i]->parent_source]->rate);
 		}
-		for(i = RX_RFPLL_INT; i < RX_RFPLL_DUMMY; i++) {
+		for (i = RX_RFPLL_INT; i < RX_RFPLL_DUMMY; i++) {
 			phy->clks[i]->rate = ad9361_rfpll_int_recalc_rate(phy->ref_clk_scale[i],
 					     phy->clks[phy->ref_clk_scale[i]->parent_source]->rate);
 		}
-		for(i = RX_RFPLL_DUMMY; i < RX_RFPLL; i++) {
+		for (i = RX_RFPLL_DUMMY; i < RX_RFPLL; i++) {
 			phy->clks[i]->rate = ad9361_rfpll_dummy_recalc_rate(phy->ref_clk_scale[i]);
 		}
-		for(i = RX_RFPLL; i < NUM_AD9361_CLKS; i++) {
+		for (i = RX_RFPLL; i < NUM_AD9361_CLKS; i++) {
 			phy->clks[i]->rate = ad9361_rfpll_recalc_rate(phy->ref_clk_scale[i]);
 		}
 	} else {

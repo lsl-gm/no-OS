@@ -122,6 +122,21 @@
 /** AD4858_REG_CH_SOFTSPAN bit masks */
 #define AD4858_SOFTSPAN_MSK         NO_OS_GENMASK(3,0)
 
+/** Status bit masks for 16-bit resolution ADC */
+#define AD4858_OR_UR_STATUS_MSK_16_BIT	NO_OS_BIT(7)
+#define AD4858_CHN_ID_MSK_16_BIT		NO_OS_GENMASK(6,4)
+#define AD4858_SOFTSPAN_ID_MSK_16_BIT	NO_OS_GENMASK(3,0)
+
+/** Status bit masks for 20-bit resolution ADC */
+#define AD4858_OR_UR_STATUS_MSK_20_BIT	NO_OS_BIT(3)
+#define AD4858_CHN_ID_MSK_20_BIT       	NO_OS_GENMASK(2,0)
+#define AD4858_SOFTSPAN_ID_MSK_20_BIT  	NO_OS_GENMASK(7,4)
+
+/** Raw data bit masks for 20-bit resolution ADC */
+#define AD4858_RAW_DATA_MSK_20_BIT		NO_OS_GENMASK(23,4)
+#define AD4858_RAW_DATA_MSK_EVEN_20_BIT	NO_OS_GENMASK(23,4)
+#define AD4858_RAW_DATA_MSK_ODD_20_BIT 	NO_OS_GENMASK(19,0)
+
 /** Miscellaneous Definitions */
 #define AD4858_REG_RD_BIT_MSK       NO_OS_BIT(7)
 #define AD4858_PRODUCT_ID_L		0x60
@@ -147,15 +162,15 @@
  * @brief AD485X Product ID
  */
 enum ad4858_prod_id {
-	AD4858_PROD_ID_L=0x60,
-	AD4857_PROD_ID_L=0x61,
-	AD4856_PROD_ID_L=0x62,
-	AD4855_PROD_ID_L=0x63,
-	AD4854_PROD_ID_L=0x64,
-	AD4853_PROD_ID_L=0x65,
-	AD4852_PROD_ID_L=0x66,
-	AD4851_PROD_ID_L=0x67,
-	AD4858I_PROD_ID_L=0x6F,
+	AD4858_PROD_ID_L = 0x60,
+	AD4857_PROD_ID_L = 0x61,
+	AD4856_PROD_ID_L = 0x62,
+	AD4855_PROD_ID_L = 0x63,
+	AD4854_PROD_ID_L = 0x64,
+	AD4853_PROD_ID_L = 0x65,
+	AD4852_PROD_ID_L = 0x66,
+	AD4851_PROD_ID_L = 0x67,
+	AD4858I_PROD_ID_L = 0x6F,
 };
 
 /**
@@ -163,9 +178,9 @@ enum ad4858_prod_id {
  * @brief Operating modes
  */
 enum ad4858_operating_mode {
-	AD4858_NORMAL_OP_MODE=0x0,
-	AD4858_LOW_POWER_OP_MODE=0x3,
-	AD4858_NUM_OF_OP_MODES=0x4
+	AD4858_NORMAL_OP_MODE = 0x0,
+	AD4858_LOW_POWER_OP_MODE = 0x3,
+	AD4858_NUM_OF_OP_MODES = 0x4
 };
 
 /**
@@ -235,10 +250,10 @@ enum ad4858_osr_ratio {
  * @brief Packet formats
  */
 enum ad4858_packet_format {
+	AD4858_PACKET_16_BIT,
 	AD4858_PACKET_20_BIT,
 	AD4858_PACKET_24_BIT,
-	AD4858_PACKET_32_BIT,
-	AD4858_NUM_OF_PACKETS
+	AD4858_PACKET_32_BIT
 };
 
 /**

@@ -34,9 +34,6 @@
 #ifndef AD7606_H_
 #define AD7606_H_
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
 #include "no_os_delay.h"
@@ -47,9 +44,6 @@
 #include "no_os_pwm.h"
 #include "clk_axi_clkgen.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define AD7606_REG_STATUS			0x01
 #define AD7606_REG_CONFIG			0x02
 #define AD7606_REG_RANGE_CH_ADDR(ch)		(0x03 + ((ch) >> 1))
@@ -247,9 +241,9 @@ struct ad7606_range {
  */
 struct ad7606_oversampling {
 	/** Oversampling padding */
-	uint8_t os_pad:4;
+	uint8_t os_pad: 4;
 	/** Oversampling ratio */
-	enum ad7606_osr os_ratio:4;
+	enum ad7606_osr os_ratio : 4;
 };
 
 /**
@@ -355,6 +349,13 @@ const struct ad7606_range *ad7606_get_ch_ranges(struct ad7606_dev *dev,
 		uint8_t ch,
 		uint32_t *num_ranges);
 
+int32_t ad7606_capture_pre_enable(struct ad7606_dev *dev);
+void ad7606_capture_post_disable(struct ad7606_dev *dev);
+
+bool ad7606_sw_mode_enabled(struct ad7606_dev *dev);
+
+int32_t ad7606_get_channels_number(struct ad7606_dev *dev);
+
 int32_t ad7606_reg_read(struct ad7606_dev *dev,
 			uint8_t reg_addr,
 			uint8_t *reg_data);
@@ -374,6 +375,8 @@ int32_t ad7606_convst(struct ad7606_dev *dev);
 int32_t ad7606_reset(struct ad7606_dev *dev);
 int32_t ad7606_set_oversampling(struct ad7606_dev *dev,
 				struct ad7606_oversampling oversampling);
+int32_t ad7606_get_oversampling(struct ad7606_dev *dev,
+				struct ad7606_oversampling *oversampling);
 int32_t ad7606_get_ch_scale(struct ad7606_dev *dev, uint8_t ch,
 			    double *scale);
 int32_t ad7606_get_resolution_bits(struct ad7606_dev *dev);
@@ -391,5 +394,7 @@ int32_t ad7606_set_digital_diag(struct ad7606_dev *dev,
 				struct ad7606_digital_diag diag);
 int32_t ad7606_init(struct ad7606_dev **device,
 		    struct ad7606_init_param *init_param);
+int32_t ad7606_data_correction_serial(struct ad7606_dev *dev,
+				      uint32_t *buf, int32_t *data, uint8_t *status);
 int32_t ad7606_remove(struct ad7606_dev *dev);
 #endif /* AD7606_H_ */

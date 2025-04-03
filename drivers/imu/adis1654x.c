@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "adis.h"
 #include "adis_internals.h"
 #include "adis1654x.h"
@@ -42,14 +38,7 @@
 #include <string.h>
 #include "no_os_util.h"
 #include "no_os_delay.h"
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define ADIS1654X_CRC32_SEED		0xFFFFFFFF
-
-/******************************************************************************/
-/************************** Variable Definitions ******************************/
-/******************************************************************************/
 
 static const struct adis_data_field_map_def adis1654x_def = {
 	/* Page 0 */
@@ -252,7 +241,7 @@ static int adis1654x_get_scale(struct adis_dev *adis,
 			       uint32_t *scale_m1, uint32_t *scale_m2,
 			       enum adis_chan_type chan_type)
 {
-	switch(chan_type) {
+	switch (chan_type) {
 	case ADIS_ACCL_CHAN:
 		*scale_m1 = adis1654x_accl_scale[ADIS1654X_ID_NO_OFFSET(adis->dev_id)].scale_m1;
 		*scale_m2 = adis1654x_accl_scale[ADIS1654X_ID_NO_OFFSET(adis->dev_id)].scale_m2;
@@ -294,7 +283,7 @@ static int adis1654x_get_scale(struct adis_dev *adis,
 static int adis1654x_get_offset(struct adis_dev *adis, int *offset,
 				enum adis_chan_type chan_type)
 {
-	switch(chan_type) {
+	switch (chan_type) {
 	case ADIS_TEMP_CHAN:
 		*offset = adis1654x_temp_offset[ADIS1654X_ID_NO_OFFSET(adis->dev_id)];
 		return 0;
@@ -452,7 +441,7 @@ static int adis1654x_read_sync_mode(struct adis_dev *adis, uint32_t *sync_mode)
 	int ret;
 
 	ret = adis_read_field_u32(adis, adis->info->field_map->sync_mode, sync_mode);
-	if(ret)
+	if (ret)
 		return ret;
 
 	/*
@@ -460,7 +449,7 @@ static int adis1654x_read_sync_mode(struct adis_dev *adis, uint32_t *sync_mode)
 	 * SYNC_DIRECT = 1
 	 * SYNC_SCALED = 3
 	 */
-	if(*sync_mode == 3)
+	if (*sync_mode == 3)
 		*sync_mode = ADIS_SYNC_SCALED;
 
 	return 0;
@@ -479,7 +468,7 @@ static int adis1654x_write_sync_mode(struct adis_dev *adis, uint32_t sync_mode,
 {
 	int ret;
 
-	if(sync_mode > adis->info->sync_mode_max)
+	if (sync_mode > adis->info->sync_mode_max)
 		return -EINVAL;
 
 	if (sync_mode != ADIS_SYNC_DEFAULT) {
@@ -525,7 +514,7 @@ static int adis1654x_read_lpf(struct adis_dev *adis, enum adis_chan_type chan,
 
 	*freq = 0;
 
-	switch(chan) {
+	switch (chan) {
 	case ADIS_ACCL_CHAN:
 		switch (axis) {
 		case ADIS_X_AXIS:
@@ -614,7 +603,7 @@ static int adis1654x_write_lpf(struct adis_dev *adis, enum adis_chan_type chan,
 			break;
 	}
 
-	switch(chan) {
+	switch (chan) {
 	case ADIS_ACCL_CHAN:
 		switch (axis) {
 		case ADIS_X_AXIS:

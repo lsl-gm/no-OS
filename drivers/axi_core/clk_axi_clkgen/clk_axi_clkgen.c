@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "clk_axi_clkgen.h"
 #ifndef USE_STANDARD_SPI
 #include <stdbool.h>
@@ -46,9 +43,6 @@
 #include "no_os_delay.h"
 #include "no_os_axi_io.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define AXI_PCORE_VER(major, minor, letter)     ((major << 16) | (minor << 8) | letter)
 #define AXI_PCORE_VER_MAJOR(version)    (version >> 16)
 #define AXI_PCORE_VER_MINOR(version)    ((version >> 8) & 0xff)
@@ -355,7 +349,7 @@ void axi_clkgen_calc_params(struct axi_clkgen *axi_clkgen,
 	m_min = no_os_max(NO_OS_DIV_ROUND_UP(fvco_min, fin) * d_min, 1);
 	m_max = no_os_min(fvco_max * d_max / fin, 64);
 
-	for(m = m_min; m <= m_max; m++) {
+	for (m = m_min; m <= m_max; m++) {
 		_d_min = no_os_max(d_min, NO_OS_DIV_ROUND_UP(fin * m, fvco_max));
 		_d_max = no_os_min(d_max, fin * m / fvco_min);
 

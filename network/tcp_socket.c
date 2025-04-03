@@ -32,10 +32,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdlib.h>
 #include "no_os_error.h"
 #include "tcp_socket.h"
@@ -46,10 +42,6 @@
 #include "noos_mbedtls_config.h"
 #include "no_os_trng.h"
 #endif /* DISABLE_SECURE_SOCKET */
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #ifdef DISABLE_SECURE_SOCKET
 
@@ -66,10 +58,6 @@
 #endif /* MAX_CONTENT_LEN */
 
 #endif /* DISABLE_SECURE_SOCKET */
-
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 
 #ifndef DISABLE_SECURE_SOCKET
 /**
@@ -92,10 +80,6 @@ struct secure_socket_desc {
 	mbedtls_ssl_context	ssl;
 };
 #endif /* DISABLE_SECURE_SOCKET */
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 #ifndef DISABLE_SECURE_SOCKET
 /* Wrapper over socket_recv */
@@ -169,16 +153,16 @@ static int32_t stcp_socket_init(struct secure_socket_desc **desc,
 
 	if (param->ca_cert) {
 #ifdef ENABLE_PEM_CERT
-		ret = mbedtls_x509_crt_parse( &ldesc->cacert,
+		ret = mbedtls_x509_crt_parse(&ldesc->cacert,
 #else
 		ret = mbedtls_x509_crt_parse_der_nocopy(&ldesc->cacert,
 #endif /* ENABLE_PEM_CERT */
-					      (const unsigned char *)param->ca_cert,
-					      (size_t)param->ca_cert_len);
+					     (const unsigned char *)param->ca_cert,
+					     (size_t)param->ca_cert_len);
 		if (ret < 0)
 			goto exit;
 
-		mbedtls_ssl_conf_ca_chain(&ldesc->conf, &ldesc->cacert, NULL );
+		mbedtls_ssl_conf_ca_chain(&ldesc->conf, &ldesc->cacert, NULL);
 		/* Verify server identity */
 		mbedtls_ssl_conf_authmode(&ldesc->conf,
 					  param->cert_verify_mode);
@@ -194,17 +178,17 @@ static int32_t stcp_socket_init(struct secure_socket_desc **desc,
 			goto exit;
 		}
 #ifdef ENABLE_PEM_CERT
-		ret = mbedtls_x509_crt_parse( &ldesc->clicert,
+		ret = mbedtls_x509_crt_parse(&ldesc->clicert,
 #else
 		ret = mbedtls_x509_crt_parse_der_nocopy(&ldesc->clicert,
 #endif /* ENABLE_PEM_CERT */
-					      (const unsigned char *)param->cli_cert,
-					      (size_t)param->cli_cert_len);
+					     (const unsigned char *)param->cli_cert,
+					     (size_t)param->cli_cert_len);
 		if (NO_OS_IS_ERR_VALUE(ret))
 			goto exit;
 		ret = mbedtls_pk_parse_key(&ldesc->pkey,
 					   (const unsigned char *)param->cli_pk,
-					   param->cli_pk_len, NULL, 0 );
+					   param->cli_pk_len, NULL, 0);
 		if (NO_OS_IS_ERR_VALUE(ret))
 			goto exit;
 

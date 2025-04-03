@@ -33,16 +33,10 @@
 ******************************************************************************/
 
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include "ad5629r.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/************************ Variables Definitions *******************************/
-/******************************************************************************/
 static const struct ad5629r_chip_info chip_info[] = {
 	[ID_AD5629R] = {
 		.resolution = 12,
@@ -65,11 +59,6 @@ static const struct ad5629r_chip_info chip_info[] = {
 		.communication = com_spi,
 	}
 };
-
-/******************************************************************************/
-/************************** Functions Definitions *****************************/
-/******************************************************************************/
-
 
 /***************************************************************************//**
  * @brief Initializes the communication with the device.
@@ -157,7 +146,7 @@ void ad5629r_set_ctrl(struct ad5629r_dev *dev,
 {
 	uint8_t data_buff [ 4 ]   = {0, 0, 0, 0};
 
-	if(chip_info[dev->act_device].communication == com_spi) {
+	if (chip_info[dev->act_device].communication == com_spi) {
 		data = data & 0xFFFFF;
 
 		data_buff[0] = function;
@@ -202,7 +191,7 @@ void ad5629r_set_input_reg(struct ad5629r_dev *dev,
 	dac_value = dac_value << (MAX_RESOLUTION -
 				  chip_info[dev->act_device].resolution);
 
-	if(chip_info[dev->act_device].communication == com_spi) {
+	if (chip_info[dev->act_device].communication == com_spi) {
 		dac_value = dac_value & 0xFFFF;
 
 		data_buff[0] = function;

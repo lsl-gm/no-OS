@@ -31,24 +31,92 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "afe_config.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
-volatile uint8_t rmsOneReady = 0;
 struct no_os_spi_desc *hSPI;
 struct no_os_spi_msg spiMsg;
 extern struct no_os_gpio_init_param reset_gpio_ip;
 
-/******************************************************************************/
-/************************* Functions Definitions ******************************/
-/******************************************************************************/
+int init_lcd(void)
+{
+	int status;
+	char buff[50];
+	struct no_os_gpio_sec *spi_cs;
+	struct nhd_c12832a1z_dev *nhd_c12832a1z_device;
+
+	struct max_gpio_init_param gpio_extra_ip_cs = {
+		.vssel = MXC_GPIO_VSSEL_VDDIOH,
+	};
+
+	struct no_os_gpio_init_param gpio_dc_ip_cs = {
+		.port = 2,
+		.number = 26,
+		.pull = NO_OS_PULL_NONE,
+		.platform_ops = &max_gpio_ops,
+		.extra = &gpio_extra_ip_cs,
+	};
+
+	status = no_os_gpio_get(&spi_cs, &gpio_dc_ip_cs);
+	if (status)
+		return status;
+
+	struct max_gpio_init_param gpio_extra_ip = {
+		.vssel = MXC_GPIO_VSSEL_VDDIOH,
+	};
+
+	struct no_os_gpio_init_param gpio_dc_ip = {
+		.port = 3,
+		.number = 5,
+		.pull = NO_OS_PULL_NONE,
+		.platform_ops = &max_gpio_ops,
+		.extra = &gpio_extra_ip,
+	};
+
+	struct no_os_gpio_init_param gpio_lcd_rst_ip = {
+		.port = 3,
+		.number = 4,
+		.pull = NO_OS_PULL_NONE,
+		.platform_ops = &max_gpio_ops,
+		.extra = &gpio_extra_ip,
+	};
+
+	struct max_spi_init_param spi_extra_ip = {
+		.num_slaves = 1,
+		.polarity = SPI_SS_POL_LOW,
+		.vssel = MXC_GPIO_VSSEL_VDDIOH
+	};
+
+	struct no_os_spi_init_param spi_lcd_ip = {
+		.device_id = 0,
+		.max_speed_hz = 1000000,
+		.bit_order = NO_OS_SPI_BIT_ORDER_MSB_FIRST,
+		.mode = NO_OS_SPI_MODE_3,
+		.platform_ops = &max_spi_ops,
+		.chip_select = 0,
+		.extra = &spi_extra_ip,
+	};
+
+	struct nhd_c12832a1z_init_param nhd_c12832a1z_ip = {
+		.spi_ip = &spi_lcd_ip,
+		.dc_pin_ip = &gpio_dc_ip,
+		.reset_pin_ip = &gpio_lcd_rst_ip
+	};
+
+	status = nhd_c12832a1z_init(&nhd_c12832a1z_device, nhd_c12832a1z_ip);
+	if (status)
+		return status;
+	sprintf(buff, "   AD-PQMON-SL     Eval Board");
+	status = no_os_gpio_set_value(spi_cs, 1);
+	if (status)
+		return status;
+	status = nhd_c12832a1z_print_string(nhd_c12832a1z_device, buff);
+	if (status)
+		return status;
+	status = no_os_gpio_set_value(spi_cs, 0);
+	if (status)
+		return status;
+
+}
 
 int afe_init(void)
 {
@@ -98,7 +166,6 @@ int afe_init(void)
 		}
 	}
 
-	init_interrupt();
 	if (status == 0) {
 		status = config_wfb();
 		if (status != 0) {
@@ -419,20 +486,18 @@ int afe_read_status0(uint32_t *pSTATUS0)
 
 	uint32_t status0 = 0;
 	*pSTATUS0 = 0;
-	if (rmsOneReady != 0) {
-		rmsOneReady = 0;
-		status = afe_read_32bit_buff(REG_STATUS0, 1, pSTATUS0);
-		status0 = *pSTATUS0;
+
+	status = afe_read_32bit_buff(REG_STATUS0, 1, pSTATUS0);
+	status0 = *pSTATUS0;
+	if (status != 0) {
+		status = SYS_STATUS_AFE_STATUS0_FAILED;
+	}
+
+	if (status == 0) {
+		status0 |= BITM_STATUS0_RMSONERDY;
+		status = afe_write_32bit_reg(REG_STATUS0, (uint32_t *)&status0);
 		if (status != 0) {
 			status = SYS_STATUS_AFE_STATUS0_FAILED;
-		}
-
-		if (status == 0) {
-			status0 |= BITM_STATUS0_RMSONERDY;
-			status = afe_write_32bit_reg(REG_STATUS0, (uint32_t *)&status0);
-			if (status != 0) {
-				status = SYS_STATUS_AFE_STATUS0_FAILED;
-			}
 		}
 	}
 
@@ -445,12 +510,10 @@ void afe_wait_settling(uint32_t cycles)
 	uint32_t status0;
 
 	while (cycles > 0) {
-		if (rmsOneReady != 0) {
-			status = afe_read_status0((uint32_t *)&status0);
-			if ((status == SYS_STATUS_AFE_STATUS0_FAILED) ||
-			    (status == SYS_STATUS_SUCCESS)) {
-				cycles--;
-			}
+		status = afe_read_status0((uint32_t *)&status0);
+		if ((status == SYS_STATUS_AFE_STATUS0_FAILED) ||
+		    (status == SYS_STATUS_SUCCESS)) {
+			cycles--;
 		}
 	}
 }

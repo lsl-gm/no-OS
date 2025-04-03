@@ -34,10 +34,6 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "maxim_gpio.h"
 #include "maxim_i2c.h"
 #include "maxim_irq.h"
@@ -47,16 +43,20 @@
 #include "maxim_uart_stdio.h"
 #include "maxim_usb_uart.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
 #define INTC_DEVICE_ID 0
 #define UART_DEVICE_ID 1
 #define UART_BAUDRATE 115200
 #define UART_IRQ_ID USB_IRQn
 #define UART_OPS &max_usb_uart_ops
+
+#if defined(PQM_CONN_USB)
 #define UART_EXTRA &iio_demo_usb_uart_extra_ip
+#elif defined(PQM_CONN_SERIAL)
+#define UART_EXTRA &uart_stdio_extra_ip
+#elif defined(PQM_CONN_T1L)
+#define UART_EXTRA &uart_stdio_extra_ip
+#define ADIN_SPI_EXTRA &spi_extra_ip
+#endif
 
 #define SPI_CS 0
 #define SPI_DEVICE_ID 2
@@ -64,8 +64,6 @@
 #define SPI_OPS &max_spi_ops
 
 #define I2C_EXTRA &vddioh_i2c_extra
-#define GPIO_EXTRA &vddioh_gpio_extra
-#define GPIO_OPS &max_gpio_ops
 #define SPI_PQM_DEVICE_ID 1
 #define SPI_PQM_BAUDRATE 6000000
 #define SPI_PQM_EXTRA &spi_extra_ip
@@ -85,6 +83,7 @@
 #define RESET_GPIO_PORT_NUM 1
 #define GPIO_OPS &max_gpio_ops
 #define RESET_GPIO_EXTRA &max_reset_gpio_extra_ip
+#define GPIO_EXTRA &max_reset_gpio_extra_ip
 
 #define INTR_GPIO_PIN_NUM 30
 #define INTR_GPIO_PORT_NUM 0
@@ -92,12 +91,7 @@
 #define INTR_GPIO_IRQ_ID 0
 #define INTR_OPS &max_gpio_irq_ops
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
-
 extern struct max_i2c_init_param vddioh_i2c_extra;
-extern struct max_gpio_init_param vddioh_gpio_extra;
 extern struct max_spi_init_param spi_extra_ip;
 extern struct max_uart_init_param uart_stdio_extra_ip;
 extern struct max_uart_init_param iio_demo_uart_extra_ip;

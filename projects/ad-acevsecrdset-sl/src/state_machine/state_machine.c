@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "no_os_print_log.h"
 #include "state_machine.h"
 #include "no_os_delay.h"
@@ -57,9 +54,6 @@ uint16_t zcross_cnt;
 // Charging state
 uint8_t is_charging;
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 /**
  * @brief State machine main execution
  *
@@ -140,7 +134,7 @@ int state_machine()
 	/* Clear the screen. */
 	printf("%c%c%c%c", 27, '[', '2', 'J');
 	no_os_mdelay(5);
-	pr_debug("\nSTOUT app FIRMWARE VERSION: %s\n",FIRMWARE_VERSION);
+	pr_debug("\nSTOUT app FIRMWARE VERSION: %s\n", FIRMWARE_VERSION);
 	/*Board revision*/
 #if defined(REV_A)
 	pr_debug("STOUT app BOARD REVISION A\n\n");
@@ -234,7 +228,7 @@ int state_machine()
 	if (ret == INTF_INPUT_V_ERR) {
 		interface_disp(stout);
 		event = S_M_UNDERVOLTAGE;
-		if (stout->grid >= 1 ) {
+		if (stout->grid >= 1) {
 			if (VIN_LOW_LIMIT_2 > rms_adc_values->v1_rms)
 				ret = INTF_INPUT_V_ERR_U;
 			else if (VIN_HIGH_LIMIT_2 < rms_adc_values->v1_rms) {
@@ -301,7 +295,7 @@ int state_machine()
 	/*******************************************************************************************************/
 	/************The main loop of the State Machine (runs continuously if no error detected)****************/
 	/*******************************************************************************************************/
-	while(1) {
+	while (1) {
 		// Update PWM LOW and PWM HIGH values each time a new conversion takes place
 		if (get_pwm_low_flag_state()) {
 			// Update values for computing PWM LOW and PWM HIGH averages
@@ -377,7 +371,7 @@ int state_machine()
 				if (v2_read >= 1) {
 					// The relay stuck detection state is active (a reading of Vrelay is needed)
 					// Compute the average Vrelay value over the COMPUTE_VRELAY_INTERVAL
-					stout->v2_val = v2_sum/(multiple_20ms_2-1);
+					stout->v2_val = v2_sum / (multiple_20ms_2 - 1);
 					// reset the 20 ms counter to start with new values
 					multiple_20ms = 0;
 					// Indicates that the Vrealy value is available for the state machine
@@ -716,7 +710,7 @@ int state_machine()
 							pr_debug("Diode OK \n");
 						}
 					}
-				} else if ( S_M_CHARGING_START == event) {
+				} else if (S_M_CHARGING_START == event) {
 					pr_debug("CLOSE THE RELAY STATE D\n");
 					// Close the relay
 					ret = relay_close(stout->relay);
@@ -907,13 +901,6 @@ error:
 	return ret;
 	/*****************************************ERROR latching and display END****************************************/
 }
-/*******************************************************************************************************************/
-/************************************************ State Machine function END****************************************/
-/*******************************************************************************************************************/
-
-/*******************************************************************************************************************/
-/**************************************************** CP event function ********************************************/
-/*******************************************************************************************************************/
 /**
  * @brief Determine next state based on CP measurements and previous events
  * @param stout - state machine descriptor
@@ -1198,13 +1185,6 @@ enum state_machine_events_e state_machine_det_event_cp(struct stout *stout,
 	}
 	return event;
 }
-/*******************************************************************************************************************/
-/**************************************************** CP event function END ****************************************/
-/*******************************************************************************************************************/
-
-/*******************************************************************************************************************/
-/************************************************* Temperature event function **************************************/
-/*******************************************************************************************************************/
 /**
  * @brief Determine next state based on temperature measurements and previous events
  * @param stout - state machine descriptor
@@ -1243,13 +1223,6 @@ enum state_machine_events_e state_machine_det_event_temperature(
 
 	return event;
 }
-/*******************************************************************************************************************/
-/********************************************** Temperature event function END *************************************/
-/*******************************************************************************************************************/
-
-/*******************************************************************************************************************/
-/*********************************************** Vin and Iout event function ***************************************/
-/*******************************************************************************************************************/
 /**
  * @brief Determine next state based on supply measurements and previous events
  * @param stout - state machine descriptor
@@ -1326,10 +1299,6 @@ enum state_machine_events_e state_machine_det_event_supply(struct stout *stout,
 
 	return event;
 }
-
-/*******************************************************************************************************************/
-/*********************************************** Vin and Iout event function END***************************************/
-/*******************************************************************************************************************/
 
 /**
  * @brief Get take action flag

@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
-
 #include "no_os_irq.h"
 #include "no_os_list.h"
 #include "no_os_uart.h"
@@ -48,15 +44,7 @@
 #include "pico/stdlib.h"
 #include "hardware/irq.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
 #define PICO_IRQ_NB 26u
-
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 
 struct irq_action {
 	uint32_t irq_id;
@@ -70,10 +58,6 @@ struct event_list {
 	struct no_os_list_desc *actions;
 };
 
-/******************************************************************************/
-/************************* Variable Declarations ******************************/
-/******************************************************************************/
-
 static bool initialized =  false;
 static uint32_t irq_enabled_mask = 0;
 
@@ -81,10 +65,6 @@ static struct event_list _events[] = {
 	[NO_OS_EVT_UART_RX_COMPLETE] = {.event = NO_OS_EVT_UART_RX_COMPLETE},
 	[NO_OS_EVT_TIM_ELAPSED] = {.event = NO_OS_EVT_TIM_ELAPSED},
 };
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief UART interrupt handler.
@@ -166,8 +146,8 @@ int32_t irq_action_cmp(void *data1, void *data2)
  * @param param - Configuration information for the instance.
  * @return 0 in case of success, error code otherwise.
  */
-int32_t pico_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
-			   const struct no_os_irq_init_param *param)
+int pico_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
+		       const struct no_os_irq_init_param *param)
 {
 	static struct no_os_irq_ctrl_desc *descriptor;
 	if (!param)
@@ -194,7 +174,7 @@ int32_t pico_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
  * @param desc - Interrupt controller descriptor.
  * @return 0 in case of success, error code otherwise.
  */
-int32_t pico_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
+int pico_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
 {
 	initialized = false;
 
@@ -211,9 +191,9 @@ int32_t pico_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
  * @param level  - The trigger condition.
  * @return -ENOSYS
  */
-int32_t pico_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
-			       uint32_t irq_id,
-			       enum no_os_irq_trig_level level)
+int pico_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
+			   uint32_t irq_id,
+			   enum no_os_irq_trig_level level)
 {
 	return -ENOSYS;
 }
@@ -225,9 +205,9 @@ int32_t pico_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
  * @param cb     - Descriptor of the callback.
  * @return 0 if successful, error code otherwise.
  */
-int32_t pico_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
-				   uint32_t irq_id,
-				   struct no_os_callback_desc *cb)
+int pico_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
+			       uint32_t irq_id,
+			       struct no_os_callback_desc *cb)
 {
 	int ret;
 	struct irq_action *action;
@@ -310,8 +290,8 @@ int32_t pico_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
  * @param cb     - Descriptor of the callback.
  * @return 0 if successful, error code otherwise.
  */
-int32_t pico_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
-				     uint32_t irq_id, struct no_os_callback_desc *cb)
+int pico_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
+				 uint32_t irq_id, struct no_os_callback_desc *cb)
 {
 	int ret;
 	void *discard;
@@ -333,7 +313,7 @@ int32_t pico_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
  * @param desc - Interrupt controller descriptor.
  * @return 0
  */
-int32_t pico_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
+int pico_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
 {
 	/* Enable all interrupts which were previously enabled */
 	irq_set_mask_enabled(irq_enabled_mask, true);
@@ -346,9 +326,9 @@ int32_t pico_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
  * @param desc - Interrupt controller descriptor.
  * @return 0
  */
-int32_t pico_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
+int pico_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
 {
-	for(uint8_t irq_num = 0; irq_num < PICO_IRQ_NB; irq_num++)
+	for (uint8_t irq_num = 0; irq_num < PICO_IRQ_NB; irq_num++)
 		if (irq_is_enabled(irq_num))
 			irq_enabled_mask |= 1 << irq_num;
 
@@ -364,7 +344,7 @@ int32_t pico_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
  * @param irq_id - Interrupt identifier.
  * @return 0 if successful, error code otherwise.
  */
-int32_t pico_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
+int pico_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
 {
 	if (!desc || !(irq_id < PICO_IRQ_NB))
 		return -EINVAL;
@@ -380,7 +360,7 @@ int32_t pico_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
  * @param irq_id - Interrupt identifier.
  * @return 0 if successful, error code otherwise.
  */
-int32_t pico_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
+int pico_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
 {
 	if (!desc || !(irq_id < PICO_IRQ_NB))
 		return -EINVAL;
@@ -397,9 +377,9 @@ int32_t pico_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
  * @param priority_level - The interrupt priority level.
  * @return 0 if successful, error code otherwise.
  */
-static int32_t pico_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
-				     uint32_t irq_id,
-				     uint32_t priority_level)
+static int pico_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
+				 uint32_t irq_id,
+				 uint32_t priority_level)
 {
 	if (!desc || !(irq_id < PICO_IRQ_NB) || (priority_level > 3))
 		return -EINVAL;

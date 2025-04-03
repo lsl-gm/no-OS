@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -170,6 +167,8 @@ int32_t ad9508_setup(struct ad9508_dev **device,
 			       AD9508_DIVIDE_RATIO_ONE); /* phase offset[10:8] */
 	if (ret != 0)
 		return ret;
+
+	*device = dev;
 
 	return 0;
 }

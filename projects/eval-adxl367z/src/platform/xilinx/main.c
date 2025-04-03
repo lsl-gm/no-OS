@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "platform_includes.h"
 #include "common_data.h"
 
@@ -78,7 +75,7 @@ int main()
 
 #if (IIO_EXAMPLE+DUMMY_EXAMPLE != 1)
 #error Selected example projects cannot be enabled at the same time. \
-Please enable only one example and re-build the project.
+Please enable only one example and rebuild the project.
 #endif
 
 error:

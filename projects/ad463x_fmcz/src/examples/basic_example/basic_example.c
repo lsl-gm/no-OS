@@ -32,18 +32,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "basic_example.h"
 #include "common_data.h"
 #include "no_os_print_log.h"
 
 #define BITS_PER_SAMPLE 32
 #define REAL_BITS 24
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief basic example main execution.
  *
@@ -82,12 +76,12 @@ int basic_example_main()
 	if (ret)
 		goto out;
 
-	for (i = 0; i < SAMPLES_PER_CHANNEL; i+=2) {
+	for (i = 0; i < SAMPLES_PER_CHANNEL; i += 2) {
 		tmp = no_os_sign_extend32(buf[i], REAL_BITS - 1);
 		pr_info("ADC sample ch1: %lu : %ld \r\n", i, tmp);
 	}
 
-	for (i = 1; i < SAMPLES_PER_CHANNEL; i+=2) {
+	for (i = 1; i < SAMPLES_PER_CHANNEL; i += 2) {
 		tmp = no_os_sign_extend32(buf[i], REAL_BITS - 1);
 		pr_info("ADC sample ch2: %lu : %ld \r\n", i, tmp);
 	}

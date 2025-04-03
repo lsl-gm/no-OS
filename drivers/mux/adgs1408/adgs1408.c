@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -41,9 +38,6 @@
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 /**
  * Compute CRC8 checksum.
  * @param data - The data buffer.
@@ -102,7 +96,7 @@ int32_t adgs1408_spi_reg_read(struct adgs1408_dev *dev,
 		buf_size = 3;
 	ret = no_os_spi_write_and_read(dev->spi_desc, buf, buf_size);
 
-	if(ret < 0)
+	if (ret < 0)
 		return -1;
 
 	if (buf[0] != ADGS1408_ALIGNMENT) {
@@ -324,7 +318,7 @@ int32_t adgs1408_configure_round_robin(struct adgs1408_dev *dev,
 	uint8_t buf[2];
 	int32_t ret;
 
-	if(dev->act_device == ID_ADGS1408) {
+	if (dev->act_device == ID_ADGS1408) {
 		reg_config = ADGS1408_RROBIN_SW1(dev->rrobin_sw_config.rrobin_sw1) |
 			     ADGS1408_RROBIN_SW2(dev->rrobin_sw_config.rrobin_sw2) |
 			     ADGS1408_RROBIN_SW3(dev->rrobin_sw_config.rrobin_sw3) |
@@ -344,7 +338,7 @@ int32_t adgs1408_configure_round_robin(struct adgs1408_dev *dev,
 	buf[1] = reg_config;
 	ret = no_os_spi_write_and_read(dev->spi_desc, buf, 2);
 
-	if(ret != -1) {
+	if (ret != -1) {
 		buf[0] = ADGS1408_REG_CNV_EDGE_SEL;
 		buf[1] = cnv_polarity;
 		ret |= no_os_spi_write_and_read(dev->spi_desc, buf, 2);
@@ -367,7 +361,7 @@ int32_t adgs1408_exit_round_robin(struct adgs1408_dev *dev)
 	buf[1] = ADGS1408_RROBIN_EXIT_2;
 	ret = no_os_spi_write_and_read(dev->spi_desc, buf, 2);
 
-	if(ret != -1) {
+	if (ret != -1) {
 		buf[0] = ADGS1408_RROBIN_EXIT_3;
 		buf[1] = ADGS1408_RROBIN_EXIT_4;
 		ret |= no_os_spi_write_and_read(dev->spi_desc, buf, 2);

@@ -34,10 +34,6 @@
 #ifndef __AFE_CONFIG_H__
 #define __AFE_CONFIG_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "ade9430.h"
 #include "adi_pqlib.h"
 #include "common_data.h"
@@ -45,10 +41,7 @@
 #include "status.h"
 #include <stdint.h>
 #include <string.h>
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
+#include "nhd_c12832a1z.h"
 
 /*! WFB_CFG burst all channels */
 #define BITM_WFB_CFG_BURST_ALL_CHAN 0x00000000
@@ -105,9 +98,12 @@ typedef enum {
 	AFE_SPI_STATUS_DMA_COMPLETED
 } AFE_SPI_STATUS;
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
+/**
+ * @brief Initialize LCD screen and text
+ *
+ * @return Return value of initialization, 0 onn success, different from 0 otherwise.
+ */
+int init_lcd(void);
 
 /**
  * @brief SPI Initialization Function

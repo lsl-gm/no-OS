@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -45,10 +42,6 @@
 #include "no_os_axi_io.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #define JESD204_TX_REG_VERSION			0x00
 #define JESD204_TX_REG_MAGIC			0x0c
@@ -109,10 +102,6 @@ const char *axi_jesd204_tx_link_status_label[] = {
 struct axi_jesd204_tx_jesd204_priv {
 	struct axi_jesd204_tx *jesd;
 };
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief JESD204 TX AXI Data Write.
@@ -201,7 +190,7 @@ uint32_t axi_jesd204_tx_status_read(struct axi_jesd204_tx *jesd)
 	} else {
 		clock_rate = NO_OS_DIV_ROUND_CLOSEST_ULL(100000ULL * clock_ratio,
 				1ULL << 16);
-		printf("\tMeasured Link Clock: %"PRIu32".%.3"PRIu32" MHz\n",\
+		printf("\tMeasured Link Clock: %"PRIu32".%.3"PRIu32" MHz\n", \
 		       clock_rate / 1000, clock_rate % 1000);
 	}
 

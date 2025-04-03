@@ -31,17 +31,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include "no_os_clk.h"
 #include "jesd204_clk.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * Start the clock.
@@ -139,12 +132,12 @@ static int jesd204_no_os_clk_init(struct no_os_clk_desc **desc,
 
 	*desc = no_os_calloc(1, sizeof(**desc));
 	/* Exit if memory cannot be allocated */
-	if(!*desc)
+	if (!*desc)
 		goto error;
 
 	jesd204_clk_d = init_param->dev_desc;
 	/* Exit if no hardware device specified in init_param */
-	if(!jesd204_clk_d)
+	if (!jesd204_clk_d)
 		goto error;
 
 	(*desc)->name = init_param->name;
@@ -173,7 +166,7 @@ static int jesd204_no_os_clk_remove(struct no_os_clk_desc *desc)
 
 	jesd204_clk_dev = desc->dev_desc;
 
-	if(!jesd204_clk_dev)
+	if (!jesd204_clk_dev)
 		return -ENODEV;
 
 	free(desc);

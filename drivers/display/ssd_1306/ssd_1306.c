@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdbool.h>
 #include "ssd_1306.h"
 #include "no_os_error.h"
@@ -41,9 +38,6 @@
 #include "no_os_delay.h"
 #include <string.h>
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 /* @defines for ssd_1306 pins signal level */
 #define SSD1306_RST_ON     	0U
 #define SSD1306_RST_OFF    	1U
@@ -62,10 +56,6 @@ const struct display_controller_ops ssd1306_ops = {
 };
 
 extern const uint8_t no_os_chr_8x8[128][8];
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /***************************************************************************//**
  * @brief Initializes ssd_1306 for display screening.
@@ -195,7 +185,7 @@ int32_t ssd_1306_move_cursor(struct display_dev *device, uint8_t row,
 	if (ret != 0)
 		return -1;
 	command[0] = 0x21;
-	command[1] = column*8;
+	command[1] = column * 8;
 	command[2] = device->cols_nb * 8 - 1U;
 	ret = no_os_spi_write_and_read(extra->spi_desc, command, 3U);
 	if (ret != 0)

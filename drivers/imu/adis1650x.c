@@ -31,18 +31,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "adis.h"
 #include "adis1650x.h"
 #include "adis_internals.h"
 #include "no_os_units.h"
-
-/******************************************************************************/
-/************************** Variable Definitions ******************************/
-/******************************************************************************/
 
 static const struct adis_data_field_map_def adis1650x_def = {
 	.x_gyro 		= {.reg_addr = 0x04, .reg_size = 0x04, .field_mask = 0xFFFFFFFF},
@@ -193,7 +185,7 @@ static int adis1650x_get_scale(struct adis_dev *adis,
 			       uint32_t *scale_m1, uint32_t *scale_m2,
 			       enum adis_chan_type chan_type)
 {
-	switch(chan_type) {
+	switch (chan_type) {
 	case ADIS_ACCL_CHAN:
 		*scale_m1 = adis1650x_accl_scale[ADIS1650X_ID_NO_OFFSET(adis->dev_id)].scale_m1;
 		*scale_m2 = adis1650x_accl_scale[ADIS1650X_ID_NO_OFFSET(adis->dev_id)].scale_m2;

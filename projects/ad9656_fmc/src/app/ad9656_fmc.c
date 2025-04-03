@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <xparameters.h>
 #include "xil_cache.h"
 #include <stdio.h>
@@ -57,12 +53,6 @@
 #include "xilinx_uart.h"
 #endif
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
-#define DMA_BUFFER		 0
-
 /***************************************************************************//**
  * @brief main
  ******************************************************************************/
@@ -70,26 +60,36 @@ int main(void)
 {
 	int32_t status;
 
+	struct xil_spi_init_param xil_spi_param = {
+		.type = SPI_PS,
+		.flags = 0U
+	};
+
 	/* Initialize SPI structures */
 	struct no_os_spi_init_param ad9508_spi_param = {
+		.device_id = SPI_DEVICE_ID,
 		.max_speed_hz = 2000000u,
 		.chip_select = 1,
-		.mode = NO_OS_SPI_MODE_0
+		.mode = NO_OS_SPI_MODE_0,
+		.platform_ops = &xil_spi_ops,
+		.extra = &xil_spi_param
 	};
 
 	struct no_os_spi_init_param ad9553_spi_param = {
+		.device_id = SPI_DEVICE_ID,
 		.max_speed_hz = 2000000u,
 		.chip_select = 2,
-		.mode = NO_OS_SPI_MODE_0
+		.mode = NO_OS_SPI_MODE_0,
+		.platform_ops = &xil_spi_ops,
+		.extra = &xil_spi_param
 	};
 	struct no_os_spi_init_param ad9656_spi_param = {
+		.device_id = SPI_DEVICE_ID,
 		.max_speed_hz = 2000000u,
 		.chip_select = 0,
-		.mode = NO_OS_SPI_MODE_0
-	};
-
-	struct xil_spi_init_param xil_spi_param = {
-		.type = SPI_PS
+		.mode = NO_OS_SPI_MODE_0,
+		.platform_ops = &xil_spi_ops,
+		.extra = &xil_spi_param
 	};
 
 	/* this pattern is outputed by the ad9656 chip after the JESD204 test is finished */
@@ -97,16 +97,6 @@ int main(void)
 		.user_test_pattern1 = 0xA1B2,
 		.user_test_pattern2 = 0xC3D4
 	};
-
-	ad9508_spi_param.device_id = SPI_DEVICE_ID;
-	ad9508_spi_param.platform_ops = &xil_spi_ops;
-	ad9508_spi_param.extra = &xil_spi_param;
-	ad9553_spi_param.device_id = SPI_DEVICE_ID;
-	ad9553_spi_param.platform_ops = &xil_spi_ops;
-	ad9553_spi_param.extra = &xil_spi_param;
-	ad9656_spi_param.device_id = SPI_DEVICE_ID;
-	ad9656_spi_param.platform_ops = &xil_spi_ops;
-	ad9656_spi_param.extra = &xil_spi_param;
 
 	struct ad9508_init_param	ad9508_param;
 	struct ad9553_init_param	ad9553_param;
@@ -145,8 +135,8 @@ int main(void)
 		.base = RX_JESD_BASEADDR,
 		.octets_per_frame = 2,
 		.frames_per_multiframe = 32,
-		.subclass = 1,
-		.device_clk_khz = 2500000/40,
+		.subclass = 0,
+		.device_clk_khz = 2500000 / 40,
 		.lane_clk_khz = 2500000
 	};
 
@@ -156,7 +146,8 @@ int main(void)
 	struct axi_adc_init ad9656_core_param = {
 		.name = "ad9656_adc",
 		.base = RX_CORE_BASEADDR,
-		.num_channels = 4
+		.num_channels = 4,
+		.num_slave_channels = 0,
 	};
 	struct axi_adc	*ad9656_core;
 	struct adxcvr	*ad9656_xcvr;
@@ -217,6 +208,9 @@ int main(void)
 		       ad9656_jesd->name);
 	}
 
+	// Allow link to reach DATA
+	no_os_mdelay(100);
+
 	status = axi_jesd204_rx_status_read(ad9656_jesd);
 	if (status != 0) {
 		printf("axi_jesd204_rx_status_read() error: %d\n", status);
@@ -231,20 +225,20 @@ int main(void)
 //******************************************************************************
 
 	/* receive path testing */
-	ad9656_JESD204_test(ad9656_device, AD9656_TEST_PN9);
-	if(axi_adc_pn_mon(ad9656_core, AXI_ADC_PN9, 10) == -1) {
+	ad9656_JESD204_test(ad9656_device, AD9656_TEST_PN9, AD9656_LINK_PN9);
+	if (axi_adc_pn_mon(ad9656_core, AXI_ADC_PN9, 10) == -1) {
 		printf("%s ad9656 - PN9 sequence mismatch!\n", __func__);
 	} else {
 		printf("%s ad9656 - PN9 sequence checked!\n", __func__);
 	}
-	ad9656_JESD204_test(ad9656_device, AD9656_TEST_PN23);
-	if(axi_adc_pn_mon(ad9656_core, AXI_ADC_PN23A, 10) == -1) {
+	ad9656_JESD204_test(ad9656_device, AD9656_TEST_PN23, AD9656_LINK_PN23);
+	if (axi_adc_pn_mon(ad9656_core, AXI_ADC_PN23A, 10) == -1) {
 		printf("%s ad9656 - PN23 sequence mismatch!\n", __func__);
 	} else {
 		printf("%s ad9656 - PN23 sequence checked!\n", __func__);
 	}
 
-	ad9656_JESD204_test(ad9656_device, AD9656_TEST_OFF);
+	ad9656_JESD204_test(ad9656_device, AD9656_TEST_OFF, AD9656_LINK_OFF);
 
 //******************************************************************************
 // generate user input in place of real ADC data and capture data with DMA
@@ -275,13 +269,20 @@ int main(void)
 	axi_dmac_transfer_start(ad9656_dmac, &read_transfer);
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(ad9656_dmac, 500);
-	if(status)
+	if (status)
 		return status;
 	Xil_DCacheInvalidateRange((uintptr_t)ADC_DDR_BASEADDR, 16384 * 4);
+
+	printf("DMA_EXAMPLE: address=%#x samples=%lu channels=%u bits=%u\n",
+	       (uintptr_t)ADC_DDR_BASEADDR,
+	       read_transfer.size / 2,
+	       ad9656_core->num_channels, 16);
 
 	ad9656_user_input_test(ad9656_device, AD9656_TEST_OFF, user_input_test_pattern);
 
 	printf("ad9656: setup, configuration and test program is done\n");
+
+	no_os_mdelay(10);
 
 #ifdef IIO_SUPPORT
 	struct xil_uart_init_param platform_uart_init_par = {
@@ -353,5 +354,7 @@ int main(void)
 	/* Disable the data cache. */
 	Xil_DCacheDisable();
 
-	return(0);
+	printf("Bye!\n");
+
+	return (0);
 }

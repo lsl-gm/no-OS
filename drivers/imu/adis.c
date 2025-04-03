@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "adis.h"
 #include "adis_internals.h"
 #include "no_os_delay.h"
@@ -43,10 +39,6 @@
 #include "no_os_alloc.h"
 #include "no_os_print_log.h"
 #include <string.h>
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #define ADIS_16_BIT_BURST_SIZE		0
 #define ADIS_32_BIT_BURST_SIZE		1
@@ -86,10 +78,6 @@ static const uint32_t adis_3db_freqs[] = {
 	10,
 };
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
-
 /**
  * @brief Initialize adis device.
  * @param adis - The adis device.
@@ -112,7 +100,7 @@ int adis_init(struct adis_dev **adis, const struct adis_init_param *ip)
 	if (ret)
 		goto error_spi;
 
-	if(ip->info->has_paging)
+	if (ip->info->has_paging)
 		dev->current_page = -1;
 	else
 		dev->current_page = 0;
@@ -184,7 +172,7 @@ int adis_initial_startup(struct adis_dev *adis)
 
 	if (adis->gpio_reset) {
 		ret = no_os_gpio_set_value(adis->gpio_reset, NO_OS_GPIO_HIGH);
-		if(ret)
+		if (ret)
 			return ret;
 		no_os_mdelay(timeouts->reset_ms);
 	} else {
@@ -407,7 +395,7 @@ int adis_read_field_u32(struct adis_dev *adis, struct adis_field field,
 	int ret;
 	uint32_t reg_val;
 	ret = adis_read_reg(adis, field.reg_addr, &reg_val, field.reg_size);
-	if(ret)
+	if (ret)
 		return ret;
 
 	*field_val = no_os_field_get(field.field_mask, reg_val);
@@ -429,7 +417,7 @@ int adis_read_field_s32(struct adis_dev *adis, struct adis_field field,
 	uint32_t reg_val;
 
 	ret = adis_read_reg(adis, field.reg_addr, &reg_val, field.reg_size);
-	if(ret)
+	if (ret)
 		return ret;
 
 	*field_val = no_os_field_get(field.field_mask, reg_val);
@@ -490,7 +478,8 @@ int adis_update_bits_base(struct adis_dev *adis, uint32_t reg,
 bool adis_validate_checksum(uint8_t *buffer, uint8_t size, uint8_t idx)
 {
 	uint8_t i;
-	uint16_t checksum = no_os_get_unaligned_be16(&buffer[size-ADIS_CHECKSUM_SIZE]);
+	uint16_t checksum = no_os_get_unaligned_be16(&buffer[size -
+				 ADIS_CHECKSUM_SIZE]);
 
 	for (i = idx; i < size - ADIS_CHECKSUM_SIZE; i++)
 		checksum -= buffer[i];
@@ -515,8 +504,8 @@ void adis_update_diag_flags(struct adis_dev *adis, uint32_t diag_stat)
 						field_map->diag_spi_comm_err_mask, diag_stat);
 	adis->diag_flags.standby_mode = no_os_field_get(
 						field_map->diag_standby_mode_mask, diag_stat);
-	adis->diag_flags.clk_err =no_os_field_get(field_map->diag_clk_err_mask,
-				  diag_stat);
+	adis->diag_flags.clk_err = no_os_field_get(field_map->diag_clk_err_mask,
+				   diag_stat);
 	adis->diag_flags.fls_mem_update_failure = no_os_field_get(
 				field_map->diag_fls_mem_update_failure_mask, diag_stat);
 	adis->diag_flags.mem_failure = no_os_field_get(field_map->diag_mem_failure_mask,
@@ -1974,7 +1963,7 @@ int adis_write_filt_size_var_b(struct adis_dev *adis, uint32_t filt_size_var_b)
 {
 	int ret;
 
-	if(filt_size_var_b > adis->info->filt_size_var_b_max)
+	if (filt_size_var_b > adis->info->filt_size_var_b_max)
 		return -EINVAL;
 
 	ret = adis_write_field_u32(adis, adis->info->field_map->filt_size_var_b,
@@ -2751,7 +2740,7 @@ int adis_write_sync_mode(struct adis_dev *adis, uint32_t sync_mode,
 {
 	int ret;
 
-	if(sync_mode > adis->info->sync_mode_max)
+	if (sync_mode > adis->info->sync_mode_max)
 		return -EINVAL;
 
 	if (adis->info->write_sync_mode)
@@ -3351,8 +3340,8 @@ int adis_write_up_scale(struct adis_dev *adis, uint32_t up_scale)
 	 * otherwise return -EINVAL.
 	 */
 	if (sync_mode == ADIS_SYNC_SCALED
-	    && (adis->ext_clk*up_scale > adis->info->sampling_clk_limits.max_freq
-		|| adis->ext_clk*up_scale < adis->info->sampling_clk_limits.min_freq))
+	    && (adis->ext_clk * up_scale > adis->info->sampling_clk_limits.max_freq
+		|| adis->ext_clk * up_scale < adis->info->sampling_clk_limits.min_freq))
 		return -EINVAL;
 
 	return adis_write_field_u32(adis, adis->info->field_map->up_scale, up_scale);
@@ -3379,11 +3368,11 @@ int adis_write_dec_rate(struct adis_dev *adis, uint32_t dec_rate)
 {
 	int ret;
 
-	if(dec_rate > adis->info->dec_rate_max)
+	if (dec_rate > adis->info->dec_rate_max)
 		return -EINVAL;
 
 	ret = adis_write_field_u32(adis, adis->info->field_map->dec_rate, dec_rate);
-	if(ret)
+	if (ret)
 		return ret;
 
 	no_os_udelay(adis->info->timeouts->dec_rate_update_us);
@@ -3615,7 +3604,7 @@ int adis_cmd_snsr_self_test(struct adis_dev *adis)
 	struct adis_field field = adis->info->field_map->snsr_self_test;
 
 	ret = adis_write_reg(adis, field.reg_addr, field.field_mask, field.reg_size);
-	if(ret)
+	if (ret)
 		return ret;
 
 	no_os_mdelay(adis->info->timeouts->self_test_ms);
@@ -3685,7 +3674,7 @@ int adis_cmd_sw_res(struct adis_dev *adis)
 	struct adis_field field = adis->info->field_map->sw_res;
 
 	ret = adis_write_reg(adis, field.reg_addr, field.field_mask, field.reg_size);
-	if(ret)
+	if (ret)
 		return ret;
 
 	no_os_mdelay(adis->info->timeouts->sw_reset_ms);
@@ -3917,7 +3906,7 @@ int adis_read_fls_mem_wr_cntr(struct adis_dev *adis, uint32_t *fls_mem_wr_cntr)
 	if (ret)
 		return ret;
 
-	if(*fls_mem_wr_cntr > adis->info->fls_mem_wr_cntr_max)
+	if (*fls_mem_wr_cntr > adis->info->fls_mem_wr_cntr_max)
 		adis->diag_flags.fls_mem_wr_cnt_exceed = true;
 
 	return 0;

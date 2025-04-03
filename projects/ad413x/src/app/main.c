@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #ifdef IIO_SUPPORT
 #include "iio.h"
 #include "iio_ad413x.h"
@@ -57,7 +54,7 @@
 
 #define DATA_BUFFER_SIZE 400
 
-static uint8_t in_buff[DATA_BUFFER_SIZE*16*sizeof(int)];
+static uint8_t in_buff[DATA_BUFFER_SIZE * 16 * sizeof(int)];
 
 #define ADC_DDR_BASEADDR	((uint32_t)in_buff)
 
@@ -137,7 +134,7 @@ int main()
 	if (ret)
 		return -1;
 
-	for(i = 0; i < 20; i++)
+	for (i = 0; i < 20; i++)
 		printf("DATA[%"PRIi32"], chan %d = %f V \n", i, i % 3, buffer[i],
 		       (float)buffer[i] / 0xFFFFFF * 2.5);
 
@@ -168,7 +165,7 @@ int main()
 
 	struct iio_data_buffer iio_ad413x_read_buff = {
 		.buff = (void *)in_buff,
-		.size = DATA_BUFFER_SIZE*16*sizeof(int)
+		.size = DATA_BUFFER_SIZE * 16 * sizeof(int)
 	};
 
 	adciio_init.ad413x_ip = ad413x_dev_ip;

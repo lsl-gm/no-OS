@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -43,14 +40,7 @@
 #include "no_os_alloc.h"
 #include "stm32_gpio_irq.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define STM32_IRQ_CTRL_NB 16
-
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 
 /**
  * @brief Struct used to store a (peripheral, callback) pair
@@ -61,9 +51,6 @@ struct irq_action {
 	void *ctx;
 };
 
-/******************************************************************************/
-/***************************** Static variables *******************************/
-/******************************************************************************/
 static struct no_os_list_desc *actions;
 
 static int32_t irq_action_cmp(void *data1, void *data2)
@@ -74,9 +61,6 @@ static int32_t irq_action_cmp(void *data1, void *data2)
 
 static bool initialized[STM32_IRQ_CTRL_NB] =  {false};
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /**
  * @brief Generic Interrupt handler callback
  * @param pin pin number on which the interrupt occurred (GPIO_PIN_pin)
@@ -130,8 +114,8 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t pin)
  * @param param - Configuration information for the instance
  * @return 0 in case of success, errno error codes otherwise.
  */
-static int32_t stm32_gpio_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
-					const struct no_os_irq_init_param *param)
+static int stm32_gpio_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
+				    const struct no_os_irq_init_param *param)
 {
 	static struct no_os_irq_ctrl_desc *gpio_irq_desc_arr[STM32_IRQ_CTRL_NB];
 
@@ -194,7 +178,7 @@ error:
  * @param desc - GPIO interrupt controller descriptor.
  * @return 0 in case of success, errno error codes otherwise.
  */
-static int32_t stm32_gpio_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
+static int stm32_gpio_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
 {
 	struct no_os_callback_desc *discard;
 
@@ -221,7 +205,7 @@ static int32_t stm32_gpio_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
  * @param level  - the trigger condition.
  * @return 0 in case of success, errno error codes otherwise
  */
-static int32_t stm32_gpio_irq_trigger_level_set(struct no_os_irq_ctrl_desc
+static int stm32_gpio_irq_trigger_level_set(struct no_os_irq_ctrl_desc
 		*desc,
 		uint32_t irq_id,
 		enum no_os_irq_trig_level level)
@@ -269,7 +253,7 @@ static int32_t stm32_gpio_irq_trigger_level_set(struct no_os_irq_ctrl_desc
  * @param cb     - Descriptor of the callback.
  * @return 0 if successful, negative error code otherwise.
  */
-static int32_t stm32_gpio_irq_register_callback(struct no_os_irq_ctrl_desc
+static int stm32_gpio_irq_register_callback(struct no_os_irq_ctrl_desc
 		*desc,
 		uint32_t irq_id,
 		struct no_os_callback_desc *cb)
@@ -330,7 +314,7 @@ free_action:
  * @param cb     - Descriptor of the callback.
  * @return 0 if successful, negative error code otherwise.
  */
-static int32_t stm32_gpio_irq_unregister_callback(struct no_os_irq_ctrl_desc
+static int stm32_gpio_irq_unregister_callback(struct no_os_irq_ctrl_desc
 		*desc,
 		uint32_t irq_id, struct no_os_callback_desc *cb)
 {
@@ -354,7 +338,7 @@ static int32_t stm32_gpio_irq_unregister_callback(struct no_os_irq_ctrl_desc
  * @param desc - GPIO interrupt controller descriptor.
  * @return -ENOSYS
  */
-static int32_t stm32_gpio_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
+static int stm32_gpio_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
 {
 	return -ENOSYS;
 }
@@ -364,7 +348,7 @@ static int32_t stm32_gpio_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
  * @param desc - GPIO interrupt controller descriptor.
  * @return -ENOSYS
  */
-static int32_t stm32_gpio_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
+static int stm32_gpio_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
 {
 	return -ENOSYS;
 }
@@ -375,8 +359,8 @@ static int32_t stm32_gpio_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
  * @param irq_id - Not used, pin id is already present in desc.
  * @return 0 in case of success, -EINVAL otherwise.
  */
-static int32_t stm32_gpio_irq_enable(struct no_os_irq_ctrl_desc *desc,
-				     uint32_t irq_id)
+static int stm32_gpio_irq_enable(struct no_os_irq_ctrl_desc *desc,
+				 uint32_t irq_id)
 {
 	IRQn_Type nvic_irq_id;
 	int ret;
@@ -399,8 +383,8 @@ static int32_t stm32_gpio_irq_enable(struct no_os_irq_ctrl_desc *desc,
  * @param irq_id - Not used, pin id is already present in desc.
  * @return 0 in case of success, -EINVAL otherwise.
  */
-static int32_t stm32_gpio_irq_disable(struct no_os_irq_ctrl_desc *desc,
-				      uint32_t irq_id)
+static int stm32_gpio_irq_disable(struct no_os_irq_ctrl_desc *desc,
+				  uint32_t irq_id)
 {
 	IRQn_Type nvic_irq_id;
 	int ret;
@@ -424,9 +408,9 @@ static int32_t stm32_gpio_irq_disable(struct no_os_irq_ctrl_desc *desc,
  * @param priority_level - The interrupt priority level.
  * @return 0
  */
-static int32_t stm32_gpio_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
-		uint32_t irq_id,
-		uint32_t priority_level)
+static int stm32_gpio_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
+				       uint32_t irq_id,
+				       uint32_t priority_level)
 {
 	IRQn_Type nvic_irq_id;
 	int ret;
@@ -449,8 +433,8 @@ static int32_t stm32_gpio_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
  * @param irq_id         - Not used, pin id is already present in desc.
  * @return 0
  */
-static int32_t stm32_irq_clear_pending(struct no_os_irq_ctrl_desc* desc,
-				       uint32_t irq_id)
+static int stm32_irq_clear_pending(struct no_os_irq_ctrl_desc* desc,
+				   uint32_t irq_id)
 {
 	if (!desc || !desc->extra || !IS_EXTI_GPIO_PIN(desc->irq_ctrl_id))
 		return -EINVAL;

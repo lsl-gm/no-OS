@@ -31,17 +31,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include "max11205.h"
 #include "errno.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief GPIO interrupt handler for data ready.
@@ -190,7 +183,7 @@ int max11205_get_data_mv(struct max11205_dev *dev, int16_t raw_data,
 	if (!dev || !data_mv)
 		return -EINVAL;
 
-	*data_mv = NO_OS_DIV_ROUND_CLOSEST(raw_data*dev->vref_mv, MAX11205_SCALE);
+	*data_mv = NO_OS_DIV_ROUND_CLOSEST(raw_data * dev->vref_mv, MAX11205_SCALE);
 
 	return 0;
 }

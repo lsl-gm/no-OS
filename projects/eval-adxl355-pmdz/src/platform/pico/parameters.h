@@ -34,9 +34,6 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "common_data.h"
 #include "no_os_util.h"
 #include "pico_uart.h"
@@ -45,10 +42,6 @@
 #include "pico_gpio_irq.h"
 #include "pico_irq.h"
 #include "pico_timer.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #define UART_DEVICE_ID  0
 #define UART_BAUDRATE   115200
@@ -73,13 +66,11 @@ extern struct pico_uart_init_param adxl355_uart_extra_ip;
 #define GPIO_OPS            &pico_gpio_ops
 #define GPIO_EXTRA          NULL /* Not used for pico platform */
 
-#ifdef IIO_TRIGGER_EXAMPLE
 #define ADXL355_GPIO_TRIG_IRQ_ID     GPIO_DRDY_PIN_NUM
 #define ADXL355_GPIO_CB_HANDLE       NULL /* Not used in pico platform */
 
 #define GPIO_IRQ_ID             GPIO_DRDY_PIN_NUM
 #define GPIO_IRQ_OPS            &pico_gpio_irq_ops
 #define GPIO_IRQ_EXTRA          NULL /* Not used for pico platform */
-#endif
 
 #endif /* __PARAMETERS_H__ */

@@ -35,17 +35,11 @@
 #ifndef __MAX31865_H__
 #define __MAX31865_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
 #include "no_os_spi.h"
 #include "no_os_util.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define MAX31865_READ_MASK  			0x7F
 #define MAX31865_WRITE_MASK 			0x80
 
@@ -96,7 +90,7 @@ int max31865_init(struct max31865_dev **, struct max31865_init_param *);
 int max31865_remove(struct max31865_dev *);
 
 /** Update Register using given update value */
-int max31865_reg_update(struct max31865_dev *, uint8_t,uint8_t, bool);
+int max31865_reg_update(struct max31865_dev *, uint8_t, uint8_t, bool);
 
 /** Read raw register value */
 int max31865_read(struct max31865_dev *, uint8_t, uint8_t *);

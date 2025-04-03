@@ -31,18 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <malloc.h>
 #include "adrf6780.h"
 #include "no_os_error.h"
 #include "no_os_delay.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief Writes data to ADRF6780 over SPI.
@@ -86,7 +79,7 @@ int adrf6780_spi_read(struct adrf6780_dev *dev, uint8_t reg_addr,
 	buff[2] = 0;
 
 	ret = no_os_spi_write_and_read(dev->spi_desc, buff, ADRF6780_BUFF_SIZE_BYTES);
-	if(ret)
+	if (ret)
 		return ret;
 
 	/*

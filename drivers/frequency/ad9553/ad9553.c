@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -216,6 +213,8 @@ int32_t ad9553_setup(struct ad9553_dev **device,
 	ret = ad9553_reg_write(dev, AD9553_IO_UPDATE, 0x01);
 	if (ret != 0)
 		return ret;
+
+	*device = dev;
 
 	return 0;
 }

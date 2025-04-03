@@ -32,9 +32,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "xil_cache.h"
 #include "xparameters.h"
 #include "axi_adc_core.h"
@@ -146,7 +143,7 @@ int main(void)
 	}
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(ad9265_dmac, 500);
-	if(status < 0)
+	if (status < 0)
 		return status;
 	Xil_DCacheInvalidateRange((uintptr_t)ADC_DDR_BASEADDR, 16384 * 2);
 

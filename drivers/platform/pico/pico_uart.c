@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "no_os_error.h"
 #include "no_os_uart.h"
 #include "no_os_lf256fifo.h"
@@ -43,10 +39,6 @@
 #include "pico_irq.h"
 #include "pico/stdlib.h"
 #include "hardware/irq.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief UART RX callback handler
@@ -91,7 +83,7 @@ static int32_t pico_uart_init(struct no_os_uart_desc **desc,
 		goto error;
 	}
 
-	switch(param->device_id) {
+	switch (param->device_id) {
 	case 0:
 		pico_uart->uart_instance = uart0;
 		break;
@@ -132,7 +124,7 @@ static int32_t pico_uart_init(struct no_os_uart_desc **desc,
 
 	switch (param->parity) {
 	case NO_OS_UART_PAR_NO:
-		parity= UART_PARITY_NONE;
+		parity = UART_PARITY_NONE;
 		break;
 	case NO_OS_UART_PAR_ODD:
 		parity = UART_PARITY_ODD;
@@ -153,7 +145,7 @@ static int32_t pico_uart_init(struct no_os_uart_desc **desc,
 
 	*desc = descriptor;
 
-	if(param->asynchronous_rx) {
+	if (param->asynchronous_rx) {
 		ret = lf256fifo_init(&descriptor->rx_fifo);
 		if (ret)
 			goto error;

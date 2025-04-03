@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "no_os_print_log.h"
 #include "interface.h"
 #include "adc_reva.h"
@@ -43,13 +40,6 @@
 #include "tmr.h"
 #include "adc.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
-
-/******************************************************************************/
-/********************************** Variables *********************************/
-/******************************************************************************/
 // Flag indicating PWM values have been acquired
 static volatile int flag_pwm_low;
 // Milliseconds count
@@ -63,10 +53,6 @@ static volatile uint32_t pwm_high_val;
 static uint32_t pwm_high[10] = { 0 }, pwm_low[10] = { 0 };
 
 extern struct no_os_irq_ctrl_desc *stout_nvic_desc;
-
-/******************************************************************************/
-/*************************** Functions Definitions ****************************/
-/******************************************************************************/
 
 /**
  * @brief TMR0 ISR
@@ -388,12 +374,12 @@ int pilot_write_new_values(struct stout *stout)
 void pilot_update_vals(void)
 {
 	for (unsigned int i = 9; i > 0; i--) {
-		pwm_high[i] = pwm_high[i-1];
+		pwm_high[i] = pwm_high[i - 1];
 	}
 	pwm_high[0] = pwm_high_val;
 
 	for (unsigned int i = 9; i > 0; i--) {
-		pwm_low[i] = pwm_low[i-1];
+		pwm_low[i] = pwm_low[i - 1];
 	}
 	pwm_low[0] = pwm_low_val;
 }

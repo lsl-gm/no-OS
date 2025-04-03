@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "dma_example.h"
 #include "common_data.h"
 #include "parameters.h"
@@ -62,13 +59,10 @@
 #include "adrv9025.h"
 #include "ad9528.h"
 
-uint32_t dac_buffer_dma[DAC_BUFFER_SAMPLES] __attribute__ ((aligned(16)));
-uint16_t adc_buffer_dma[ADC_BUFFER_SAMPLES * ADC_CHANNELS] __attribute__ ((
+uint32_t dac_buffer_dma[DAC_BUFFER_SAMPLES] __attribute__((aligned(16)));
+uint16_t adc_buffer_dma[ADC_BUFFER_SAMPLES * ADC_CHANNELS] __attribute__((
 			aligned(16)));
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief DMA example main execution.
  *
@@ -366,7 +360,7 @@ int dma_example_main(void)
 	}
 
 	jesd204_topology_init(&topology, devs,
-			      sizeof(devs)/sizeof(*devs));
+			      sizeof(devs) / sizeof(*devs));
 
 	jesd204_fsm_start(topology, JESD204_LINKS_ALL);
 
@@ -417,7 +411,7 @@ int dma_example_main(void)
 
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(rx_dmac, 1000);
-	if(status)
+	if (status)
 		goto error_10;
 
 	Xil_DCacheInvalidateRange((uintptr_t)adc_buffer_dma, sizeof(adc_buffer_dma));

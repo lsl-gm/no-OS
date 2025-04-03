@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <fcntl.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -42,10 +39,6 @@
 #include <sys/mman.h>
 #include "no_os_error.h"
 #include "no_os_axi_io.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief AXI IO through UIO read/write function.
@@ -74,7 +67,7 @@ static int32_t uio_read_write(uint32_t base, uint32_t offset, uint32_t *read,
 
 	uio_addr = mmap(NULL,
 			offset + sizeof(*read),
-			PROT_READ|PROT_WRITE,
+			PROT_READ | PROT_WRITE,
 			MAP_SHARED,
 			uio_fd,
 			0);

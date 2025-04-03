@@ -31,24 +31,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <limits.h>
 #include "no_os_util.h"
 #include "altera_a10_cdr_pll.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define A10_CDR_PLL_PFD_MIN 50000    /*  50.00 Mhz */
 #define A10_CDR_PLL_PFD_MAX 800000   /* 800.00 Mhz */
 #define A10_CDR_PLL_VCO_MIN 4900000  /*   4.90 GHz */
 #define A10_CDR_PLL_VCO_MAX 14150000 /*  14.15 GHz */
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief altera_a10_cdr_lookup_vco_speed
@@ -153,14 +143,14 @@ uint32_t altera_a10_cdr_lookup_lf_resistor_pfd(uint32_t fvco,
 		uint32_t m, uint32_t lpfd)
 {
 	if (fvco < 7000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 8 ... 45:
 			return 2;
 		default:
 			return 3;
 		}
 	} else if (fvco < 9000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 8 ... 57:
 			return 2;
 		case 58 ... 71:
@@ -171,7 +161,7 @@ uint32_t altera_a10_cdr_lookup_lf_resistor_pfd(uint32_t fvco,
 			return 3;
 		}
 	} else if (fvco < 12000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 8 ... 27:
 			return 1;
 		case 28 ... 71:
@@ -184,7 +174,7 @@ uint32_t altera_a10_cdr_lookup_lf_resistor_pfd(uint32_t fvco,
 			return 3;
 		}
 	} else {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 8 ... 27:
 			return 1;
 		case 28 ... 57:
@@ -202,7 +192,7 @@ uint32_t altera_a10_cdr_lookup_cp_current_pfd(uint32_t fvco,
 		uint32_t m, uint32_t lpfd)
 {
 	if (fvco < 7000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 0 ... 35:
 			return 2;
 		case 36 ... 45:
@@ -215,7 +205,7 @@ uint32_t altera_a10_cdr_lookup_cp_current_pfd(uint32_t fvco,
 			return 3;
 		}
 	} else if (fvco < 9000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 0 ... 27:
 			return 1;
 		case 28 ... 45:
@@ -236,7 +226,7 @@ uint32_t altera_a10_cdr_lookup_cp_current_pfd(uint32_t fvco,
 			return 3;
 		}
 	} else if (fvco < 12000000) {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 0 ... 27:
 			return 3;
 		case 28 ... 35:
@@ -251,7 +241,7 @@ uint32_t altera_a10_cdr_lookup_cp_current_pfd(uint32_t fvco,
 			return 2;
 		}
 	} else {
-		switch (m*lpfd) {
+		switch (m * lpfd) {
 		case 0 ... 27:
 			return 4;
 		case 28 ... 35:

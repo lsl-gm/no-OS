@@ -35,15 +35,9 @@
 #ifndef _TRANSMITTER_H_
 #define _TRANSMITTER_H_
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "transmitter_defs.h"
 #include "clk_axi_clkgen.h"
 
-/******************************************************************************/
-/******************* Macros and Variables Definitions *************************/
-/******************************************************************************/
 #define ADI_TASK_EVENT_TIMER	0x1
 #define TRANSMITTER_DBG_MSG		if(TransmitterParm.DebugControl)DBG_MSG
 
@@ -58,10 +52,6 @@ extern TRANSMITTER_TX_VARS	TransmitterTxVars;
 #define TxStatus				TransmitterTxVars.TxStatus
 
 #define HDMI_IEEE_REG			0x000C03
-
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 
 /*! Link the transmitter clk_gen handler to the application one. */
 void transmitter_link_clkgen(struct axi_clkgen *clk_gen_handle);
@@ -103,7 +93,7 @@ void TRANSMITTER_Housekeeping(void);
 ATV_ERR ADIAPI_TransmitterSetMuteState(void);
 
 /*! Performs the notification operations. */
-UINT16 TRANSMITTER_Notification (TX_EVENT Ev, UINT16 Count, void *BufPtr);
+UINT16 TRANSMITTER_Notification(TX_EVENT Ev, UINT16 Count, void *BufPtr);
 
 /*! @brief Parse the new EDID segment. */
 void TRANSMITTER_NewEdidSegment(UINT16 SegmentNum, UCHAR *SegPtr);

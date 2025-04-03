@@ -32,19 +32,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdlib.h>
 #include <errno.h>
 #include "ad405x.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 /*
  * Reset pattern bytes.
  */
@@ -68,9 +61,6 @@ static const uint8_t reset_pattern_buff[18] = {
 	0xFF,
 	0xFE
 };
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /******************************************************************************/
 
 /**
@@ -186,6 +176,8 @@ int ad405x_reset_pattern_command(struct ad405x_dev *dev)
 	if (!ret)
 		dev->operation_mode = AD405X_CONFIG_MODE_OP;
 
+	no_os_mdelay(5);	// Let the device reset complete
+
 	return ret;
 }
 
@@ -281,6 +273,39 @@ int ad405x_set_burst_averaging_mode(struct ad405x_dev *dev)
 }
 
 /**
+ * @brief Enter Averaging Mode
+ * @param dev - The device structure.
+ * @return 0 in case of success, negative error code otherwise.
+ */
+int ad405x_set_averaging_mode(struct ad405x_dev *dev)
+{
+	int ret;
+
+	if (!dev)
+		return -EINVAL;
+
+	/* Set Averaging mode. */
+	ret = ad405x_update_bits(dev,
+				 AD405X_REG_ADC_MODES,
+				 AD405X_ADC_MODES_MSK,
+				 AD405X_AVERAGING_MODE);
+	if (ret)
+		return ret;
+
+	/* Enter ADC_MODE. */
+	ret = ad405x_update_bits(dev,
+				 AD405X_REG_MODE_SET,
+				 AD405X_ENTER_ADC_MODE_MSK,
+				 no_os_field_prep(AD405X_ENTER_ADC_MODE_MSK, 1));
+	if (ret)
+		return ret;
+
+	dev->operation_mode = AD405X_AVERAGING_MODE_OP;
+
+	return 0;
+}
+
+/**
  * @brief Enter Config Mode
  * @param dev - The device structure.
  * @return 0 in case of success, negative error code otherwise.
@@ -330,6 +355,8 @@ int ad405x_set_operation_mode(struct ad405x_dev *dev,
 			return ad405x_set_adc_mode(dev);
 		case AD405X_BURST_AVERAGING_MODE_OP:
 			return ad405x_set_burst_averaging_mode(dev);
+		case AD405X_AVERAGING_MODE_OP:
+			return ad405x_set_averaging_mode(dev);
 		default:
 			return -EINVAL;
 		}
@@ -381,7 +408,14 @@ int ad405x_spi_data_read(struct ad405x_dev *dev, int32_t *data)
 		bytes_number = 2;
 		break;
 	case AD405X_BURST_AVERAGING_MODE_OP:
-		bytes_number += dev->active_device;
+		if (dev->active_device == ID_AD4052) {
+			bytes_number = 3;
+		}
+		break;
+	case AD405X_AVERAGING_MODE_OP:
+		if (dev->active_device == ID_AD4052) {
+			bytes_number = 3;
+		}
 		break;
 	default:
 		bytes_number = 2;
@@ -625,7 +659,7 @@ int ad405x_set_gp_mode(struct ad405x_dev *dev,
 	if (!dev)
 		return -EINVAL;
 
-	switch(gp) {
+	switch (gp) {
 	case AD405X_GP_0 :
 		msk = AD405X_GP0_MODE_MSK;
 		break;
@@ -646,7 +680,7 @@ int ad405x_set_gp_mode(struct ad405x_dev *dev,
 	if (ret)
 		return ret;
 
-	switch(gp) {
+	switch (gp) {
 	case AD405X_GP_0 :
 		dev->gp0_mode = mode;
 		break;
@@ -674,7 +708,7 @@ enum ad405x_gp_mode ad405x_get_gp_mode(
 	if (!dev)
 		return -EINVAL;
 
-	switch(gp) {
+	switch (gp) {
 	case AD405X_GP_0 :
 		return dev->gp0_mode;
 	case AD405X_GP_1 :
@@ -794,6 +828,10 @@ int ad405x_init(struct ad405x_dev **device,
 
 	switch (init_param.active_device) {
 	case ID_AD4050:
+		if (no_os_get_unaligned_be16(prod_id) != PROD_ID_AD4050)
+			goto error_spi;
+
+		break;
 	case ID_AD4052:
 		if (no_os_get_unaligned_be16(prod_id) != PROD_ID_AD4052)
 			goto error_spi;
@@ -818,8 +856,9 @@ int ad405x_init(struct ad405x_dev **device,
 	dev->gp1_mode = AD405X_GP_MODE_DEV_RDY;
 	dev->invert_on_chop_status = AD405X_INVERT_ON_CHOP_DISABLED;
 	dev->gp0_mode = AD405X_GP_MODE_HIGH_Z;
-	dev->data_format = AD405X_STRAIGHT_BINARY;
+	dev->data_format = AD405X_TWOS_COMPLEMENT;
 	dev->active_device = init_param.active_device;
+	dev->filter_length = AD405X_LENGTH_2;
 
 	*device = dev;
 

@@ -31,19 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "basic_example.h"
 #include "common_data.h"
 #include "no_os_delay.h"
 #include "no_os_util.h"
 #include "no_os_print_log.h"
 #include "pulsar_adc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /***************************************************************************//**
  * @brief basic example main execution.
@@ -73,7 +66,7 @@ int basic_example_main()
 		return ret;
 	}
 
-	for(i = 0, data = ADC_DDR_BASEADDR; i < SAMPLES_PER_CHANNEL; i++, data++) {
+	for (i = 0, data = ADC_DDR_BASEADDR; i < SAMPLES_PER_CHANNEL; i++, data++) {
 		if (sign == 's')
 			printf("ADC: %ld\n\r", no_os_sign_extend32(*data, resolution - 1));
 		else

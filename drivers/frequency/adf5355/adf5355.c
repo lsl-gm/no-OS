@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <inttypes.h>
 #include <stdio.h>
 #include "no_os_error.h"
@@ -42,10 +39,6 @@
 #include "no_os_util.h"
 #include "no_os_alloc.h"
 #include "adf5355.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * SPI register write to device.
@@ -137,7 +130,7 @@ static int32_t adf5355_reg_config(struct adf5355_dev *dev, bool sync_all)
 		dev->all_synced = true;
 
 	} else {
-		if((dev->dev_id == ADF4356) || (dev->dev_id == ADF5356)) {
+		if ((dev->dev_id == ADF4356) || (dev->dev_id == ADF5356)) {
 			ret = adf5355_write(dev, ADF5355_REG(13), dev->regs[ADF5355_REG(13)]);
 			if (ret != 0)
 				return ret;
@@ -439,7 +432,7 @@ static int32_t adf5355_setup(struct adf5355_dev *dev)
 	dev->regs[ADF5355_REG(11)] = ADF5355_REG11_DEFAULT;
 
 	dev->regs[ADF5355_REG(12)] = ((dev->dev_id == ADF4356)
-				      || (dev->dev_id == ADF5356))?
+				      || (dev->dev_id == ADF5356)) ?
 				     ADF5356_REG12_PHASE_RESYNC_CLK_DIV(1) | ADF5356_REG12_DEFAULT :
 				     ADF5355_REG12_PHASE_RESYNC_CLK_DIV(1) | ADF5355_REG12_DEFAULT;
 

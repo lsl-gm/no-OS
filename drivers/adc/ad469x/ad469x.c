@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <string.h>
 #include "stdio.h"
 #include "stdlib.h"
@@ -46,9 +43,6 @@
 #include "no_os_util.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define AD469x_TEST_DATA 0xEA
 
 /**
@@ -72,10 +66,6 @@ struct ad469x_device_info dev_info[] = {
 	[ID_AD4697] = {.max_data_ch = 8, .max_rate_ksps = 500},
 	[ID_AD4698] = {.max_data_ch = 8, .max_rate_ksps = 1000},
 };
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * Read from device.
@@ -864,7 +854,7 @@ int32_t ad469x_reset_dev(struct ad469x_dev *dev)
 	if (ret != 0)
 		return ret;
 
-	if(!((reset_status & AD469x_REG_STATUS_RESET_MASK) >> 5))
+	if (!((reset_status & AD469x_REG_STATUS_RESET_MASK) >> 5))
 		return -1;
 
 	return 0;
@@ -987,7 +977,7 @@ int32_t ad469x_config_extended(struct ad469x_dev *dev, struct
 				return ret;
 
 		}
-	} else if(config_desc->ch_sequence == AD469x_standard_seq)  {
+	} else if (config_desc->ch_sequence == AD469x_standard_seq)  {
 		ret = ad469x_std_sequence_ch(dev, ch_mask);
 		if (ret)
 			return ret;
@@ -1113,7 +1103,7 @@ int32_t ad469x_init(struct ad469x_dev **device,
 		       init_param->num_data_ch, max_data_ch);
 		ret = -EINVAL;
 		goto error_spi;
-	} else if(init_param->num_data_ch == 0) {
+	} else if (init_param->num_data_ch == 0) {
 		dev->num_data_ch = max_data_ch;
 	} else {
 		dev->num_data_ch = init_param->num_data_ch;

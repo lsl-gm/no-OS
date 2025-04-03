@@ -31,29 +31,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "no_os_util.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include "pico_i2c.h"
 #include "pico/stdlib.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define PICO_I2C_MAX_INSTANCES	2U
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 static uint8_t last_slave_address[PICO_I2C_MAX_INSTANCES];
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 static int pico_i2c_config_baudrate(struct no_os_i2c_desc *desc)
 {
@@ -88,7 +74,7 @@ int32_t pico_i2c_init(struct no_os_i2c_desc **desc,
 	if (!descriptor)
 		return -ENOMEM;
 
-	pico_i2c = (struct pico_i2c_desc *)no_os_calloc(1,sizeof(*pico_i2c));
+	pico_i2c = (struct pico_i2c_desc *)no_os_calloc(1, sizeof(*pico_i2c));
 	if (!pico_i2c) {
 		ret = -ENOMEM;
 		goto free_desc;
