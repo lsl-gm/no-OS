@@ -42,8 +42,8 @@
  * @param param - The structure that contains the IRQ parameters.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
-			    const struct no_os_irq_init_param *param)
+int no_os_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
+			const struct no_os_irq_init_param *param)
 {
 	int32_t ret;
 
@@ -68,7 +68,7 @@ int32_t no_os_irq_ctrl_init(struct no_os_irq_ctrl_desc **desc,
  * @param desc - The SPI descriptor.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
+int no_os_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -89,9 +89,9 @@ int32_t no_os_irq_ctrl_remove(struct no_os_irq_ctrl_desc *desc)
  * @param callback - Callback descriptor - platform specific type.
  * @return SUCCESS in case of success, FAILURE otherwise.
  */
-int32_t no_os_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
-				    uint32_t irq_id,
-				    struct no_os_callback_desc *callback)
+int no_os_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
+				uint32_t irq_id,
+				struct no_os_callback_desc *callback)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -109,9 +109,9 @@ int32_t no_os_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
  * @param callback - Callback descriptor - platform specific type.
  * @return SUCCESS in case of success, FAILURE otherwise.
  */
-int32_t no_os_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
-				      uint32_t irq_id,
-				      struct no_os_callback_desc *callback)
+int no_os_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
+				  uint32_t irq_id,
+				  struct no_os_callback_desc *callback)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -126,7 +126,7 @@ int32_t no_os_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
  * @brief Enable global interrupts.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
+int no_os_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -141,7 +141,7 @@ int32_t no_os_irq_global_enable(struct no_os_irq_ctrl_desc *desc)
  * @brief Disable global interrupts.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
+int no_os_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -159,14 +159,14 @@ int32_t no_os_irq_global_disable(struct no_os_irq_ctrl_desc *desc)
  * @param trig - New trigger level for the interrupt.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
-				    uint32_t irq_id,
-				    enum no_os_irq_trig_level trig)
+int no_os_irq_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
+				uint32_t irq_id,
+				enum no_os_irq_trig_level trig)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
 
-	if(!desc->platform_ops->trigger_level_set)
+	if (!desc->platform_ops->trigger_level_set)
 		return -ENOSYS;
 
 	return desc->platform_ops->trigger_level_set(desc, irq_id, trig);
@@ -178,7 +178,7 @@ int32_t no_os_irq_trigger_level_set(struct no_os_irq_ctrl_desc *desc,
  * @param irq_id - Interrupt identifier.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
+int no_os_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -195,7 +195,7 @@ int32_t no_os_irq_enable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
  * @param irq_id - Interrupt identifier.
  * @return 0 in case of success, -1 otherwise.
  */
-int32_t no_os_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
+int no_os_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -213,9 +213,9 @@ int32_t no_os_irq_disable(struct no_os_irq_ctrl_desc *desc, uint32_t irq_id)
  * @param priority_level - The priority level of the interrupt.
  * @return 0 in case of success, negative errno error codes.
  */
-int32_t no_os_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
-			       uint32_t irq_id,
-			       uint32_t priority_level)
+int no_os_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
+			   uint32_t irq_id,
+			   uint32_t priority_level)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;
@@ -227,13 +227,33 @@ int32_t no_os_irq_set_priority(struct no_os_irq_ctrl_desc *desc,
 }
 
 /**
+ * @brief Get the priority for an interrupt.
+ * @param desc - The IRQ controller descriptor.
+ * @param irq_id - Interrupt identifier.
+ * @param priority_level - The priority level of the interrupt.
+ * @return 0 in case of success, negative errno error codes.
+ */
+int no_os_irq_get_priority(struct no_os_irq_ctrl_desc *desc,
+			   uint32_t irq_id,
+			   uint32_t *priority_level)
+{
+	if (!desc || !desc->platform_ops)
+		return -EINVAL;
+
+	if (!desc->platform_ops->get_priority)
+		return -ENOSYS;
+
+	return desc->platform_ops->get_priority(desc, irq_id, priority_level);
+}
+
+/**
  * @brief Clear the pending interrupt.
  * @param desc - The IRQ controller descriptor.
  * @param irq_id - Interrupt identifier.
  * @return 0 in case of success, negative errno error codes.
  */
-int32_t no_os_irq_clear_pending(struct no_os_irq_ctrl_desc* desc,
-				uint32_t irq_id)
+int no_os_irq_clear_pending(struct no_os_irq_ctrl_desc* desc,
+			    uint32_t irq_id)
 {
 	if (!desc || !desc->platform_ops)
 		return -EINVAL;

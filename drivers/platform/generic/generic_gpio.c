@@ -30,18 +30,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdint.h>
 #include "no_os_error.h"
 #include "no_os_util.h"
 #include "no_os_gpio.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Obtain the GPIO decriptor.
@@ -67,7 +59,7 @@ int32_t generic_gpio_get(struct no_os_gpio_desc **desc,
 int32_t generic_gpio_get_optional(struct no_os_gpio_desc **desc,
 				  const struct no_os_gpio_init_param *param)
 {
-	if(param == NULL) {
+	if (param == NULL) {
 		*desc = NULL;
 		return 0;
 	}

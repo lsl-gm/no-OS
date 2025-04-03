@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -47,9 +44,6 @@
 #include "no_os_print_log.h"
 #include "no_os_clk.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define ADXCVR_REG_RESETN		0x0010
 #define ADXCVR_RESETN			(1 << 0)
 #define ADXCVR_BUFSTATUS_RST		NO_OS_BIT(1)
@@ -478,7 +472,7 @@ static int adxcvr_reset(struct adxcvr *xcvr)
  */
 int adxcvr_clk_enable(struct adxcvr *xcvr)
 {
-	int ret, retry = 10;
+	int ret, retry = 100;
 	unsigned int status;
 	int bufstatus_err;
 
@@ -754,7 +748,7 @@ int32_t adxcvr_no_os_clk_set_rate(struct no_os_clk_desc *desc,
  */
 const struct no_os_clk_platform_ops adxcvr_clk_ops = {
 	.clk_enable = &adxcvr_no_os_clk_enable,
-	.clk_recalc_rate =&adxcvr_no_os_clk_recalc_rate,
+	.clk_recalc_rate = &adxcvr_no_os_clk_recalc_rate,
 	.clk_round_rate = &adxcvr_no_os_clk_round_rate,
 	.clk_set_rate = &adxcvr_no_os_clk_set_rate,
 	.clk_disable = &adxcvr_no_os_clk_disable,

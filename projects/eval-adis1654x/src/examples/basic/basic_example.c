@@ -31,20 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "basic_example.h"
 #include "common_data.h"
 #include "adis1654x.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
 #include "no_os_units.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 static const char * const output_data[] = {
 	"angular velocity x axis: ",
@@ -65,10 +57,6 @@ static const char * const output_unit[] = {
 	"m/s^2",
 	"milli °C"
 };
-
-/******************************************************************************/
-/************************* Functions Definitions ******************************/
-/******************************************************************************/
 
 /**
  * @brief Dummy example main execution.
@@ -111,8 +99,8 @@ int basic_example_main()
 		(float)temp_scale.dividend / temp_scale.divisor,
 	};
 
-	while(1) {
-		pr_info ("while loop \n");
+	while (1) {
+		pr_info("while loop \n");
 		no_os_mdelay(1000);
 		ret = adis_read_x_gyro(adis1654x_desc, &val[0]);
 		if (ret)

@@ -171,7 +171,7 @@ int32_t stm32_spi_init(struct no_os_spi_desc **desc,
 	struct stm32_spi_desc *sdesc;
 	struct stm32_spi_init_param *sinit;
 
-	sdesc = (struct stm32_spi_desc*)no_os_calloc(1,sizeof(struct stm32_spi_desc));
+	sdesc = (struct stm32_spi_desc*)no_os_calloc(1, sizeof(struct stm32_spi_desc));
 	if (!sdesc) {
 		ret = -ENOMEM;
 		goto error;
@@ -374,7 +374,7 @@ int32_t stm32_spi_transfer(struct no_os_spi_desc *desc,
 		/* Assert CS */
 		gdesc->port->BSRR = NO_OS_BIT(sdesc->chip_select->number) << 16;
 
-		if(msgs[i].cs_delay_first)
+		if (msgs[i].cs_delay_first)
 			no_os_udelay(msgs[i].cs_delay_first);
 
 #ifndef SPI_SR_TXE
@@ -406,14 +406,14 @@ int32_t stm32_spi_transfer(struct no_os_spi_desc *desc,
 
 		while ((msgs[i].rx_buff && rx_cnt < msgs[i].bytes_number) ||
 		       (msgs[i].tx_buff && tx_cnt < msgs[i].bytes_number)) {
-			while(!(SPIx->SR & SPI_SR_TXE))
+			while (!(SPIx->SR & SPI_SR_TXE))
 				;
 			if (msgs[i].tx_buff)
 				*(volatile uint8_t *)&SPIx->DR = msgs[i].tx_buff[tx_cnt++];
 			else
 				*(volatile uint8_t *)&SPIx->DR = 0;
 
-			while(!(SPIx->SR & SPI_SR_RXNE))
+			while (!(SPIx->SR & SPI_SR_RXNE))
 				;
 			if (msgs[i].rx_buff)
 				msgs[i].rx_buff[rx_cnt++] = *(volatile uint8_t *)&SPIx->DR;
@@ -423,14 +423,14 @@ int32_t stm32_spi_transfer(struct no_os_spi_desc *desc,
 
 #endif
 
-		if(msgs[i].cs_delay_last)
+		if (msgs[i].cs_delay_last)
 			no_os_udelay(msgs[i].cs_delay_last);
 
 		if (msgs[i].cs_change)
 			/* De-assert CS */
 			gdesc->port->BSRR = NO_OS_BIT(sdesc->chip_select->number);
 
-		if(msgs[i].cs_change_delay)
+		if (msgs[i].cs_change_delay)
 			no_os_udelay(msgs[i].cs_change_delay);
 
 		if (ret)
@@ -513,7 +513,7 @@ int32_t stm32_config_dma_and_start(struct no_os_spi_desc* desc,
 #endif
 		tx_ch_xfer[i].xfer_type = MEM_TO_DEV;
 		tx_ch_xfer[i].periph = NO_OS_DMA_IRQ;
-		tx_ch_xfer[i].length = 1;
+		tx_ch_xfer[i].length = msgs[i].bytes_number;
 
 		rx_ch_xfer[i].dst = msgs[i].rx_buff;
 #ifndef SPI_SR_RXNE
@@ -551,6 +551,13 @@ int32_t stm32_config_dma_and_start(struct no_os_spi_desc* desc,
 	ret = no_os_dma_xfer_start(sdesc->dma_desc, sdesc->rxdma_ch);
 	if (ret)
 		goto abort_transfer;
+
+	if (sdesc->txdma_ch)
+#if defined (STM32H5)
+		SET_BIT(sdesc->hspi.Instance->CFG1, SPI_CFG1_TXDMAEN);
+#else
+		SET_BIT(sdesc->hspi.Instance->CR2, SPI_CR2_TXDMAEN);
+#endif
 
 	if (sdesc->rxdma_ch)
 #if defined (STM32H5)
@@ -608,16 +615,10 @@ void stm32_spi_dma_callback(struct no_os_dma_xfer_desc *old_xfer,
 		no_os_pwm_disable(sdesc->tx_pwm_desc);
 #endif
 
-#if defined (STM32H5)
-	CLEAR_BIT(sdesc->hspi.Instance->CFG1, SPI_CFG1_RXDMAEN);
-#else
-	CLEAR_BIT(sdesc->hspi.Instance->CR2, SPI_CR2_RXDMAEN);
-#endif
+	/* Perform abort SPI transfers */
+	no_os_spi_transfer_abort(desc);
 
-	no_os_dma_xfer_abort(sdesc->dma_desc, sdesc->txdma_ch);
-
-	no_os_dma_xfer_abort(sdesc->dma_desc, sdesc->rxdma_ch);
-
+	/* Free the allocated memory for tx and rx transfers */
 	no_os_free(sdesc->tx_ch_xfer);
 	no_os_free(sdesc->rx_ch_xfer);
 
@@ -625,13 +626,6 @@ void stm32_spi_dma_callback(struct no_os_dma_xfer_desc *old_xfer,
 	stm32_spi_altrnate_cs_enable(desc, false);
 
 	sdesc->stm32_spi_dma_done = true;
-
-	/* Dummy read to clear any pending read on SPI */
-#ifndef SPI_SR_RXNE
-	*(volatile uint8_t *)&SPIx->RXDR;
-#else
-	*(volatile uint8_t *)&SPIx->DR;
-#endif
 
 	if (sdesc->stm32_spi_dma_user_cb)
 		sdesc->stm32_spi_dma_user_cb(sdesc->stm32_spi_dma_user_ctx);
@@ -647,7 +641,7 @@ void stm32_spi_dma_callback(struct no_os_dma_xfer_desc *old_xfer,
  * @param ctx - User defined parameter for the callback function.
  * @return 0 in case of success, errno codes otherwise.
  */
-int32_t stm32_spi_dma_transfer_async(struct no_os_spi_desc* desc,
+int32_t stm32_spi_transfer_dma_async(struct no_os_spi_desc* desc,
 				     struct no_os_spi_msg* msgs,
 				     uint32_t len,
 				     void (*callback)(void*),
@@ -669,9 +663,9 @@ int32_t stm32_spi_dma_transfer_async(struct no_os_spi_desc* desc,
  * @param len - Number of messages.
  * @return 0 in case of success, errno codes otherwise.
  */
-int32_t stm32_spi_dma_transfer_sync(struct no_os_spi_desc* desc,
-				    struct no_os_spi_msg* msgs,
-				    uint32_t len)
+int32_t stm32_spi_transfer_dma(struct no_os_spi_desc* desc,
+			       struct no_os_spi_msg* msgs,
+			       uint32_t len)
 {
 	uint32_t timeout;
 	struct stm32_spi_desc* sdesc = desc->extra;
@@ -679,7 +673,7 @@ int32_t stm32_spi_dma_transfer_sync(struct no_os_spi_desc* desc,
 	sdesc->stm32_spi_dma_done = false;
 	stm32_config_dma_and_start(desc, msgs, len, stm32_spi_dma_callback, desc);
 	timeout = msgs->bytes_number;
-	while(timeout--) {
+	while (timeout--) {
 		no_os_mdelay(1);
 		if (sdesc->stm32_spi_dma_done)
 			break;
@@ -693,6 +687,58 @@ int32_t stm32_spi_dma_transfer_sync(struct no_os_spi_desc* desc,
 }
 
 /**
+ * @brief Abort SPI transfers.
+ * @param desc - The SPI descriptor.
+ * @return 0 in case of success, errno codes otherwise.
+ */
+int32_t stm32_spi_transfer_abort(struct no_os_spi_desc* desc)
+{
+	int32_t ret;
+	struct stm32_spi_desc* sdesc;
+
+	if (!desc->extra)
+		return -EINVAL;
+
+	sdesc = desc->extra;
+	SPI_TypeDef *SPIx = sdesc->hspi.Instance;
+
+	if (sdesc->rxdma_ch) {
+		ret = no_os_dma_xfer_abort(sdesc->dma_desc, sdesc->rxdma_ch);
+		if (ret) {
+			return ret;
+		}
+
+#if defined (STM32H5)
+		CLEAR_BIT(SPIx->CFG1, SPI_CFG1_RXDMAEN);
+#else
+		CLEAR_BIT(SPIx->CR2, SPI_CR2_RXDMAEN);
+#endif
+	}
+
+	if (sdesc->txdma_ch) {
+		ret = no_os_dma_xfer_abort(sdesc->dma_desc, sdesc->txdma_ch);
+		if (ret) {
+			return ret;
+		}
+
+#if defined (STM32H5)
+		CLEAR_BIT(SPIx->CFG1, SPI_CFG1_TXDMAEN);
+#else
+		CLEAR_BIT(SPIx->CR2, SPI_CR2_TXDMAEN);
+#endif
+	}
+
+	/* Dummy read to clear any pending read on SPI */
+#ifndef SPI_SR_RXNE
+	*(volatile uint8_t *)&SPIx->RXDR;
+#else
+	*(volatile uint8_t *)&SPIx->DR;
+#endif
+
+	return 0;
+}
+
+/**
  * @brief stm32 platform specific SPI platform ops structure
  */
 const struct no_os_spi_platform_ops stm32_spi_ops = {
@@ -700,6 +746,7 @@ const struct no_os_spi_platform_ops stm32_spi_ops = {
 	.write_and_read = &stm32_spi_write_and_read,
 	.remove = &stm32_spi_remove,
 	.transfer = &stm32_spi_transfer,
-	.dma_transfer_async = &stm32_spi_dma_transfer_async,
-	.dma_transfer_sync = &stm32_spi_dma_transfer_sync
+	.transfer_dma_async = &stm32_spi_transfer_dma_async,
+	.transfer_dma = &stm32_spi_transfer_dma,
+	.transfer_abort = &stm32_spi_transfer_abort
 };

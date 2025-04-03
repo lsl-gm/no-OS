@@ -38,28 +38,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "max42500.h"
 #include "no_os_error.h"
 #include "no_os_util.h"
 #include "no_os_alloc.h"
 #include "no_os_crc8.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define CRC8_PEC        0x07      /* Implements Polynomial X^8 + X^2 + X^1 +1 */
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 NO_OS_DECLARE_CRC8_TABLE(max42500_crc8);
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /******************************************************************************/
 
 /**
@@ -323,8 +311,8 @@ int max42500_set_ov_thresh1(struct max42500_dev *desc,
 						 0.005);
 		return max42500_reg_update(desc,
 					   MAX42500_REG_OVUV1 + vm_in,
-					   NO_OS_GENMASK(7,4),
-					   no_os_field_prep(NO_OS_GENMASK(7,4),
+					   NO_OS_GENMASK(7, 4),
+					   no_os_field_prep(NO_OS_GENMASK(7, 4),
 							   ov_val));
 	default:
 		return -EINVAL;
@@ -393,7 +381,7 @@ int max42500_set_uv_thresh1(struct max42500_dev *desc,
 						 -0.005);
 		return max42500_reg_update(desc,
 					   MAX42500_REG_OVUV1 + vm_in,
-					   NO_OS_GENMASK(3,0),
+					   NO_OS_GENMASK(3, 0),
 					   uv_val);
 	default:
 		return -EINVAL;
@@ -451,7 +439,7 @@ static int max42500_get_fps_clk_div(struct max42500_dev *desc,
 	if (ret)
 		return ret;
 
-	*fps_clk_div = (uint8_t)no_os_field_get(NO_OS_GENMASK(2,0), reg_val);
+	*fps_clk_div = (uint8_t)no_os_field_get(NO_OS_GENMASK(2, 0), reg_val);
 
 	return 0;
 }
@@ -620,7 +608,7 @@ int max42500_set_watchdog_rhld(struct max42500_dev *desc,
 {
 	return max42500_reg_update(desc,
 				   MAX42500_REG_RSTCTRL,
-				   NO_OS_GENMASK(1,0),
+				   NO_OS_GENMASK(1, 0),
 				   rhld);
 }
 
@@ -701,7 +689,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Enable voltage monitor inputs */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_VMON,
-				  NO_OS_GENMASK(6,0),
+				  NO_OS_GENMASK(6, 0),
 				  init_param->vmon_en);
 	if (ret)
 		goto free_i2c;
@@ -717,7 +705,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Enable input OV/UV mapping to reset pin */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_RSTMAP,
-				  NO_OS_GENMASK(6,0),
+				  NO_OS_GENMASK(6, 0),
 				  init_param->reset_map);
 	if (ret)
 		goto free_i2c;
@@ -733,7 +721,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Set watchdog clock div */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_WDCDIV,
-				  NO_OS_GENMASK(5,0),
+				  NO_OS_GENMASK(5, 0),
 				  init_param->wd_cdiv);
 	if (ret)
 		goto free_i2c;
@@ -741,7 +729,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Set watchdog open window */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_WDCFG1,
-				  NO_OS_GENMASK(3,0),
+				  NO_OS_GENMASK(3, 0),
 				  init_param->wd_open);
 	if (ret)
 		goto free_i2c;
@@ -749,7 +737,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Set watchdog close window */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_WDCFG1,
-				  NO_OS_GENMASK(7,4),
+				  NO_OS_GENMASK(7, 4),
 				  init_param->wd_close);
 	if (ret)
 		goto free_i2c;
@@ -757,7 +745,7 @@ int max42500_init(struct max42500_dev **desc,
 	/* Set watchdog first update window */
 	ret = max42500_reg_update(descriptor,
 				  MAX42500_REG_WDCFG2,
-				  NO_OS_GENMASK(2,0),
+				  NO_OS_GENMASK(2, 0),
 				  init_param->wd_1ud);
 	if (ret)
 		goto free_i2c;

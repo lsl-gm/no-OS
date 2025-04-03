@@ -32,10 +32,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -43,10 +39,6 @@
 #include "no_os_error.h"
 #include "no_os_util.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 int32_t no_os_cb_cfg(struct no_os_circular_buffer *desc, int8_t *buff,
 		     uint32_t size)
@@ -276,7 +268,7 @@ static int32_t no_os_cb_operation(struct no_os_circular_buffer *desc,
 			sticky_overrun = true;
 
 		/* If no data is available return error */
-		if(!available_size)
+		if (!available_size)
 			return -1;
 
 		if (is_read)

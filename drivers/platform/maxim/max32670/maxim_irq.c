@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -60,10 +56,6 @@ static struct event_list _events[] = {
 static struct no_os_irq_ctrl_desc *nvic;
 extern mxc_uart_req_t uart_irq_state[MXC_UART_INSTANCES];
 extern bool is_callback;
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Action comparator function
@@ -306,7 +298,7 @@ int max_irq_register_callback(struct no_os_irq_ctrl_desc *desc,
 	struct irq_action *action;
 	struct irq_action action_key = {.irq_id = irq_id};
 
-	if(is_gpio_irq_id(irq_id))
+	if (is_gpio_irq_id(irq_id))
 		return -ENOSYS;
 
 	if (!desc || !callback_desc)
@@ -447,9 +439,9 @@ int max_irq_unregister_callback(struct no_os_irq_ctrl_desc *desc,
 {
 	int ret;
 	void *discard_action = NULL;
-	struct irq_action action_key= {.irq_id = irq_id};
+	struct irq_action action_key = {.irq_id = irq_id};
 
-	if(is_gpio_irq_id(irq_id))
+	if (is_gpio_irq_id(irq_id))
 		return -ENOSYS;
 
 	if (!desc || !cb)

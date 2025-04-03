@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <inttypes.h>
 #include <string.h>
 #include "ad9361.h"
@@ -44,9 +41,6 @@
 
 #ifndef AXI_ADC_NOT_PRESENT
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define ADI_REG_ID	0x0004
 
 #define PCORE_VERSION(major, minor, letter) ((major << 16) | (minor << 8) | letter)
@@ -210,7 +204,7 @@ static int32_t ad9361_dig_tune_iodelay(struct ad9361_rf_phy *phy, bool tx)
 
 		dev_dbg(&phy->spi->dev,
 			"%s Lane %"PRId32", window cnt %"PRIu32" , start %"PRIu32", IODELAY set to %"PRIu32"\n",
-			tx ? "TX" :"RX",  i, c0, s0, s0 + c0 / 2);
+			tx ? "TX" : "RX",  i, c0, s0, s0 + c0 / 2);
 	}
 
 	return 0;

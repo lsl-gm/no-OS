@@ -35,9 +35,6 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "stm32_hal.h"
 #include "stm32_irq.h"
 #include "stm32_gpio_irq.h"
@@ -47,10 +44,10 @@
 #include "stm32_uart_stdio.h"
 #include "no_os_units.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 extern UART_HandleTypeDef huart5;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim8;
 #ifdef IIO_SUPPORT
 #define INTC_DEVICE_ID 0
 #endif

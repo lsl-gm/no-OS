@@ -34,9 +34,6 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "common_data.h"
 #include "no_os_util.h"
 #include "pico_uart.h"
@@ -46,9 +43,6 @@
 #include "pico_irq.h"
 #include "pico_timer.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 /* This value can be modified based on the number
 of samples needed to be stored in the device buffer
 and based on the available RAM memory of the platform */
@@ -79,17 +73,13 @@ extern struct pico_spi_init_param adxrs290_spi_extra_ip;
 #define GPIO_EXTRA          NULL /* Not used for pico platform */
 
 
-#ifdef IIO_TRIGGER_EXAMPLE
 #define GPIO_IRQ_ID     GPIO_SYNC_PIN_NUM
 #define GPIO_IRQ_OPS    &pico_gpio_irq_ops
 #define GPIO_IRQ_EXTRA  NULL /* Not used for pico platform */
 
 #define ADXRS290_GPIO_TRIG_IRQ_ID    GPIO_SYNC_PIN_NUM
 #define ADXRS290_GPIO_CB_HANDLE      NULL /* Not used for pico platform */
-#endif
 
-
-#ifdef IIO_TIMER_TRIGGER_EXAMPLE
 #define ADXRS290_TIMER_DEVICE_ID    0 /* For alarm0 */
 #define ADXRS290_TIMER_FREQ_HZ      1000000
 #define ADXRS290_TIMER_TICKS_COUNT  1000
@@ -105,6 +95,5 @@ extern struct pico_spi_init_param adxrs290_spi_extra_ip;
 extern uint8_t adxrs290_timer_extra_ip;
 #define ADXRS290_TIMER_CB_HANDLE    &adxrs290_timer_extra_ip /* for alarm0 */
 #define ADXRS290_TIMER_TRIG_IRQ_ID  0 /* for TIMER_IRQ_0 */
-#endif
 
 #endif /* __PARAMETERS_H__ */

@@ -33,17 +33,11 @@
 #ifndef __ADXL38X_H__
 #define __ADXL38X_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
 #include "no_os_i2c.h"
 #include "no_os_spi.h"
 
-/******************************************************************************/
-/******************************** ADXL38X *************************************/
-/******************************************************************************/
 /* Constants and Macros */
 
 /* SPI */
@@ -226,9 +220,6 @@
 
 #define ADXL38X_ST_LIMIT_DENOMINATOR 	10
 
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 /**
  * @struct device_variant
  * @brief ADXL38X Device selection.
@@ -398,10 +389,6 @@ union adxl38x_sts_reg_flags {
 	uint32_t value;
 };
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
-
 int adxl38x_read_device_data(struct adxl38x_dev *dev, uint8_t base_address,
 			     uint16_t size, uint8_t *read_data);
 int adxl38x_write_device_data(struct adxl38x_dev *dev, uint8_t base_address,
@@ -457,12 +444,12 @@ int adxl38x_get_xyz_gees(struct adxl38x_dev *dev,
 int adxl38x_selftest(struct adxl38x_dev *dev, enum adxl38x_op_mode op_mode,
 		     bool *st_x, bool *st_y, bool *st_z);
 
-int adxl38x_accel_set_FIFO( struct adxl38x_dev *dev, uint16_t numSamples,
-			    bool externalTrigger, enum adxl38x_fifo_mode fifo_mode,
-			    bool chIDEnable, bool readReset);
+int adxl38x_accel_set_FIFO(struct adxl38x_dev *dev, uint16_t numSamples,
+			   bool externalTrigger, enum adxl38x_fifo_mode fifo_mode,
+			   bool chIDEnable, bool readReset);
 
-int adxl38x_data_raw_to_gees( struct adxl38x_dev *dev, uint8_t *raw_accel_data,
-			      struct adxl38x_fractional_val *data_frac);
+int adxl38x_data_raw_to_gees(struct adxl38x_dev *dev, uint8_t *raw_accel_data,
+			     struct adxl38x_fractional_val *data_frac);
 
 #endif /* __ADXL38X_H__ */
 

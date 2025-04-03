@@ -31,19 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <string.h>
 #include <stdlib.h>
 #include "no_os_fifo.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Create new fifo element
@@ -77,7 +69,7 @@ static struct no_os_fifo_element * fifo_new_element(char *buff, uint32_t len)
 static struct no_os_fifo_element *no_os_fifo_get_last(struct no_os_fifo_element
 		*p_fifo)
 {
-	if(p_fifo == NULL)
+	if (p_fifo == NULL)
 		return NULL;
 	while (p_fifo->next) {
 		p_fifo = p_fifo->next;

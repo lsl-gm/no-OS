@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
-
 #include <stdlib.h>
 #include <errno.h>
 #include "spi.h"
@@ -55,9 +51,6 @@
 #define MAX_DELAY_SCLK	255
 #define NS_PER_US	1000
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 struct max_dma_spi_xfer_data {
 	struct no_os_spi_desc *spi;
 	struct no_os_dma_ch *tx_ch;
@@ -94,7 +87,7 @@ static void max_dma_xfer_cycle(struct no_os_dma_xfer_desc *old_xfer,
 	       no_os_dma_in_progress(max_spi_state->dma, data->tx_ch));
 
 	/* Wait for the SPI transfer to finish. */
-	while(spi->stat & 1);
+	while (spi->stat & 1);
 
 	if (!next_xfer) {
 		if (data->cb)
@@ -158,11 +151,11 @@ static int32_t _max_spi_config_pins(struct no_os_spi_desc *desc)
 	mxc_gpio_cfg_t spi_pins;
 	mxc_gpio_cfg_t cs;
 
-	switch(desc->device_id) {
+	switch (desc->device_id) {
 	case 0:
 		spi_pins = gpio_cfg_spi0_1;
 
-		switch(desc->chip_select) {
+		switch (desc->chip_select) {
 		case 0:
 			cs = gpio_cfg_spi0_0;
 			break;
@@ -173,7 +166,7 @@ static int32_t _max_spi_config_pins(struct no_os_spi_desc *desc)
 	case 1:
 		spi_pins = gpio_cfg_spi1;
 
-		switch(desc->chip_select) {
+		switch (desc->chip_select) {
 		case 0:
 			cs = gpio_cfg_spi1_ss0;
 			break;
@@ -194,7 +187,7 @@ static int32_t _max_spi_config_pins(struct no_os_spi_desc *desc)
 	case 2:
 		spi_pins = gpio_cfg_spi2;
 
-		switch(desc->chip_select) {
+		switch (desc->chip_select) {
 		case 0:
 			cs = gpio_cfg_spi2_ss0;
 			break;
@@ -214,15 +207,15 @@ static int32_t _max_spi_config_pins(struct no_os_spi_desc *desc)
 	case 3:
 		spi_pins = gpio_cfg_spi3;
 
-		switch(desc->chip_select) {
+		switch (desc->chip_select) {
 		case 0:
-			cs = gpio_cfg_spi2_ss0;
+			cs = gpio_cfg_spi3_ss0;
 			break;
 		case 1:
-			cs = gpio_cfg_spi2_ss1;
+			cs = gpio_cfg_spi3_ss1;
 			break;
 		case 2:
-			cs = gpio_cfg_spi2_ss2;
+			cs = gpio_cfg_spi3_ss2;
 			break;
 		case 3:
 			cs = gpio_cfg_spi3_ss3;
@@ -599,10 +592,10 @@ static int32_t max_config_dma_and_start(struct no_os_spi_desc *desc,
 		goto abort_rx_tx;
 
 	if (!is_async) {
-		while(!no_os_dma_is_completed(max_spi->dma, rx_ch) ||
-		      !no_os_dma_is_completed(max_spi->dma, tx_ch));
+		while (!no_os_dma_is_completed(max_spi->dma, rx_ch) ||
+		       !no_os_dma_is_completed(max_spi->dma, tx_ch));
 
-		while(spi->stat & 1);
+		while (spi->stat & 1);
 		/* End the transaction */
 		spi->ctrl0 &= ~MXC_F_SPI_CTRL0_START;
 		/* Disable the RX and TX FIFOs */
@@ -637,9 +630,9 @@ free_rx_ch_xfer:
  * @param len - Number of messages.
  * @return 0 in case of success, errno codes otherwise.
  */
-static int32_t max_spi_dma_transfer_sync(struct no_os_spi_desc *desc,
-		struct no_os_spi_msg *msgs,
-		uint32_t len)
+static int32_t max_spi_transfer_dma(struct no_os_spi_desc *desc,
+				    struct no_os_spi_msg *msgs,
+				    uint32_t len)
 {
 	return max_config_dma_and_start(desc, msgs, len, NULL, NULL, false);
 }
@@ -654,7 +647,7 @@ static int32_t max_spi_dma_transfer_sync(struct no_os_spi_desc *desc,
  * @param ctx - User defined parameter for the callback function.
  * @return 0 in case of success, errno codes otherwise.
  */
-static int32_t max_spi_dma_transfer_async(struct no_os_spi_desc *desc,
+static int32_t max_spi_transfer_dma_async(struct no_os_spi_desc *desc,
 		struct no_os_spi_msg *msgs,
 		uint32_t len,
 		void (*callback)(void *),
@@ -796,7 +789,7 @@ const struct no_os_spi_platform_ops max_spi_ops = {
 	.init = &max_spi_init,
 	.write_and_read = &max_spi_write_and_read,
 	.transfer = &max_spi_transfer,
-	.dma_transfer_sync = &max_spi_dma_transfer_sync,
-	.dma_transfer_async = &max_spi_dma_transfer_async,
+	.transfer_dma = &max_spi_transfer_dma,
+	.transfer_dma_async = &max_spi_transfer_dma_async,
 	.remove = &max_spi_remove
 };

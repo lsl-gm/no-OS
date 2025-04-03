@@ -34,17 +34,11 @@
 #ifndef ADMV1014_H_
 #define ADMV1014_H_
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
 #include "no_os_spi.h"
 #include "no_os_util.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 /* ADMV1014 Register Map */
 #define ADMV1014_REG_SPI_CONTROL		0x00
 #define ADMV1014_REG_ALARM			0x01
@@ -147,10 +141,10 @@ enum admv1014_quad_se_mode {
  * @brief LO Filters BW Selection
  */
 enum admv1014_quad_filters {
-	LO_BAND_8_62_TO_10_25_GHZ = 0,
-	LO_BAND_6_6_TO_9_2_GHZ = 5,
-	LO_BAND_5_4_TO_8_GHZ = 10,
-	LO_BAND_5_4_TO_7_GHZ = 15
+	ADMV1014_LO_BAND_8_62_TO_10_25_GHZ = 0,
+	ADMV1014_LO_BAND_6_6_TO_9_2_GHZ = 5,
+	ADMV1014_LO_BAND_5_4_TO_8_GHZ = 10,
+	ADMV1014_LO_BAND_5_4_TO_7_GHZ = 15
 };
 
 /**
@@ -158,14 +152,14 @@ enum admv1014_quad_filters {
  * @brief Digital Rx Detector Program.
  */
 enum admv1014_det_prog {
-	DET_PROG_NEG_12_DBM_TO_POS_4DBM = 0,
-	DET_PROG_NEG_13_DBM_TO_POS_3DBM = 1,
-	DET_PROG_NEG_14_DBM_TO_POS_2DBM = 2,
-	DET_PROG_NEG_15_DBM_TO_POS_1DBM = 4,
-	DET_PROG_NEG_15_5_DBM_TO_POS_0_5_DBM = 8,
-	DET_PROG_NEG_16_25_DBM_TO_NEG_0_25_DBM = 16,
-	DET_PROG_NEG_17_DBM_TO_NEG_1DBM = 32,
-	DET_PROG_NEG_18_DBM_TO_NEG_2DBM = 64,
+	ADMV1014_DET_PROG_NEG_12_DBM_TO_POS_4DBM = 0,
+	ADMV1014_DET_PROG_NEG_13_DBM_TO_POS_3DBM = 1,
+	ADMV1014_DET_PROG_NEG_14_DBM_TO_POS_2DBM = 2,
+	ADMV1014_DET_PROG_NEG_15_DBM_TO_POS_1DBM = 4,
+	ADMV1014_DET_PROG_NEG_15_5_DBM_TO_POS_0_5_DBM = 8,
+	ADMV1014_DET_PROG_NEG_16_25_DBM_TO_NEG_0_25_DBM = 16,
+	ADMV1014_DET_PROG_NEG_17_DBM_TO_NEG_1DBM = 32,
+	ADMV1014_DET_PROG_NEG_18_DBM_TO_NEG_2DBM = 64,
 };
 /**
  * @struct admv1014_init_param
@@ -208,10 +202,6 @@ struct admv1014_dev {
 	/** P1DB Compensation Enable */
 	bool				p1db_comp_en;
 };
-
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 
 /** ADMV1014 SPI write */
 int admv1014_spi_write(struct admv1014_dev *dev, uint8_t reg_addr,

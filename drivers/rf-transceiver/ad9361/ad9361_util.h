@@ -33,9 +33,6 @@
 #ifndef __AD9361_UTIL_H__
 #define __AD9361_UTIL_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -44,9 +41,6 @@
 #include "common.h"
 #include "app_config.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define CLK_IGNORE_UNUSED						NO_OS_BIT(3)
 #define CLK_GET_RATE_NOCACHE					NO_OS_BIT(6)
 
@@ -97,15 +91,12 @@ typedef SSIZE_T ssize_t;
 #define __func__ __FUNCTION__
 #endif
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 int32_t clk_prepare_enable(struct no_os_clk *clk);
 uint32_t clk_get_rate(struct ad9361_rf_phy *phy,
 		      struct refclk_scale *clk_priv);
-int32_t no_os_clk_set_rate(struct ad9361_rf_phy *phy,
-			   struct refclk_scale *clk_priv,
-			   uint32_t rate);
+int32_t clk_set_rate(struct ad9361_rf_phy *phy,
+		     struct refclk_scale *clk_priv,
+		     uint32_t rate);
 uint32_t int_sqrt(uint32_t x);
 int32_t ilog2(int32_t x);
 uint32_t find_first_bit(uint32_t word);

@@ -34,9 +34,6 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "stm32_hal.h"
 #include "stm32_irq.h"
 #include "stm32_spi.h"
@@ -44,9 +41,6 @@
 #include "stm32_uart.h"
 #include "stm32_uart_stdio.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #ifdef IIO_SUPPORT
 extern UART_HandleTypeDef huart5;
 #define INTC_DEVICE_ID  0
@@ -69,10 +63,6 @@ extern UART_HandleTypeDef huart5;
 #define GPIO_SYNC_PORT_NUM  0
 #define GPIO_OPS            &stm32_gpio_ops
 #define GPIO_EXTRA          &adxrs290_gpio_extra_ip
-
-#ifdef IIO_TRIGGER_EXAMPLE
-#error IIO_TRIGGER_EXAMPLE is not supported on STM32 platform for adxrs290-pmdz project.
-#endif
 
 extern struct stm32_uart_init_param adxrs290_uart_extra_ip;
 extern struct stm32_spi_init_param adxrs290_spi_extra_ip;

@@ -221,15 +221,15 @@ out:
  * @param len - Number of messages in the array.
  * @return 0 in case of success, negativ error code otherwise.
  */
-int32_t no_os_spi_transfer_dma_sync(struct no_os_spi_desc *desc,
-				    struct no_os_spi_msg *msgs,
-				    uint32_t len)
+int32_t no_os_spi_transfer_dma(struct no_os_spi_desc *desc,
+			       struct no_os_spi_msg *msgs,
+			       uint32_t len)
 {
 	if (!desc || !desc->platform_ops || !msgs || !len)
 		return -EINVAL;
 
-	if (desc->platform_ops->dma_transfer_sync)
-		return desc->platform_ops->dma_transfer_sync(desc, msgs, len);
+	if (desc->platform_ops->transfer_dma)
+		return desc->platform_ops->transfer_dma(desc, msgs, len);
 
 	return -ENOSYS;
 }
@@ -254,9 +254,25 @@ int32_t no_os_spi_transfer_dma_async(struct no_os_spi_desc *desc,
 	if (!desc || !desc->platform_ops || !msgs || !len)
 		return -EINVAL;
 
-	if (desc->platform_ops->dma_transfer_async)
-		return desc->platform_ops->dma_transfer_async(desc, msgs, len,
+	if (desc->platform_ops->transfer_dma_async)
+		return desc->platform_ops->transfer_dma_async(desc, msgs, len,
 				callback, ctx);
 
 	return -ENOSYS;
+}
+
+/**
+ * @brief Abort SPI transfers.
+ * @param desc - The SPI descriptor.
+ * @return 0 in case of success, -1 otherwise.
+ */
+int32_t no_os_spi_transfer_abort(struct no_os_spi_desc *desc)
+{
+	if (!desc || !desc->platform_ops)
+		return -EINVAL;
+
+	if (!desc->platform_ops->transfer_abort)
+		return -ENOSYS;
+
+	return desc->platform_ops->transfer_abort(desc);
 }

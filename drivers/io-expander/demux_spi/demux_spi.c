@@ -31,19 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "demux_spi.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include <stdlib.h>
 #include <string.h>
-
-/******************************************************************************/
-/**************************** Types Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Demux specific SPI platform ops structure
@@ -132,7 +124,7 @@ int32_t demux_spi_write_and_read(struct no_os_spi_desc *desc, uint8_t *data,
 	if (!desc)
 		return -1;
 
-	buff = no_os_malloc(sizeof(*buff) * (bytes_number+1));
+	buff = no_os_malloc(sizeof(*buff) * (bytes_number + 1));
 	if (!buff)
 		return -1;
 
@@ -140,11 +132,11 @@ int32_t demux_spi_write_and_read(struct no_os_spi_desc *desc, uint8_t *data,
 	cs = CS_OFFSET | desc->chip_select;
 
 	buff[0] = cs;
-	memcpy((buff+1), data, bytes_number);
+	memcpy((buff + 1), data, bytes_number);
 
-	ret = no_os_spi_write_and_read(spi_dev, buff, bytes_number+1);
+	ret = no_os_spi_write_and_read(spi_dev, buff, bytes_number + 1);
 
-	memcpy(data, buff+1, bytes_number);
+	memcpy(data, buff + 1, bytes_number);
 
 	no_os_free(buff);
 

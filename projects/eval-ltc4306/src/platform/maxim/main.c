@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "platform_includes.h"
 #include "common_data.h"
 #include "basic_example.h"
@@ -63,7 +60,7 @@ int main()
 		goto error;
 
 #if (BASIC_EXAMPLE != 1)
-#error Please enable the example and re-build the project.
+#error Please enable the example and rebuild the project.
 #endif
 
 error:

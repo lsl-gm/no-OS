@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include "no_os_error.h"
@@ -43,9 +40,6 @@
 #include "adxl367.h"
 #include <string.h>
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 static const int adxl367_iio_odr_table[6][2] = {
 	{12, 500000},
 	{25,      0},
@@ -62,10 +56,6 @@ static const int adxl367_iio_scale_table[3][2] = {
 };
 
 static struct iio_device adxl367_iio_dev;
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /***************************************************************************//**
  * @brief Wrapper for reading ADXL367 register.
@@ -132,13 +122,13 @@ static int adxl367_iio_read_calibbias(void *dev, char *buf, uint32_t len,
 	case IIO_ACCEL:
 		switch (channel->ch_num) {
 		case 0:
-			val = no_os_sign_extend32(adxl367->x_offset,15);
+			val = no_os_sign_extend32(adxl367->x_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 		case 1:
-			val = no_os_sign_extend32(adxl367->y_offset,15);
+			val = no_os_sign_extend32(adxl367->y_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 		case 2:
-			val = no_os_sign_extend32(adxl367->z_offset,15);
+			val = no_os_sign_extend32(adxl367->z_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 
 		default:
@@ -184,7 +174,7 @@ static int adxl367_iio_write_calibbias(void *dev, char *buf, uint32_t len,
 	case IIO_ACCEL:
 		iio_parse_value(buf, IIO_VAL_INT, &val, NULL);
 		// Change this value to two's complement with sign bit = BIT15
-		if(val < 0)
+		if (val < 0)
 			calibbias = NO_OS_BIT(15) | (~abs(val) + 1);
 		else
 			calibbias = val;
@@ -684,7 +674,7 @@ static int adxl367_iio_read_samples(void* dev, int* buff, uint32_t samples)
 
 	adxl367 = iio_adxl367->adxl367_dev;
 
-	for(uint32_t i = 0; i < samples*iio_adxl367->no_of_active_channels;) {
+	for (uint32_t i = 0; i < samples * iio_adxl367->no_of_active_channels;) {
 		adxl367_get_raw_xyz(adxl367, &data_x, &data_y, &data_z);
 
 		if (iio_adxl367->active_channels & NO_OS_BIT(0)) {
@@ -782,10 +772,6 @@ int adxl367_iio_remove(struct adxl367_iio_dev *desc)
 
 	return 0;
 }
-
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 
 static struct iio_attribute adxl367_iio_global_attributes[] = {
 	{

@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -594,7 +590,7 @@ int main(void)
 		xil_printf("axi_dmac_transfer_start() error: %"PRIi32"\n", status);
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(rx_dmac, 500);
-	if(status)
+	if (status)
 		return status;
 	Xil_DCacheInvalidateRange((uintptr_t)ADC_DDR_BASEADDR, 16384 * size);
 

@@ -31,19 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <malloc.h>
 #include "adf5902.h"
 #include "no_os_error.h"
 #include "no_os_delay.h"
 #include "no_os_util.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief Writes 4 bytes of data to ADF5902.
@@ -121,7 +114,7 @@ static int32_t adf5902_vco_freq_param(struct adf5902_dev *dev)
 	do {
 		dev->ref_div_factor++;
 		dev->f_pfd = (dev->ref_in * (1 + dev->ref_doubler_en) /
-			      (dev->ref_div_factor *(1 + dev->ref_div2_en)));
+			      (dev->ref_div_factor * (1 + dev->ref_div2_en)));
 	} while (dev->f_pfd > ADF5902_MAX_FREQ_PFD);
 
 	dev->int_div = (uint16_t)(dev->rf_out / (dev->f_pfd * 2));
@@ -138,7 +131,7 @@ static int32_t adf5902_vco_freq_param(struct adf5902_dev *dev)
 	/* Set frequency calibration divider value */
 	dev->freq_cal_div = NO_OS_DIV_ROUND_UP(dev->f_pfd, ADF5902_FREQ_CAL_DIV_100KHZ);
 
-	if(dev->freq_cal_div > ADF5902_MAX_FREQ_CAL_DIV)
+	if (dev->freq_cal_div > ADF5902_MAX_FREQ_CAL_DIV)
 		return -1;
 
 	/* Set clock divider value */
@@ -204,7 +197,7 @@ static int32_t adf5902_check_init_param(struct adf5902_init_param *init_param)
 		return -EINVAL;
 
 	for (i = 0; i < init_param->slopes_no; i++)
-		if((init_param->slopes[i].step_word > ADF5902_MAX_STEP_WORD) ||
+		if ((init_param->slopes[i].step_word > ADF5902_MAX_STEP_WORD) ||
 		    (init_param->slopes[i].dev_offset > ADF5902_MAX_DEV_OFFSET))
 			return -EINVAL;
 
@@ -220,15 +213,15 @@ static int32_t adf5902_check_init_param(struct adf5902_init_param *init_param)
 		return -EINVAL;
 
 	for (i = 0; i < init_param->clk2_div_no; i++)
-		if(init_param->clk2_div[i] > ADF5902_MAX_CLK_DIV_2)
+		if (init_param->clk2_div[i] > ADF5902_MAX_CLK_DIV_2)
 			return -EINVAL;
 
-	if((init_param->clk_div_mode != ADF5902_CLK_DIV_OFF) &&
+	if ((init_param->clk_div_mode != ADF5902_CLK_DIV_OFF) &&
 	    (init_param->clk_div_mode != ADF5902_FREQ_MEASURE) &&
 	    (init_param->clk_div_mode != ADF5902_RAMP_DIV))
 		return -EINVAL;
 
-	if((init_param->le_sel != ADF5902_LE_FROM_PIN) &&
+	if ((init_param->le_sel != ADF5902_LE_FROM_PIN) &&
 	    (init_param->le_sel != ADF5902_LE_SYNC_REFIN))
 		return -EINVAL;
 
@@ -239,14 +232,14 @@ static int32_t adf5902_check_init_param(struct adf5902_init_param *init_param)
 	    && (init_param->cp_tristate_en != ADF5902_CP_TRISTATE_ENABLE))
 		return -EINVAL;
 
-	if(init_param->ramp_status != ADF5902_TEST_BUS_NONE &&
+	if (init_param->ramp_status != ADF5902_TEST_BUS_NONE &&
 	    init_param->ramp_status != ADF5902_RAMP_COMPL_TO_MUXOUT &&
 	    init_param->ramp_status != ADF5902_RAMP_DOWN_TO_MUXOUT &&
 	    init_param->ramp_status != ADF5902_TEMP_SENS_TO_ATEST &&
 	    init_param->ramp_status != ADF5902_TEMP_SENS_TO_ADC)
 		return -EINVAL;
 
-	if(init_param->ramp_mode != ADF5902_CONT_SAWTOOTH &&
+	if (init_param->ramp_mode != ADF5902_CONT_SAWTOOTH &&
 	    init_param->ramp_mode != ADF5902_SAWTOOTH_BURST &&
 	    init_param->ramp_mode != ADF5902_CONTINUOUS_TRIANGULAR &&
 	    init_param->ramp_mode != ADF5902_SINGLE_RAMP_BURST)
@@ -476,7 +469,7 @@ int32_t adf5902_init(struct adf5902_dev **device,
 
 	/* Check ADF5902 Initialization Paramteres */
 	ret = adf5902_check_init_param(init_param);
-	if(ret != 0)
+	if (ret != 0)
 		return ret;
 
 	dev = (struct adf5902_dev *)no_os_calloc(1, sizeof(*dev));

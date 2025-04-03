@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include "no_os_error.h"
@@ -48,9 +45,6 @@ static const struct ltc268x_span_tbl ltc268x_span_tbl[] = {
 	[LTC268X_VOLTAGE_RANGE_M10V_10V] = {-10, 10},
 	[LTC268X_VOLTAGE_RANGE_M15V_15V] = {-15, 15}
 };
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /**
  * SPI command write to device.
  * @param dev - The device structure.
@@ -393,7 +387,7 @@ int32_t ltc268x_set_voltage(struct ltc268x_dev *dev, uint8_t channel,
 
 	/* Compute the binary code from the value(mA) provided by user. */
 	code = (uint32_t)((voltage - range_offset) * (1l << 16) / v_ref);
-	if(code > 0xFFFF)
+	if (code > 0xFFFF)
 		code = 0xFFFF;
 
 	dev->dac_code[channel] = code;

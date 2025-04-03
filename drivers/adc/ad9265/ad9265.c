@@ -31,9 +31,6 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include "axi_adc_core.h"
@@ -294,7 +291,7 @@ int32_t ad9265_setup(struct ad9265_dev **device,
 	ret = no_os_spi_init(&dev->spi_desc, &init_param.spi_init);
 
 	ad9265_spi_read(dev, AD9265_REG_CHIP_ID, &chip_id);
-	if(chip_id != AD9265_CHIP_ID) {
+	if (chip_id != AD9265_CHIP_ID) {
 		printf("Error: Invalid CHIP ID (0x%x).\n", chip_id);
 		return -1;
 	}

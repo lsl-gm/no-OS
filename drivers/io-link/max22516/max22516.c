@@ -31,18 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include "max22516.h"
 #include "no_os_delay.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief Writes data to max22516 over SPI.
@@ -186,9 +179,9 @@ void max22516_rebuild_min_cyct_to_us(int16_t t, uint8_t *tmr)
 	if ((t & 0xc0) == 0x00) {      // then time is stored in 100µs increments
 		temp = t * 100;
 	} else if ((t & 0xc0) == 0x40) { // then time is stored in 400µs increments
-		temp = 6400 + ((t&0x3f) * 400);
+		temp = 6400 + ((t & 0x3f) * 400);
 	} else if ((t & 0xc0) == 0x80) { // then time is stored in 1.6ms increments
-		temp = 32000 + ((t&0x3f) * 1600);
+		temp = 32000 + ((t & 0x3f) * 1600);
 	}
 
 	*tmr = temp;
@@ -564,7 +557,7 @@ int max22516_set_cq(struct max22516_dev *dev,
 	if (ret)
 		return ret;
 
-	if(lvl == 0)
+	if (lvl == 0)
 		return max22516_tx_set(dev, 1);
 	else
 		return max22516_tx_set(dev, 0);

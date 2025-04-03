@@ -31,29 +31,16 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-#include "iio_example.h"
 #include "iio_adxl355.h"
 #include "common_data.h"
 #include "iio_app.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #ifndef DATA_BUFFER_SIZE
 #define DATA_BUFFER_SIZE 400
 #endif
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
-uint8_t iio_data_buffer[DATA_BUFFER_SIZE*3*sizeof(int)];
+uint8_t iio_data_buffer[DATA_BUFFER_SIZE * 3 * sizeof(int)];
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief IIO example main execution.
  *
@@ -61,7 +48,7 @@ uint8_t iio_data_buffer[DATA_BUFFER_SIZE*3*sizeof(int)];
  *               execute continuously function iio_app_run and will not return.
 *******************************************************************************/
 
-int iio_example_main()
+int example_main()
 {
 	int ret;
 	struct adxl355_iio_dev *adxl355_iio_desc;
@@ -69,7 +56,7 @@ int iio_example_main()
 	struct iio_app_desc *app;
 	struct iio_data_buffer accel_buff = {
 		.buff = (void *)iio_data_buffer,
-		.size = DATA_BUFFER_SIZE*3*sizeof(int)
+		.size = DATA_BUFFER_SIZE * 3 * sizeof(int)
 	};
 	struct iio_app_init_param app_init_param = { 0 };
 

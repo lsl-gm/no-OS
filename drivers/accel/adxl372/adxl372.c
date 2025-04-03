@@ -31,19 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "adxl372.h"
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * Wrapper used to read device registers.
@@ -605,9 +598,9 @@ int32_t adxl372_get_fifo_xyz_data(struct adxl372_dev *dev,
 		return ret;
 
 	for (i = 0; i < cnt * 2; i += 6) {
-		samples->x = ((buf[i] << 4) | (buf[i+1] >> 4));
-		samples->y = ((buf[i+2] << 4) | (buf[i+3] >> 4));
-		samples->z = ((buf[i+4] << 4) | (buf[i+5] >> 4));
+		samples->x = ((buf[i] << 4) | (buf[i + 1] >> 4));
+		samples->y = ((buf[i + 2] << 4) | (buf[i + 3] >> 4));
+		samples->z = ((buf[i + 4] << 4) | (buf[i + 5] >> 4));
 		samples++;
 	}
 
@@ -635,7 +628,7 @@ int32_t adxl372_get_highest_peak_data(struct adxl372_dev *dev,
 					 &status2, &fifo_entries);
 		if (ret < 0)
 			return ret;
-	} while(!(ADXL372_STATUS_1_DATA_RDY(status1)));
+	} while (!(ADXL372_STATUS_1_DATA_RDY(status1)));
 
 	ret = adxl372_read_reg_multiple(dev, ADXL372_X_MAXPEAK_H, buf,
 					NO_OS_ARRAY_SIZE(buf));
@@ -669,7 +662,7 @@ int32_t adxl372_get_accel_data(struct adxl372_dev *dev,
 					 &status2, &fifo_entries);
 		if (ret < 0)
 			return ret;
-	} while(!(ADXL372_STATUS_1_DATA_RDY(status1)));
+	} while (!(ADXL372_STATUS_1_DATA_RDY(status1)));
 
 	ret = adxl372_read_reg_multiple(dev,
 					ADXL372_X_DATA_H,

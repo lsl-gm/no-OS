@@ -32,26 +32,19 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-#include "channel_output_example.h"
 #include "common_data.h"
 #include "ad5460.h"
 #include "no_os_delay.h"
 #include "no_os_gpio.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief Channel output example main execution.
  *
  * @return ret - Result of the example execution. If working correctly, will
  *               execute continuously the while(1) loop and will not return.
 *******************************************************************************/
-int channel_output_example_main()
+int example_main()
 {
 	struct ad5460_desc *ad5460_desc;
 	union ad5460_live_status *live_status;
@@ -103,7 +96,7 @@ int channel_output_example_main()
 		goto error_ad5460;
 
 	/* Set channel 0 output */
-	if(ad5460_desc->channel_configs[0].function == AD5460_VOLTAGE_OUT) {
+	if (ad5460_desc->channel_configs[0].function == AD5460_VOLTAGE_OUT) {
 		ret = ad5460_dac_voltage_to_code(ad5460_desc, output_in_mvolts_ch0, &dac_code0,
 						 0);
 		if (ret)
@@ -115,7 +108,7 @@ int channel_output_example_main()
 
 		pr_info("For channel 0, expected output = %d mV \n DAC code = %d \n",
 			output_in_mvolts_ch0, dac_code0);
-	} else if(ad5460_desc->channel_configs[0].function == (AD5460_CURRENT_OUT|
+	} else if (ad5460_desc->channel_configs[0].function == (AD5460_CURRENT_OUT |
 			AD5460_CURRENT_OUT_HART)) {
 		ret = ad5460_dac_current_to_code(ad5460_desc, output_in_uamps_ch0, &dac_code0,
 						 0);

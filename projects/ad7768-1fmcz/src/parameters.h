@@ -33,17 +33,11 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <xparameters.h>
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define AD77681_EVB_SAMPLE_NO				8
 #define AD77681_DMA_1_BASEADDR				XPAR_AXI_AD77681_DMA_BASEADDR
-#define AD77681_SPI1_ENGINE_BASEADDR		XPAR_SPI_ADC_AXI_REGMAP_BASEADDR
+#define AD77681_SPI1_ENGINE_BASEADDR		XPAR_SPI_AD77681_SPI_AD77681_AXI_REGMAP_BASEADDR
 #define AD77681_SPI_CS						0
 #define AD77681_SPI_ENG_REF_CLK_FREQ_HZ		80000000
 

@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <xparameters.h>
 #include <xil_cache.h>
 #include "no_os_spi.h"
@@ -126,7 +123,7 @@ int main(void)
 		.ref_doubler_en = ADF5902_REF_DOUBLER_DISABLE,
 
 		/* Ref / 2 */
-		.ref_div2_en= ADF5902_R_DIV_2_DISABLE,
+		.ref_div2_en = ADF5902_R_DIV_2_DISABLE,
 
 		/* ADC Average Output */
 		.adc_avg = ADF5902_ADC_AVG_1,

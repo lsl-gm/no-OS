@@ -31,19 +31,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdbool.h>
 #include "display.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include <string.h>
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /***************************************************************************//**
  * @brief Initializes the display peripheral.
@@ -161,8 +154,8 @@ int32_t display_clear(struct display_dev *device)
 	if (!device)
 		return -EINVAL;
 
-	for(i = 0; i < device->rows_nb; i++)
-		for(j = 0; j < device->cols_nb; j++) {
+	for (i = 0; i < device->rows_nb; i++)
+		for (j = 0; j < device->cols_nb; j++) {
 			ret = device->controller_ops->print_char(device, ' ', i, j);
 			if (ret != 0)
 				return -1;
@@ -192,15 +185,15 @@ int32_t display_print_string(struct display_dev *device, char *msg,
 		return -EINVAL;
 
 	len = strlen(msg);
-	for(i = 0; i < len; i++) {
-		if(r < device->rows_nb) {
-			if(c < device->cols_nb) {
+	for (i = 0; i < len; i++) {
+		if (r < device->rows_nb) {
+			if (c < device->cols_nb) {
 				ret = device->controller_ops->print_char(device, msg[i], r, c);
 				if (ret != 0)
 					return -1;
 				c++;
 			} else {
-				c=0U;
+				c = 0U;
 				r++;
 				ret = device->controller_ops->print_char(device, msg[i], r, c);
 				if (ret != 0)

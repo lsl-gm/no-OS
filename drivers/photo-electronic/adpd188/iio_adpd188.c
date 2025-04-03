@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
@@ -529,7 +526,7 @@ int32_t adpd188_iio_init(struct adpd188_iio_desc **device,
 
 	/* No averaging for any slot */
 	ret = adpd188_reg_write(dev->drv_dev, ADPD188_REG_NUM_AVG, 0);
-	if(ret != 0)
+	if (ret != 0)
 		goto error_drv;
 
 	*device = dev;

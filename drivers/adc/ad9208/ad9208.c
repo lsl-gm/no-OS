@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -154,7 +150,7 @@ static int32_t ad9208_setup(struct ad9208_state *st)
 
 	ret = ad9208_adc_set_channel_select(ad9208_h, AD9208_ADC_CH_ALL);
 	if (ret < 0) {
-		printf( "Failed to select channels (%d)\n", ret);
+		printf("Failed to select channels (%d)\n", ret);
 		goto error;
 	}
 
@@ -304,7 +300,7 @@ static int32_t ad9208_setup(struct ad9208_state *st)
 		goto error;
 	}
 
-	ret = ad9208_jesd_set_if_config(ad9208_h, (jesd_param_t )*st->jesd_param,
+	ret = ad9208_jesd_set_if_config(ad9208_h, (jesd_param_t) * st->jesd_param,
 					&lane_rate_kbps);
 	if (ret < 0) {
 		printf("Failed to set JESD204 interface config (%d)\n", ret);

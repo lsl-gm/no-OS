@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "adt75.h"
 #include "no_os_delay.h"
 #include "no_os_error.h"
@@ -41,9 +38,6 @@
 #include "no_os_units.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /******************************************************************************/
 
 /**
@@ -59,7 +53,7 @@ int adt75_reg_read(struct adt75_desc *desc, uint32_t addr, uint16_t *val)
 	int reg_size;
 	int ret;
 
-	reg_size = (addr == ADT75_CONF_REG)? 1 : 2;
+	reg_size = (addr == ADT75_CONF_REG) ? 1 : 2;
 
 	buff[0] = no_os_field_get(ADT75_DATA_REG_MASK, addr);
 	ret = no_os_i2c_write(desc->comm_desc, buff, 1, 0);
@@ -90,7 +84,7 @@ int adt75_reg_write(struct adt75_desc *desc, uint32_t addr, uint16_t val)
 	uint8_t buff[ADT75_FRAME_SIZE];
 	int reg_size;
 
-	reg_size = (addr == ADT75_CONF_REG)? 1 : 2;
+	reg_size = (addr == ADT75_CONF_REG) ? 1 : 2;
 
 	buff[0] = no_os_field_get(ADT75_DATA_REG_MASK, addr);
 	no_os_put_unaligned_be16(val, &buff[1]);

@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/************************* Include Files **************************************/
-/******************************************************************************/
-
 #include "no_os_i2c.h"
 #include "aducm3029_i2c.h"
 #include "no_os_error.h"
@@ -47,10 +43,6 @@
 #define UNINITIALIZED_BITRATE 0
 #define UNINITIALIZED_ADDRESS 0xFF
 
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
-
 /** Used to know how many instances are created */
 static uint32_t nb_created_desc;
 
@@ -62,7 +54,7 @@ static ADI_I2C_HANDLE i2c_handler = NULL;
  * Buffer needed to be aligned to 32 bits.
  */
 static uint8_t adi_i2c_buffer[ADI_I2C_MEMORY_SIZE]
-__attribute__((aligned (4)));
+__attribute__((aligned(4)));
 
 /** Save the current state of the bitrate to not change it each time */
 static uint32_t last_bitrate = UNINITIALIZED_BITRATE;
@@ -80,10 +72,6 @@ struct aducm_i2c_extra {
 	/** Prologue size. */
 	uint8_t prologue_size;
 };
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief Configure slave address and bitrate if needed

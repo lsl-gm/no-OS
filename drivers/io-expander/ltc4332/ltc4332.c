@@ -31,19 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include "ltc4332.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 #include <stdlib.h>
 #include <string.h>
-
-/******************************************************************************/
-/**************************** Types Definitions *******************************/
-/******************************************************************************/
 
 /**
  * @brief LTC4332 specific SPI platform ops structure
@@ -115,16 +107,16 @@ int32_t ltc4332_spi_write_and_read(struct no_os_spi_desc *desc, uint8_t *data,
 	temp_ops = desc->platform_ops;
 	desc->platform_ops = desc->parent->platform_ops;
 
-	buff = no_os_calloc(bytes_number + 1, sizeof *buff);
+	buff = no_os_calloc(bytes_number + 1, sizeof * buff);
 	if (!buff)
 		return -ENOMEM;
 
 	memcpy(buff, data, bytes_number);
 	ret = no_os_spi_write_and_read(desc, buff, bytes_number + 1);
-	if(ret)
+	if (ret)
 		goto error;
 
-	memcpy(data, buff+1, bytes_number);
+	memcpy(data, buff + 1, bytes_number);
 	desc->platform_ops = temp_ops;
 	no_os_free(buff);
 

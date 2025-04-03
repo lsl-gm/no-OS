@@ -35,15 +35,7 @@
 #ifndef _NO_OS_TRNG_H_
 #define _NO_OS_TRNG_H_
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdint.h>
-
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 
 /**
  * @struct no_os_trng_platform_ops
@@ -84,16 +76,12 @@ struct no_os_trng_init_param {
 struct no_os_trng_platform_ops {
 	/** TRNG initialization function pointer */
 	int (*init)(struct no_os_trng_desc **,
-		    const struct no_os_trng_init_param *);
+		    struct no_os_trng_init_param *);
 	/** Fill buffer with random numbers */
 	int (*fill_buffer)(struct no_os_trng_desc *, uint8_t *, uint32_t);
 	/** TRNG remove function pointer */
 	int (*remove)(struct no_os_trng_desc *);
 };
-
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 
 /* Initialize descriptor */
 int no_os_trng_init(struct no_os_trng_desc **desc,

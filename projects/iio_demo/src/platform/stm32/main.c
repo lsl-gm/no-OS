@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "platform_includes.h"
 #include "common_data.h"
 #include "no_os_error.h"
@@ -79,7 +76,7 @@ int main()
 #error At least one example has to be selected using y value in Makefile.
 #elif (IIO_EXAMPLE + IIO_TIMER_TRIGGER_EXAMPLE > 1)
 #error Selected example projects cannot be enabled at the same time. \
-Please enable only one example and re-build the project.
+Please enable only one example and rebuild the project.
 #endif
 
 	return ret;

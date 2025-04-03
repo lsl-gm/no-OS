@@ -32,10 +32,6 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdio.h>
 #include "iio_types.h"
 #include "iio.h"
@@ -43,10 +39,6 @@
 #include "no_os_error.h"
 #include "no_os_util.h"
 #include "no_os_alloc.h"
-
-/*****************************************************************************/
-/******************** Macros and Constants Definitions ***********************/
-/*****************************************************************************/
 
 #define AD3552R_ATTR(_name, _priv) {\
 	.name = _name,\
@@ -78,11 +70,7 @@ struct iio_ad3552r_desc {
 	uint32_t mask;
 };
 
-/*****************************************************************************/
-/************************* Functions Definitions *****************************/
-/*****************************************************************************/
-
-static int iio_ad3552r_attr_get(void *device, char *buf, size_t len,
+static int iio_ad3552r_attr_get(void *device, char *buf, uint32_t len,
 				const struct iio_ch_info *channel, intptr_t priv)
 {
 	struct iio_ad3552r_desc *iio_dac = device;
@@ -132,7 +120,7 @@ static int iio_ad3552r_attr_get(void *device, char *buf, size_t len,
 	}
 }
 
-static int iio_ad3552r_attr_set(void *device, char *buf, size_t len,
+static int iio_ad3552r_attr_set(void *device, char *buf,  uint32_t len,
 				const struct iio_ch_info *channel, intptr_t priv)
 {
 	struct iio_ad3552r_desc *iio_dac = device;
@@ -147,21 +135,19 @@ static int iio_ad3552r_attr_set(void *device, char *buf, size_t len,
 					   channel->ch_num, !val);
 		if (NO_OS_IS_ERR_VALUE(err))
 			return err;
+		break;
 	case AD3552R_IIO_ATTR_RAW:
 		err = ad3552r_set_ch_value(iio_dac->dac, AD3552R_CH_CODE,
 					   channel->ch_num, val);
 		if (NO_OS_IS_ERR_VALUE(err))
 			return err;
+		break;
 	default:
 		return -EINVAL;
 	}
 
 	return len;
 }
-
-/******************************************************************************/
-/************************** IIO Types Declarations *****************************/
-/******************************************************************************/
 
 static struct scan_type ad3552r_dac_scan_type = {
 	.realbits = 16,

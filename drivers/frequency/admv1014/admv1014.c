@@ -31,26 +31,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <malloc.h>
 #include "admv1014.h"
 #include "no_os_error.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/*************************** Variables Definition *****************************/
-/******************************************************************************/
-
 static const int mixer_vgate_table[] = {
 	106, 107, 108, 110, 111, 112, 113, 114,
 	117, 118, 119, 120, 122, 123, 44, 45
 };
-
-/******************************************************************************/
-/************************** Functions Implementation **************************/
-/******************************************************************************/
 
 /**
  * @brief Writes data to ADMV1014 over SPI.
@@ -94,7 +83,7 @@ int admv1014_spi_read(struct admv1014_dev *dev, uint8_t reg_addr,
 	buff[2] = 0;
 
 	ret = no_os_spi_write_and_read(dev->spi_desc, buff, ADMV1014_BUFF_SIZE_BYTES);
-	if(ret)
+	if (ret)
 		return ret;
 
 	/*
@@ -313,13 +302,13 @@ static int admv1014_update_quad_filters(struct admv1014_dev *dev)
 		return -EINVAL;
 
 	if ((dev->lo_in >= 5400000000) && (dev->lo_in <= 7000000000))
-		filt_raw = LO_BAND_5_4_TO_7_GHZ;
+		filt_raw = ADMV1014_LO_BAND_5_4_TO_7_GHZ;
 	else if ((dev->lo_in > 7000000000) && (dev->lo_in <= 8000000000))
-		filt_raw = LO_BAND_5_4_TO_8_GHZ;
+		filt_raw = ADMV1014_LO_BAND_5_4_TO_8_GHZ;
 	else if ((dev->lo_in > 8000000000) && (dev->lo_in <= 9200000000))
-		filt_raw = LO_BAND_6_6_TO_9_2_GHZ;
+		filt_raw = ADMV1014_LO_BAND_6_6_TO_9_2_GHZ;
 	else
-		filt_raw = LO_BAND_8_62_TO_10_25_GHZ;
+		filt_raw = ADMV1014_LO_BAND_8_62_TO_10_25_GHZ;
 
 	return admv1014_spi_update_bits(dev, ADMV1014_REG_QUAD,
 					ADMV1014_QUAD_FILTERS_MSK,

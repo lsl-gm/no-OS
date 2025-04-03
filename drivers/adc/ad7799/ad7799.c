@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,9 +38,6 @@
 #include "ad7799.h"
 #include "no_os_alloc.h"
 
-/*****************************************************************************/
-/***************************** Constant definition ***************************/
-/*****************************************************************************/
 static const uint8_t ad7798_reg_size[] = {
 	[AD7799_REG_COMM] = AD7799_REG_SIZE_1B,
 	[AD7799_REG_MODE] = AD7799_REG_SIZE_2B,
@@ -65,10 +59,6 @@ static const uint8_t ad7799_reg_size[] = {
 	[AD7799_REG_OFFSET] = AD7799_REG_SIZE_3B,
 	[AD7799_REG_FULLSCALE] = AD7799_REG_SIZE_3B
 };
-
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 
 /**
  * @brief Read device register.
@@ -94,10 +84,10 @@ int32_t ad7799_read(struct ad7799_dev *device, uint8_t reg_addr,
 	memset((buff + 1), 0, buff_size + 1);
 
 	ret = no_os_spi_write_and_read(device->spi_desc, buff, buff_size + 1);
-	if(ret)
+	if (ret)
 		return -1;
 
-	for(i = 1; i < buff_size + 1 ; i++)
+	for (i = 1; i < buff_size + 1 ; i++)
 		*reg_data = (*reg_data << 8) | buff[i];
 
 	return ret;
@@ -125,7 +115,7 @@ int32_t ad7799_write(struct ad7799_dev *device, uint8_t reg_addr,
 		buff[i] = reg_data >> ((buff_size - i) * 8);
 
 	ret = no_os_spi_write_and_read(device->spi_desc, buff, buff_size + 1);
-	if(ret)
+	if (ret)
 		return -1;
 
 	return ret;
@@ -248,7 +238,7 @@ int32_t ad7799_read_channel(struct ad7799_dev *device, uint8_t ch,
 		vref_scaled *= 1000;
 
 	ret = ad7799_get_channel(device, ch, &data);
-	if(ret)
+	if (ret)
 		return ret;
 
 	if (device->polarity) { // AD7799_UNIPOLAR
@@ -257,7 +247,7 @@ int32_t ad7799_read_channel(struct ad7799_dev *device, uint8_t ch,
 	} else { // AD7799_BIPOLAR
 		temp = 1 << ((device->reg_size[AD7799_REG_DATA] * 8) - 1);
 
-		if(data >= temp)
+		if (data >= temp)
 			data = ((data - temp) * vref_scaled) / (temp - 1);
 		else
 			data = -(((temp - data) * vref_scaled) / (temp - 1));
@@ -406,7 +396,7 @@ int32_t ad7799_init(struct ad7799_dev **device,
 	dev->vref_mv = init_param->vref_mv;
 	dev->precision = init_param->precision;
 
-	switch(dev->chip_type) {
+	switch (dev->chip_type) {
 	case ID_AD7798:
 		dev->reg_size = ad7798_reg_size;
 		break;
@@ -433,7 +423,7 @@ int32_t ad7799_init(struct ad7799_dev **device,
 	if (ret)
 		return -1;
 
-	switch(dev->chip_type) {
+	switch (dev->chip_type) {
 	case ID_AD7798:
 		if ((chip_id & AD7799_ID_MASK) != ID_AD7798) {
 			printf("Invalid AD7798 Chip ID");

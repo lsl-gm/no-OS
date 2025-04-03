@@ -31,28 +31,28 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-#include "dummy_example.h"
 #include "common_data.h"
 #include "adxl355.h"
 #include "no_os_delay.h"
 #include "no_os_print_log.h"
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief Dummy example main execution.
  *
  * @return ret - Result of the example execution. If working correctly, will
  *               execute continuously the while(1) loop and will not return.
 *******************************************************************************/
-int dummy_example_main()
+int example_main()
 {
 	struct adxl355_dev *adxl355_desc;
+	struct no_os_uart_desc *uart_desc;
 	int ret;
+
+	ret = no_os_uart_init(&uart_desc, &adxl355_uart_ip);
+	if (ret)
+		goto error;
+
+	no_os_uart_stdio(uart_desc);
 
 	ret = adxl355_init(&adxl355_desc, adxl355_ip);
 	if (ret)
@@ -74,15 +74,15 @@ int dummy_example_main()
 	union adxl355_sts_reg_flags status_flags = {0};
 	uint8_t fifo_entries = 0;
 
-	while(1) {
+	while (1) {
 
 		pr_info("Single read \n");
-		ret = adxl355_get_xyz(adxl355_desc,&x[0], &y[0], &z[0]);
+		ret = adxl355_get_xyz(adxl355_desc, &x[0], &y[0], &z[0]);
 		if (ret)
 			goto error;
 		pr_info(" x=%d"".%09u", (int)x[0].integer, (abs)(x[0].fractional));
 		pr_info(" y=%d"".%09u", (int)y[0].integer, (abs)(y[0].fractional));
-		pr_info(" z=%d"".%09u \n", (int)z[0].integer,(abs)(z[0].fractional));
+		pr_info(" z=%d"".%09u \n", (int)z[0].integer, (abs)(z[0].fractional));
 
 		ret = adxl355_get_fifo_data(adxl355_desc,
 					    &fifo_entries,
@@ -92,9 +92,9 @@ int dummy_example_main()
 		if (ret)
 			goto error;
 		pr_info("Number of read entries from the FIFO %d \n", fifo_entries);
-		pr_info("Number of read data sets from the FIFO %d \n", fifo_entries/3);
+		pr_info("Number of read data sets from the FIFO %d \n", fifo_entries / 3);
 		for (uint8_t idx = 0; idx < 32; idx ++) {
-			if (idx < fifo_entries/3) {
+			if (idx < fifo_entries / 3) {
 				pr_info(" x=%d"".%09u m/s^2", (int)x[idx].integer, (abs)(x[idx].fractional));
 				pr_info(" y=%d"".%09u m/s^2", (int)y[idx].integer, (abs)(y[idx].fractional));
 				pr_info(" z=%d"".%09u m/s^2", (int)z[idx].integer, (abs)(z[idx].fractional));

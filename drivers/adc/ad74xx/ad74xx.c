@@ -31,16 +31,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include "ad74xx.h"		// AD74xx definitions.
 #include "no_os_alloc.h"
-
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 
 /***************************************************************************//**
  * @brief Initializes the communication peripheral and the initial Values for
@@ -153,7 +146,7 @@ uint16_t ad74xx_get_register_value(struct ad74xx_dev *dev)
 	uint16_t conv_result = 0;
 
 	no_os_spi_write_and_read(dev->spi_desc, data_word, 2);
-	switch(dev->device_bits_number) {
+	switch (dev->device_bits_number) {
 	case 8:
 		conv_result = (((uint16_t)(data_word[0] & 0x1F)) << 8) +
 			      (data_word[1] & 0xE0);

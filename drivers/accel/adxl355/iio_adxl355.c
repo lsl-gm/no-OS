@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include "no_os_error.h"
@@ -43,9 +40,6 @@
 #include "no_os_units.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define ACCEL_AXIS_X (uint32_t) 0
 #define ACCEL_AXIS_Y (uint32_t) 1
 #define ACCEL_AXIS_Z (uint32_t) 2
@@ -74,18 +68,12 @@ static const int adxl355_iio_hpf_3db_multipliers[] = {
 	238,
 };
 
-/******************************************************************************/
-/*************************** Types Declarations *******************************/
-/******************************************************************************/
 enum adxl355_iio_accel_chans {
 	chan_x,
 	chan_y,
 	chan_z,
 };
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 extern int adxl355_read_device_data(struct adxl355_dev *dev,
 				    uint8_t base_address, uint16_t size, uint8_t *read_data);
 extern int adxl355_write_device_data(struct adxl355_dev *dev,
@@ -122,9 +110,6 @@ static int adxl355_iio_read_samp_freq_avail(void *dev, char *buf,
 static int adxl355_iio_read_samples(void* dev, int* buff, uint32_t samples);
 static int adxl355_iio_update_channels(void* dev, uint32_t mask);
 static int32_t adxl355_trigger_handler(struct iio_device_data *dev_data);
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 static struct iio_attribute adxl355_iio_temp_attrs[] = {
 	{
 		.name = "offset",
@@ -223,9 +208,6 @@ static struct iio_device adxl355_iio_dev = {
 	.debug_reg_write = (int32_t (*)())adxl355_iio_write_reg
 };
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /***************************************************************************//**
  * @brief Fills the 3db frequency table based on the current ODR setting.
  *
@@ -424,7 +406,7 @@ static int adxl355_iio_read_offset(void *dev, char *buf, uint32_t len,
 
 	switch (channel->type) {
 	case IIO_TEMP:
-		switch(adxl355->dev_type) {
+		switch (adxl355->dev_type) {
 		case ID_ADXL355:
 		case ID_ADXL357:
 			vals[0] = -2111;
@@ -474,7 +456,7 @@ static int adxl355_iio_read_scale(void *dev, char *buf, uint32_t len,
 
 	switch (channel->type) {
 	case IIO_ACCEL:
-		switch(adxl355->dev_type) {
+		switch (adxl355->dev_type) {
 		case ID_ADXL355:
 			vals[0] = 0;
 			vals[1] = 38245;
@@ -530,13 +512,13 @@ static int adxl355_iio_read_calibbias(void *dev, char *buf, uint32_t len,
 	case IIO_ACCEL:
 		switch (channel->address) {
 		case ACCEL_AXIS_X:
-			val = no_os_sign_extend32(adxl355->x_offset,15);
+			val = no_os_sign_extend32(adxl355->x_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 		case ACCEL_AXIS_Y:
-			val = no_os_sign_extend32(adxl355->y_offset,15);
+			val = no_os_sign_extend32(adxl355->y_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 		case ACCEL_AXIS_Z:
-			val = no_os_sign_extend32(adxl355->z_offset,15);
+			val = no_os_sign_extend32(adxl355->z_offset, 15);
 			return iio_format_value(buf, len, IIO_VAL_INT, 1, &val);
 
 		default:
@@ -583,7 +565,7 @@ static int adxl355_iio_write_calibbias(void *dev, char *buf, uint32_t len,
 	case IIO_ACCEL:
 		iio_parse_value(buf, IIO_VAL_INT, &val, NULL);
 		// Change this value to two's complement with sign bit = BIT15
-		if(val < 0)
+		if (val < 0)
 			calibbias = NO_OS_BIT(15) | (~abs(val) + 1);
 		else
 			calibbias = val;
@@ -704,7 +686,7 @@ static int adxl355_iio_write_hpf(void *dev, char *buf, uint32_t len,
 		// Search for the given data in the HPF available data for the current ODR
 		iio_parse_value(buf, IIO_VAL_FRACTIONAL, &vals[0], &vals[1]);
 		hpf_idx = adxl355_iio_find_2d_row(iio_adxl355->adxl355_hpf_3db_table,
-						  NO_OS_ARRAY_SIZE(iio_adxl355->adxl355_hpf_3db_table),vals[0], vals[1]);
+						  NO_OS_ARRAY_SIZE(iio_adxl355->adxl355_hpf_3db_table), vals[0], vals[1]);
 		if (hpf_idx < 0)
 			return hpf_idx;
 		// Set the HPF value
@@ -921,7 +903,7 @@ static int adxl355_iio_read_samples(void* dev, int* buff, uint32_t samples)
 
 	adxl355 = iio_adxl355->adxl355_dev;
 
-	for(uint32_t i = 0; i < samples*iio_adxl355->no_of_active_channels;) {
+	for (uint32_t i = 0; i < samples * iio_adxl355->no_of_active_channels;) {
 		adxl355_get_raw_xyz(adxl355, &data_x, &data_y, &data_z);
 
 		if (iio_adxl355->active_channels & NO_OS_BIT(0)) {
@@ -992,7 +974,7 @@ static int adxl355_iio_update_channels(void* dev, uint32_t mask)
 static int32_t adxl355_trigger_handler(struct iio_device_data *dev_data)
 {
 	int32_t data_buff[3];
-	uint32_t x,y,z;
+	uint32_t x, y, z;
 	uint8_t i = 0;
 
 	struct adxl355_iio_dev *iio_adxl355;

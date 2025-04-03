@@ -1,7 +1,5 @@
-INCS += $(PLATFORM_DRIVERS)/maxim_delay.h     		\
-        $(PLATFORM_DRIVERS)/maxim_gpio.h      		\
+INCS += $(PLATFORM_DRIVERS)/maxim_gpio.h      		\
         $(PLATFORM_DRIVERS)/maxim_spi.h       		\
-        $(PLATFORM_DRIVERS)/maxim_init.h      		\
         $(PLATFORM_DRIVERS)/maxim_gpio_irq.h  		\
         $(PLATFORM_DRIVERS)/maxim_irq.h       		\
         $(PLATFORM_DRIVERS)/maxim_i2c.h       		\
@@ -38,4 +36,7 @@ INCS +=	$(MAXIM_LIBRARIES)/MAXUSB/include/core/usb.h		\
 	
 SRCS +=	$(MAXIM_LIBRARIES)/MAXUSB/src/core/usb_event.c
 
-EXTRA_MATH_LIB = $(MAXIM_LIBRARIES)/CMSIS/5.9.0/DSP/Lib/libarm_cortexM4l_math.a
+EXTRA_MATH_LIB = $(shell find $(MAXIM_LIBRARIES)/CMSIS -path "*/DSP/*" -name "libarm_cortexM4l_math.a")
+ifeq ($(EXTRA_MATH_LIB),)
+	$(warning CMSIS DSP math library not found. Check MAXIM_LIBRARIES path.)
+endif

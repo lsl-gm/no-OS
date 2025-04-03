@@ -34,17 +34,9 @@
 #ifndef __MAX31855_H__
 #define __MAX31855_H__
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdint.h>
 #include "no_os_spi.h"
 #include "no_os_util.h"
-
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
 #define MAX31855_GET_INTERNAL_TEMP(x)		(no_os_field_get(NO_OS_GENMASK(15, 4), x))
 #define MAX31855_GET_FAULT_BIT(x)		(no_os_field_get(NO_OS_BIT(16), x))
@@ -79,11 +71,11 @@ struct max31855_decimal {
 
 struct _max31855_fault_sts_mask {
 	/** Thermocouple is short circuited to VCC */
-	uint8_t SCV:1;
+	uint8_t SCV: 1;
 	/** Thermocouple is short circuited to GND */
-	uint8_t SCG:1;
+	uint8_t SCG: 1;
 	/** Thermocouple probe not connected */
-	uint8_t OC:1;
+	uint8_t OC: 1;
 };
 
 union max31855_fault_sts {

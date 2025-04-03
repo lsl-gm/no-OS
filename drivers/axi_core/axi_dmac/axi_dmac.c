@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -205,7 +202,7 @@ void axi_dmac_mem_to_mem_isr(void *instance)
 	}
 	if (reg_val & AXI_DMAC_IRQ_EOT) {
 		if (!dmac->remaining_size) {
-			if(dmac->next_src_addr > (dmac->init_addr + dmac->transfer.size)) {
+			if (dmac->next_src_addr > (dmac->init_addr + dmac->transfer.size)) {
 				dmac->transfer.transfer_done = true;
 				dmac->next_src_addr = 0;
 				dmac->next_dest_addr = 0;

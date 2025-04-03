@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "ad74413r.h"
 #include "no_os_crc8.h"
 #include "no_os_delay.h"
@@ -41,16 +38,10 @@
 #include "no_os_util.h"
 #include "no_os_alloc.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 #define AD74413R_FRAME_SIZE 		4
 #define AD74413R_CRC_POLYNOMIAL 	0x7
 #define AD74413R_DIN_DEBOUNCE_LEN 	NO_OS_BIT(5)
 
-/******************************************************************************/
-/************************ Variable Declarations ******************************/
-/******************************************************************************/
 NO_OS_DECLARE_CRC8_TABLE(_crc_table);
 
 static const unsigned int ad74413r_debounce_map[AD74413R_DIN_DEBOUNCE_LEN] = {
@@ -64,9 +55,6 @@ static const unsigned int ad74413r_debounce_map[AD74413R_DIN_DEBOUNCE_LEN] = {
 static const uint32_t conv_times_ad74413r[] = { 50000, 208, 100000, 833 };
 static const uint32_t conv_times_ad74412r[] = { 50000, 208};
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
 /******************************************************************************/
 
 /**
@@ -1005,8 +993,8 @@ int ad74413r_set_threshold(struct ad74413r_desc *desc, uint32_t ch,
 	if (ret)
 		return ret;
 
-	dac_threshold= AD74413R_THRESHOLD_DAC_RANGE * threshold /
-		       AD74413R_THRESHOLD_RANGE;
+	dac_threshold = AD74413R_THRESHOLD_DAC_RANGE * threshold /
+			AD74413R_THRESHOLD_RANGE;
 
 	return ad74413r_reg_update(desc, AD74413R_DIN_THRESH,
 				   AD74413R_COMP_THRESH_MASK, dac_threshold);

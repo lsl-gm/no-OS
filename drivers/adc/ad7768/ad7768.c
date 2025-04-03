@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include "ad7768.h"
@@ -204,7 +201,7 @@ int32_t ad7768_set_mode_pins(ad7768_dev *dev,
 		ret |= no_os_gpio_set_value(dev->gpio_mode3,
 					    ((state & 0x08) >> 3));
 	} else {
-		printf ("MODE GPIOs are not defined.");
+		printf("MODE GPIOs are not defined.");
 		ret = -1;
 	}
 

@@ -32,16 +32,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "parameters.h"
 
 #include "stm32_dma.h"
 #include "no_os_pwm.h"
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 extern DMA_HandleTypeDef hdma_tim8_ch1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 
@@ -75,6 +69,8 @@ struct stm32_dma_channel rxdma_channel = {
 
 /* TRIGGER PWM */
 struct stm32_pwm_init_param trigger_pwm_extra_init_params = {
+	.htimer = &htim1,
+	.pwm_timer = STM32_PWM_TIMER_TIM,
 	.prescaler = 1,
 	.timer_autoreload = true,
 	.mode = TIM_OC_PWM1,
@@ -87,6 +83,8 @@ struct stm32_pwm_init_param trigger_pwm_extra_init_params = {
 
 /* CS PWM */
 struct stm32_pwm_init_param cs_pwm_extra_init_params = {
+	.htimer = &htim2,
+	.pwm_timer = STM32_PWM_TIMER_TIM,
 	.prescaler = 1,
 	.timer_autoreload = true,
 	.mode = TIM_OC_PWM1,
@@ -95,7 +93,7 @@ struct stm32_pwm_init_param cs_pwm_extra_init_params = {
 	.get_timer_clock = HAL_RCC_GetPCLK1Freq,
 	.clock_divider = 2,
 	.onepulse_enable = true,
-	.trigger_enable = true,
+	.slave_mode = STM32_PWM_SM_TRIGGER,
 	.trigger_source = PWM_TS_ITR0,
 	.trigger_output = PWM_TRGO_ENABLE,
 };
@@ -112,6 +110,8 @@ struct no_os_pwm_init_param cs_pwm_init = {
 
 /* TX PWM */
 struct stm32_pwm_init_param tx_pwm_extra_init_params = {
+	.htimer = &htim8,
+	.pwm_timer = STM32_PWM_TIMER_TIM,
 	.prescaler = 1,
 	.timer_autoreload = true,
 	.mode = TIM_OC_PWM1,
@@ -120,7 +120,7 @@ struct stm32_pwm_init_param tx_pwm_extra_init_params = {
 	.get_timer_clock = HAL_RCC_GetPCLK2Freq,
 	.clock_divider = 2,
 	.onepulse_enable = true,
-	.trigger_enable = true,
+	.slave_mode = STM32_PWM_SM_TRIGGER,
 	.trigger_source = PWM_TS_ITR0,
 	.dma_enable = true,
 	.repetitions = TX_PWM_REPS,

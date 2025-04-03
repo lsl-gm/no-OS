@@ -34,9 +34,6 @@
  *   SVN Revision: $WCREV$
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include <stdio.h>
 #include "xil_cache.h"
 #include "xparameters.h"
@@ -58,9 +55,6 @@
 #include "xilinx_uart.h"
 #endif
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 /* ADC registers */
 #define CF_REG_DELAY_CTRL			0x60
 #define CF_REG_DELAY_STATUS			0x20
@@ -168,9 +162,6 @@ struct ad9517_lvds_cmos_channel_spec ad9517_lvds_cmos_channels[] = {
 	}
 };
 
-/******************************************************************************/
-/************************ Functions Declarations ******************************/
-/******************************************************************************/
 void adc_test(struct axi_adc *adc,
 	      struct axi_dmac *dma,
 	      struct ad9467_dev *dev,
@@ -325,7 +316,7 @@ int main()
 	status = axi_adc_write(ad9467_core, AXI_ADC_REG_CNTRL, 0x2);
 	if (status)
 		return status;
-	for(i = 0; i < ad9467_core->num_channels; i++) {
+	for (i = 0; i < ad9467_core->num_channels; i++) {
 		status = axi_adc_write(ad9467_core, AXI_ADC_REG_CHAN_CNTRL(i), 0x03);
 		if (status)
 			return status;
@@ -418,11 +409,11 @@ int main()
 		.dest_addr = (uintptr_t)ADC_DDR_BASEADDR
 	};
 	status = axi_dmac_transfer_start(ad9467_dmac, &read_transfer);
-	if(status)
+	if (status)
 		return status;
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(ad9467_dmac, 500);
-	if(status)
+	if (status)
 		return status;
 	Xil_DCacheInvalidateRange((uintptr_t)ADC_DDR_BASEADDR, 16384 * 2);
 
@@ -529,7 +520,7 @@ void adc_test(struct axi_adc *adc,
 	axi_dmac_transfer_start(dmac, &read_transfer);
 	/* Wait until transfer finishes */
 	status = axi_dmac_transfer_wait_completion(dmac, 500);
-	if(status)
+	if (status)
 		printf("  ERROR: DMA transfer.\n\r");
 	Xil_DCacheInvalidateRange((uintptr_t)ADC_DDR_BASEADDR, 16384);
 
@@ -562,7 +553,7 @@ void adc_test(struct axi_adc *adc,
 	}
 
 	for (n = 0; n < 32; n++) {
-		no_os_axi_io_read(ADC_DDR_BASEADDR, n*4, &rdata);
+		no_os_axi_io_read(ADC_DDR_BASEADDR, n * 4, &rdata);
 		if ((mode == MIDSCALE) && (format == OFFSET_BINARY))
 			edata = 0x80008000;
 		if ((mode == POS_FULLSCALE) && (format == OFFSET_BINARY))
@@ -588,7 +579,7 @@ void adc_test(struct axi_adc *adc,
 			error = 1;
 		}
 	}
-	if(error == 0) {
+	if (error == 0) {
 		printf("		Test passed\r\n");
 	}
 }
@@ -598,7 +589,7 @@ void display_test_mode(uint32_t mode, uint32_t format)
 	char *s_mode;
 	char *s_format;
 
-	switch(format) {
+	switch (format) {
 	case OFFSET_BINARY:
 		s_format = "OFFSET BINARY";
 		break;
@@ -612,7 +603,7 @@ void display_test_mode(uint32_t mode, uint32_t format)
 		s_format = "";
 		break;
 	}
-	switch(mode) {
+	switch (mode) {
 	case TEST_DISABLE:
 		s_mode = "TEST_DISABLE BINARY";
 		break;

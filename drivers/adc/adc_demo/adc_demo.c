@@ -31,10 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -63,10 +59,6 @@ const uint16_t sine_lut[128] = {
 	0xFCF0, 0xFD4E, 0xFDAD, 0xFE0E, 0xFE70, 0xFED3, 0xFF37, 0xFF9B
 };
 
-/******************************************************************************/
-/************************ Functions Definitions *******************************/
-/******************************************************************************/
-
 /**
  * @brief init function for the adc demo driver
  * @param desc - descriptor for the adc
@@ -79,12 +71,12 @@ int32_t adc_demo_init(struct adc_demo_desc **desc,
 	struct adc_demo_desc *adesc;
 	adesc = (struct adc_demo_desc*)no_os_calloc(1, sizeof(*adesc));
 
-	if(!adesc)
+	if (!adesc)
 		return -ENOMEM;
 
 	adesc->ext_buff = param->ext_buff;
 	adesc->ext_buff_len = param->ext_buff_len;
-	for(int i = 0; i < TOTAL_ADC_CHANNELS; i++)
+	for (int i = 0; i < TOTAL_ADC_CHANNELS; i++)
 		adesc->adc_ch_attr[i] = param->dev_ch_attr[i];
 	adesc->adc_global_attr = param->dev_global_attr;
 	*desc = adesc;
@@ -99,7 +91,7 @@ int32_t adc_demo_init(struct adc_demo_desc **desc,
  */
 int32_t adc_demo_remove(struct adc_demo_desc *desc)
 {
-	if(!desc)
+	if (!desc)
 		return -EINVAL;
 
 	no_os_free(desc);
@@ -117,7 +109,7 @@ int32_t update_adc_channels(void *dev, uint32_t mask)
 {
 	struct adc_demo_desc *desc;
 
-	if(!dev)
+	if (!dev)
 		return -ENODEV;
 
 	desc = dev;
@@ -137,7 +129,7 @@ int32_t close_adc_channels(void* dev)
 {
 	struct adc_demo_desc *desc;
 
-	if(!dev)
+	if (!dev)
 		return -ENODEV;
 
 	desc = dev;
@@ -157,7 +149,7 @@ int32_t close_adc_channels(void* dev)
 int32_t adc_demo_reg_read(struct adc_demo_desc *desc, uint8_t reg_index,
 			  uint8_t *readval)
 {
-	if(!desc || reg_index >= NO_OS_ARRAY_SIZE(desc->reg))
+	if (!desc || reg_index >= NO_OS_ARRAY_SIZE(desc->reg))
 		return -EINVAL;
 
 	*readval = desc->reg[reg_index];
@@ -176,7 +168,7 @@ int32_t adc_demo_reg_write(struct adc_demo_desc *desc, uint8_t reg_index,
 			   uint8_t writeval)
 {
 
-	if(!desc || reg_index >= NO_OS_ARRAY_SIZE(desc->reg))
+	if (!desc || reg_index >= NO_OS_ARRAY_SIZE(desc->reg))
 		return -EINVAL;
 
 	desc->reg[reg_index] = writeval;

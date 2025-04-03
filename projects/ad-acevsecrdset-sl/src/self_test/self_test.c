@@ -31,9 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************/
 
-/******************************************************************************/
-/***************************** Include Files **********************************/
-/******************************************************************************/
 #include "no_os_print_log.h"
 #include "common_data.h"
 #include "no_os_delay.h"
@@ -48,17 +45,7 @@
 #include "pilot.h"
 #include "relay.h"
 
-/******************************************************************************/
-/********************** Macros and Constants Definitions **********************/
-/******************************************************************************/
 
-/******************************************************************************/
-/********************************** Variables *********************************/
-/******************************************************************************/
-
-/******************************************************************************/
-/*************************** Functions Definitions ****************************/
-/******************************************************************************/
 /**
  * @brief Startup test for power supply
  * @param stout - state  machine descriptor
@@ -75,7 +62,7 @@ int self_test_supply(struct stout *stout, struct rms_adc_values *rms_adc_values)
 	// Test Vin value within limits
 	// Skip a number of cycles
 	while (SELF_TEST_SKIP_CYCLES_NO >= cnt) {
-		while(!get_zero_cross_flag_state());
+		while (!get_zero_cross_flag_state());
 		reset_zero_cross_flag_state();
 		cnt++;
 	}
@@ -118,7 +105,7 @@ int self_test_supply(struct stout *stout, struct rms_adc_values *rms_adc_values)
 	no_os_mdelay(DELAY_SELF_TEST_READING);
 	// Test Vin value within limits
 	// Skip SELF_TEST_SKIP_CYCLES_NO periods
-	while(!get_zero_cross_flag_state());
+	while (!get_zero_cross_flag_state());
 	reset_zero_cross_flag_state();
 	// Calculate rms and ADC values
 #if defined(REV_A)
@@ -148,7 +135,7 @@ int self_test_supply(struct stout *stout, struct rms_adc_values *rms_adc_values)
 	no_os_mdelay(DELAY_SELF_TEST_READING);
 	// Test Vin value within limits
 	// Skip SELF_TEST_SKIP_CYCLES_NO periods
-	while(!get_zero_cross_flag_state());
+	while (!get_zero_cross_flag_state());
 	reset_zero_cross_flag_state();
 	// Calculate rms and ADC values
 	while (SELF_TEST_SKIP_CYCLES_NO >= cnt) {
@@ -173,7 +160,7 @@ int self_test_supply(struct stout *stout, struct rms_adc_values *rms_adc_values)
 		}
 #elif defined(REV_D)
 		if (stout->grid >= 1)
-			if  ((VIN_LOW_LIMIT_2 - VR_OPEN_LOW_LIMIT) < rms_adc_values->v2_rms) {
+			if ((VIN_LOW_LIMIT_2 - VR_OPEN_LOW_LIMIT) < rms_adc_values->v2_rms) {
 				pr_debug("Relay Soldered %d, %d \n", rms_adc_values->v2_rms,
 					 rms_adc_values->v1_rms);
 				goto error1;
@@ -518,7 +505,7 @@ int self_test_relay_stuck(struct stout *stout)
 		}
 #elif defined(REV_D)
 		if (stout->grid >= 1)
-			if  ((VIN_LOW_LIMIT_2 - VR_OPEN_LOW_LIMIT) < stout->v2_val) {
+			if ((VIN_LOW_LIMIT_2 - VR_OPEN_LOW_LIMIT) < stout->v2_val) {
 				pr_debug("Error: Relay contacts soldered %d \n", stout->v2_val);
 				goto error;
 			} else if ((VIN_LOW_LIMIT - VR_OPEN_LOW_LIMIT) < stout->v2_val) {
