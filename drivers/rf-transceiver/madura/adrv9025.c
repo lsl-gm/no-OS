@@ -1318,8 +1318,9 @@ int adrv9025_setup(struct adrv9025_rf_phy *phy)
 	adi_adrv9025_ApiVersion_t apiVersion;
 	int ret, i;
 
+	void *ptr = phy->madDevice->common.devHalInfo;
 	phy->madDevice = &phy->adi_adrv9025_device;
-	phy->madDevice->common.devHalInfo = &phy->hal;
+	phy->madDevice->common.devHalInfo = ptr;
 
 	adrv9025_ErrorClear(&phy->madDevice->common);
 
