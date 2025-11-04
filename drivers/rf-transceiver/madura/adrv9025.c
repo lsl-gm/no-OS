@@ -486,6 +486,8 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 				    JESD204_ENCODER_8B10B;
 		lnk->subclass = JESD204_SUBCLASS_1;
 		lnk->is_transmit = false;
+		// TODO - I don't think this is the right place for the calloc
+		lnk->lane_ids = no_os_calloc(lnk->num_lanes, sizeof(uint8_t));
 		for (id = 0; id < lnk->num_lanes; id++)
 			lnk->lane_ids[id] = id;
 	} else if (deframer) {
@@ -506,6 +508,8 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 				    JESD204_ENCODER_8B10B;
 		lnk->subclass = JESD204_SUBCLASS_1;
 		lnk->is_transmit = true;
+		// TODO - I don't think this is the right place for the calloc
+		lnk->lane_ids = no_os_calloc(lnk->num_lanes, sizeof(uint8_t));
 		for (id = 0; id < lnk->num_lanes; id++)
 			lnk->lane_ids[id] = id;
 	}
