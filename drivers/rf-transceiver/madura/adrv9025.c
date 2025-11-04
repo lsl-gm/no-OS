@@ -1228,6 +1228,8 @@ int32_t adrv9025_init(struct adrv9025_rf_phy **dev,
 	phy->dev_clk = init_param->dev_clk;
 	phy->agcConfig = agcConfig;
 
+	memcpy(&phy->hal, init_param->adrv9025_device->common.devHalInfo, sizeof(struct adrv9025_hal_cfg));
+
 	ret = adrv9025_phy_parse_agc_params(phy, init_param);
 	if (ret)
 		goto error_agc_config;
