@@ -40,22 +40,21 @@ int adrv9025_hdl_loopback(struct adrv9025_rf_phy *phy, bool enable)
 
 int adrv9025_post_setup(struct adrv9025_rf_phy *phy)
 {
-	unsigned tmp, num_chan;
 	uint64_t clock_hz;
 	uint32_t ratio;
 	uint32_t freq;
+	unsigned tmp;
 	int i;
 
-	num_chan = 8;
-
 	axi_adc_write(phy->rx_adc, AXI_ADC_REG_CNTRL, 0);
+	axi_adc_write(phy->orx_adc, AXI_ADC_REG_CNTRL, 0);
 	axi_adc_read(phy->rx_adc, 0x4048, &tmp);
 
 	tmp &= ~NO_OS_BIT(5);
 	axi_adc_write(phy->rx_adc, 0x4048, tmp);
 	axi_adc_write(phy->rx_adc, 0x404c, 3); /* RATE */
 
-	for (i = 0; i < num_chan; i++) {
+	for (i = 0; i < phy->rx_adc->num_channels; i++) {
 		axi_adc_write(phy->rx_adc, AXI_ADC_REG_CHAN_CNTRL_1(i),
 			      AXI_ADC_DCFILT_OFFSET(0));
 		axi_adc_write(phy->rx_adc, AXI_ADC_REG_CHAN_CNTRL_2(i),
@@ -64,6 +63,18 @@ int adrv9025_post_setup(struct adrv9025_rf_phy *phy)
 			      AXI_ADC_FORMAT_SIGNEXT | AXI_ADC_FORMAT_ENABLE |
 			      AXI_ADC_ENABLE | AXI_ADC_IQCOR_ENB);
 	}
+
+	// ORx
+	if (phy->orx_adc)
+		for (i = 0; i < phy->orx_adc->num_channels; i++) {
+			axi_adc_write(phy->orx_adc, AXI_ADC_REG_CHAN_CNTRL_1(i),
+				      AXI_ADC_DCFILT_OFFSET(0));
+			axi_adc_write(phy->orx_adc, AXI_ADC_REG_CHAN_CNTRL_2(i),
+				      (i & 1) ? 0x00004000 : 0x40000000);
+			axi_adc_write(phy->orx_adc, AXI_ADC_REG_CHAN_CNTRL(i),
+				      AXI_ADC_FORMAT_SIGNEXT | AXI_ADC_FORMAT_ENABLE |
+				      AXI_ADC_ENABLE | AXI_ADC_IQCOR_ENB);
+		}
 
 	no_os_mdelay(100);
 	axi_adc_read(phy->rx_adc, 0x4054, &freq);

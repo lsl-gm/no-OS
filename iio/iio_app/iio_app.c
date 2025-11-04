@@ -241,7 +241,7 @@ static int32_t uart_setup(struct no_os_uart_desc **uart_desc,
 		/* TODO: remove this ifdef when asynchrounous rx is implemented on every platform. */
 #if defined(STM32_PLATFORM) || defined(MAXIM_PLATFORM) || defined(ADUCM_PLATFORM) || defined(PICO_PLATFORM)
 		.irq_id = uart_init_par->irq_id,
-		.asynchronous_rx = true,
+		.asynchronous_rx = uart_init_par->asynchronous_rx,
 #endif
 		.baud_rate = UART_BAUDRATE_DEFAULT,
 		.size = NO_OS_UART_CS_8,
@@ -348,6 +348,14 @@ int iio_app_init(struct iio_app_desc **app,
 	status = network_setup(&iio_init_param, uart_desc, application->irq_desc);
 	if (status < 0)
 		goto error;
+#elif defined(NO_OS_W5500_NETWORKING)
+	static struct tcp_socket_init_param socket_param;
+
+	socket_param.net = &app_init_param.net_dev->net_if;
+	socket_param.max_buff_size = 0;
+
+	iio_init_param.phy_type = USE_NETWORK;
+	iio_init_param.tcp_socket_init_param = &socket_param;
 #else
 	iio_init_param.phy_type = USE_UART;
 	iio_init_param.uart_desc = uart_desc;

@@ -250,7 +250,7 @@ static int32_t max_uart_init(struct no_os_uart_desc **desc,
 		return -ENOMEM;
 
 	max_uart = no_os_calloc(1, sizeof(*max_uart));
-	if (!descriptor) {
+	if (!max_uart) {
 		ret = -ENOMEM;
 		goto error;
 	}
@@ -313,7 +313,7 @@ static int32_t max_uart_init(struct no_os_uart_desc **desc,
 	}
 
 	switch (eparam->flow) {
-	case UART_FLOW_DIS:
+	case MAX_UART_FLOW_DIS:
 		flow = MXC_UART_FLOW_DIS;
 		break;
 	case UART_FLOW_LOW:

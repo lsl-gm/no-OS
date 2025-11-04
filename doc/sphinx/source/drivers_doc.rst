@@ -4,61 +4,69 @@ no-OS drivers list
 
 The following sections contain code documentation for ADI no-OS drivers.
 
+AMPLIFIERS
+==========
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/amplifiers/*
+
 ACCELEROMETERS
 ==============
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/adxl355
+   drivers/accel/*
 
 ANALOG TO DIGITAL CONVERTERS
 ============================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/adm1177
-   drivers/ad405x
-   drivers/ad796x
-   drivers/pulsar_adc
-   drivers/ad7768
+   drivers/adc/*
+
+ADC / DAC
+==========
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   drivers/adc-dac/*
 
 AXI CORES
 =========
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/axi_sysid
+   drivers/axi/*
 
 DIGITAL INPUT/OUTPUT
 ==========================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/max14914
-   drivers/max14919
-   drivers/max149x6
-   drivers/max22190
-   drivers/max22196
-   drivers/max22200
+   drivers/digital-io/*
 
 DIGITAL TO ANALOG CONVERTERS
 ============================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/ad8460
-   drivers/max22017
+   drivers/dac/*
 
 FREQUENCY GENERATORS
 ====================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/adf4382
-   drivers/adf4368
-   drivers/adf4377
-   drivers/adf5611
-   drivers/admfm2000
+   drivers/frequency/*
 
 INERTIAL MEASUREMENT UNITS
 ==========================
@@ -67,62 +75,90 @@ INERTIAL MEASUREMENT UNITS
 
    drivers/imu
 
+IO-LINK
+=======
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/io-link/*
+
 LED
 ===
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/max25603
+   drivers/led/*
 
 METER
 =====
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/ade7816
+   drivers/meter/*
+
+MUX
+===
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/mux/*
 
 RF TRANSCEIVER
 ==============
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/madura
+   drivers/rf-transceiver/*
+
+SWITCH
+======
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/switch/*
 
 TEMPERATURE
 ==============
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/max31827
-   drivers/ltc2983
+   drivers/temperature/*
 
 POWER MANAGEMENT
 ================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/ades1754
-   drivers/adp1050
-   drivers/adp1055
-   drivers/adp5055
-   drivers/ltc2992
-   drivers/ltc4162l
-   drivers/ltc4296
-   drivers/ltc7841
-   drivers/ltc7871
-   drivers/ltm4686
-   drivers/lt3074
-   drivers/lt7170
-   drivers/lt7182s
-   drivers/lt8491
-   drivers/lt8722
-   drivers/ltp8800
-   drivers/max17851
-   drivers/max42500
+   drivers/power/*
 
 POTENTIOMETER
 ================
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   drivers/ad5293
+   drivers/potentiometer/*
+
+ETHERNET
+========
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/ethernet/*
+
+GYROSCOPES
+============
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   drivers/gyroscope/*

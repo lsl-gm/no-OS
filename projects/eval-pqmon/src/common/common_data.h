@@ -34,6 +34,10 @@
 #ifndef __COMMON_DATA_H__
 #define __COMMON_DATA_H__
 
+#if defined(PQM_CONN_ETH)
+#include "w5500_network.h"
+#endif
+
 #if defined(PQM_CONN_T1L)
 #include "lwip_socket.h"
 #include "lwip_adin1110.h"
@@ -64,11 +68,18 @@
 #define TOTAL_PQM_CHANNELS 11
 #define VOLTAGE_CH_NUMBER 3
 #define MAX_CH_ATTRS 23
-#define PQM_DEVICE_ATTR_NUMBER 35
+#define PQM_DEVICE_ATTR_NUMBER 40
 #define WAVEFORM_BUFFER_LENGTH (256 * 7)
 #define MAX_EVENT_NUMBER 6
 
 extern IIO_BUFF_TYPE iio_data_buffer_loc[MAX_SIZE_BASE_ADDR];
+
+#if defined(PQM_CONN_ETH)
+extern const struct no_os_spi_init_param w5500_spi_init_params;
+
+extern struct w5500_init_param w5500_ip;
+extern struct w5500_network_init_param w5500_network_ip;
+#endif
 
 #if defined(PQM_CONN_USB)
 extern struct no_os_uart_init_param iio_demo_usb_ip;
