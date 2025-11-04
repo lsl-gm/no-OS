@@ -47,7 +47,8 @@ int adrv9025_post_setup(struct adrv9025_rf_phy *phy)
 	int i;
 
 	axi_adc_write(phy->rx_adc, AXI_ADC_REG_CNTRL, 0);
-	axi_adc_write(phy->orx_adc, AXI_ADC_REG_CNTRL, 0);
+	if (phy->orx_adc)
+		axi_adc_write(phy->orx_adc, AXI_ADC_REG_CNTRL, 0);
 	axi_adc_read(phy->rx_adc, 0x4048, &tmp);
 
 	tmp &= ~NO_OS_BIT(5);
