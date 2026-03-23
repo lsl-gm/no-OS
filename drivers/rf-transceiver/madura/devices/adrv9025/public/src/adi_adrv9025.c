@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// SPDX-License-Identifier: GPL-2.0
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> merge_main_lsl_updates
 /**
 * \file adi_adrv9025.c
 * \brief Contains Adrv9025 features related function implementation defined in
@@ -227,10 +223,6 @@ int32_t adi_adrv9025_HwReset(adi_adrv9025_Device_t* device)
     recoveryAction = adi_common_hal_Wait_ms(&device->common,
                                             RESETB_WAIT_MS);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> merge_main_lsl_updates
     if (recoveryAction != ADI_COMMON_ACT_NO_ACTION)
     {
         ADI_ERROR_REPORT(&device->common,
