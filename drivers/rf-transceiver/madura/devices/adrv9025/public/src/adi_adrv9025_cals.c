@@ -1,9 +1,10 @@
+/* SPDX-License-Identifier: GPL-2.0 */
 /**
 * \file adi_adrv9025_cals.c
 * \brief Contains Calibration features related function implementation defined in
 * adi_adrv9025_cals.h
 *
-* ADRV9025 API Version: 6.4.0.14
+* ADRV9025 API Version: 7.0.0.14
 */
 
 /**
@@ -135,7 +136,6 @@ int32_t adi_adrv9025_InitCalsWait(adi_adrv9025_Device_t* device,
     			initStatus.initErrCode,initStatus.initErrCal,initStatus.calsDurationUsec,initStatus.calsSincePowerUp[0],initStatus.calsLastRun[0]);
     }
 
-
     /* Don't update errorFlag if SPI error because errorFlag could be a random */
     /* value but update error flag for other recovery action types */
     if (recoveryAction == ADI_COMMON_ACT_ERR_RESET_INTERFACE)
@@ -187,8 +187,6 @@ int32_t adi_adrv9025_InitCalsCheckCompleteGet(adi_adrv9025_Device_t* device,
                                                         ADRV9025_CPU_RUNINIT_OPCODE,
                                                         &cmdStatusByte);
     /* don't check cmdStatusByte until return parameters are updated */
-
-
 
     armErrorFlag = (cmdStatusByte >> ARM_ERR_SHIFT);
 
@@ -262,8 +260,6 @@ int32_t adi_adrv9025_InitCalsAbort(adi_adrv9025_Device_t* device,
                                   ADI_ADRV9025_INITCALSABORT_TIMEOUT_US,
                                   ADI_ADRV9025_INITCALSABORT_INTERVAL_US);
 
-
-
     if ((cmdStatusByte >> ARM_ERR_SHIFT) > 0)
     {
         adrv9025_CpuCmdErrorHandler(device,
@@ -296,8 +292,6 @@ int32_t adi_adrv9025_InitCalsAbort(adi_adrv9025_Device_t* device,
                                       &cmdStatusByte,
                                       ADI_ADRV9025_INITCALSABORT_TIMEOUT_US,
                                       ADI_ADRV9025_INITCALSABORT_INTERVAL_US);
-
-
         if ((cmdStatusByte >> ARM_ERR_SHIFT) > 0)
         {
             adrv9025_CpuCmdErrorHandler(device,
@@ -367,8 +361,6 @@ int32_t adi_adrv9025_InitCalsDetailedStatusGet(adi_adrv9025_Device_t*        dev
                                   ADI_ADRV9025_INITCALSTATUSGET_TIMEOUT_US,
                                   ADI_ADRV9025_INITCALSTATUSGET_INTERVAL_US);
 
-
-
     if ((cmdStatusByte >> 1) > 0)
     {
         adrv9025_CpuCmdErrorHandler(device,
@@ -421,8 +413,6 @@ int32_t adi_adrv9025_InitCalsDetailedStatusGet(adi_adrv9025_Device_t*        dev
             + 1]) << 8) | (((uint32_t)calBitField[offset + 0]));
     }
 
-
-
     if (initStatus->initErrCode > 0)
     {
         ADI_ERROR_REPORT(&device->common,
@@ -461,8 +451,6 @@ int32_t adi_adrv9025_TrackingCalsEnableSet(adi_adrv9025_Device_t*               
     ADI_ERROR_RETURN(device->common.error.newAction);
 
     fwStatus = (uint32_t)status;
-
-
     /* throw error if not in READY state */
     if (fwStatus != ADRV9025_CPU_FW_STATUS_READY)
     {

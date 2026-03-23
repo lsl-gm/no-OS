@@ -38,23 +38,20 @@
 /**
  * @brief Initialize semaphore.
  * semaphore - Pointer toward the semaphore.
- * @return None.
  */
 __attribute__((weak)) inline void no_os_semaphore_init(void **semaphore)
 {
 	if (*semaphore == NULL) {
-		SemaphoreHandle_t* semaphoreTmp = (SemaphoreHandle_t *)no_os_calloc(1,
-						  sizeof(SemaphoreHandle_t));
-
-		*semaphore = xSemaphoreCreate();
-		xSemaphoreGive(*semaphore);
+		*semaphore = xSemaphoreCreateBinary();
+		if (*semaphore != NULL) {
+			xSemaphoreGive(*semaphore);
+		}
 	}
 }
 
 /**
  * @brief Take token from semaphore.
  * semaphore - Pointer toward the semaphore.
- * @return None.
  */
 __attribute__((weak)) inline void no_os_semaphore_take(void *semaphore)
 {
@@ -65,9 +62,8 @@ __attribute__((weak)) inline void no_os_semaphore_take(void *semaphore)
 /**
  * @brief Give token to semaphore
  * semaphore - Pointer toward the semaphore.
- * @return None.
  */
-__attribute((weak)) inline void no_os_semaphore_give(void *semaphore)
+__attribute__((weak)) inline void no_os_semaphore_give(void *semaphore)
 {
 	if (semaphore != NULL)
 		xSemaphoreGive((SemaphoreHandle_t)semaphore);
@@ -76,7 +72,6 @@ __attribute((weak)) inline void no_os_semaphore_give(void *semaphore)
 /**
  * @brief Remove semaphore.
  * semaphore - Pointer toward the semaphore.
- * @return None.
  */
 __attribute__((weak)) inline void no_os_semaphore_remove(void *semaphore)
 {

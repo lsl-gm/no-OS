@@ -143,10 +143,10 @@ int adrv9025_spi_write(struct no_os_spi_desc *spi, uint32_t reg,
 	return 0;
 }
 
-int adrv9025_RxLinkSamplingRateFind(adi_adrv9025_Device_t *device,
-				    adi_adrv9025_Init_t *adrv9025Init,
-				    adi_adrv9025_FramerSel_e framerSel,
-				    uint32_t *iqRate_kHz)
+static int adrv9025_RxLinkSamplingRateFind(adi_adrv9025_Device_t *device,
+		adi_adrv9025_Init_t *adrv9025Init,
+		adi_adrv9025_FramerSel_e framerSel,
+		uint32_t *iqRate_kHz)
 {
 	int recoveryAction = ADI_COMMON_ACT_NO_ACTION;
 	adi_adrv9025_AdcSampleXbarSel_e conv = ADI_ADRV9025_ADC_RX1_Q;
@@ -241,10 +241,10 @@ int adrv9025_RxLinkSamplingRateFind(adi_adrv9025_Device_t *device,
 	return recoveryAction;
 }
 
-int adrv9025_TxLinkSamplingRateFind(adi_adrv9025_Device_t *device,
-				    adi_adrv9025_Init_t *adrv9025Init,
-				    adi_adrv9025_DeframerSel_e deframerSel,
-				    uint32_t *iqRate_kHz)
+static int adrv9025_TxLinkSamplingRateFind(adi_adrv9025_Device_t *device,
+		adi_adrv9025_Init_t *adrv9025Init,
+		adi_adrv9025_DeframerSel_e deframerSel,
+		uint32_t *iqRate_kHz)
 {
 	int recoveryAction = ADI_COMMON_ACT_NO_ACTION;
 	uint32_t deframerIndex = 0;
@@ -360,8 +360,8 @@ struct adrv9025_jesd204_priv {
 	struct adrv9025_jesd204_link link[5];
 };
 
-int adrv9025_jesd204_link_pre_setup(struct jesd204_dev *jdev,
-				    enum jesd204_state_op_reason reason)
+static int adrv9025_jesd204_link_pre_setup(struct jesd204_dev *jdev,
+		enum jesd204_state_op_reason reason)
 {
 	struct adrv9025_jesd204_priv *priv = jesd204_dev_priv(jdev);
 	struct adrv9025_rf_phy *phy = priv->phy;
@@ -403,6 +403,7 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 	struct adrv9025_rf_phy *phy = priv->phy;
 	adi_adrv9025_FrmCfg_t *framer = NULL;
 	adi_adrv9025_DfrmCfg_t *deframer = NULL;
+	unsigned int id;
 	uint32_t rate;
 	int ret;
 
@@ -448,6 +449,7 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 		ret = adrv9025_RxLinkSamplingRateFind(phy->madDevice, &phy->deviceInitStruct,
 						      ADI_ADRV9025_FRAMER_1,
 						      &rate);
+		phy->orx_iqRate_kHz = rate;
 		break;
 	case FRAMER2_LINK_RX:
 		framer = &phy->deviceInitStruct.dataInterface.framer[2];
@@ -476,11 +478,18 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 		lnk->scrambling = framer->scramble;
 		lnk->bits_per_sample = framer->jesd204Np;
 		lnk->converter_resolution = framer->jesd204Np;
+		lnk->num_of_multiblocks_in_emb = framer->jesd204E;
 		lnk->ctrl_bits_per_sample = 0;
 		lnk->jesd_version = framer->enableJesd204C ? JESD204_VERSION_C :
 				    JESD204_VERSION_B;
+		lnk->jesd_encoder = framer->enableJesd204C ? JESD204_ENCODER_64B66B :
+				    JESD204_ENCODER_8B10B;
 		lnk->subclass = JESD204_SUBCLASS_1;
 		lnk->is_transmit = false;
+		// TODO - I don't think this is the right place for the calloc
+		lnk->lane_ids = no_os_calloc(lnk->num_lanes, sizeof(uint8_t));
+		for (id = 0; id < lnk->num_lanes; id++)
+			lnk->lane_ids[id] = id;
 	} else if (deframer) {
 		lnk->num_converters = deframer->jesd204M;
 		lnk->num_lanes = no_os_hweight8(deframer->deserializerLanesEnabled);
@@ -491,18 +500,25 @@ static int adrv9025_jesd204_link_init(struct jesd204_dev *jdev,
 		lnk->scrambling = deframer->scramble;
 		lnk->bits_per_sample = deframer->jesd204Np;
 		lnk->converter_resolution = deframer->jesd204Np;
+		lnk->num_of_multiblocks_in_emb = deframer->jesd204E;
 		lnk->ctrl_bits_per_sample = 0;
 		lnk->jesd_version = deframer->enableJesd204C ? JESD204_VERSION_C :
 				    JESD204_VERSION_B;
+		lnk->jesd_encoder = deframer->enableJesd204C ? JESD204_ENCODER_64B66B :
+				    JESD204_ENCODER_8B10B;
 		lnk->subclass = JESD204_SUBCLASS_1;
 		lnk->is_transmit = true;
-	};
+		// TODO - I don't think this is the right place for the calloc
+		lnk->lane_ids = no_os_calloc(lnk->num_lanes, sizeof(uint8_t));
+		for (id = 0; id < lnk->num_lanes; id++)
+			lnk->lane_ids[id] = id;
+	}
 
 	return JESD204_STATE_CHANGE_DONE;
 }
 
-int adrv9025_jesd204_link_setup(struct jesd204_dev *jdev,
-				enum jesd204_state_op_reason reason)
+static int adrv9025_jesd204_link_setup(struct jesd204_dev *jdev,
+				       enum jesd204_state_op_reason reason)
 {
 	struct adrv9025_jesd204_priv *priv = jesd204_dev_priv(jdev);
 	struct adrv9025_rf_phy *phy = priv->phy;
@@ -833,10 +849,15 @@ static int adrv9025_jesd204_link_running(struct jesd204_dev *jdev,
 		if (ret)
 			return adrv9025_dev_err(phy);
 
-
-		if ((framerStatus.status & 0x0F) != 0x0A)
-			pr_warning("Link%u framerStatus 0x%X\n",
-				   lnk->link_id, framerStatus.status);
+		if (lnk->jesd_version != JESD204_VERSION_C) {
+			if ((framerStatus.status & 0x0F) != 0x0A)
+				pr_warning("Link%u framerStatus 0x%X",
+					   lnk->link_id, framerStatus.status);
+		} else {
+			if (framerStatus.status != 0x01)
+				pr_warning("Link%u framerStatus 0x%X",
+					   lnk->link_id, framerStatus.status);
+		}
 	} else {
 		ret = adi_adrv9025_DeframerStatusGet(phy->madDevice,
 						     priv->link[lnk->link_id].source_id, &deframerStatus);
@@ -847,10 +868,18 @@ static int adrv9025_jesd204_link_running(struct jesd204_dev *jdev,
 			       phy->madDevice,
 			       priv->link[lnk->link_id].source_id,
 			       &deframerLinkCondition);
+		if (ret)
+			return adrv9025_dev_err(phy);
 
-		if ((deframerStatus.status & 0x7F) != 0x7) /* Ignore Valid ILAS checksum */
-			pr_warning("Link%u deframerStatus 0x%X deframerLinkCondition 0x%X\\n",
-				   lnk->link_id, deframerStatus.status,deframerLinkCondition);
+		if (lnk->jesd_version != JESD204_VERSION_C) {
+			if ((deframerStatus.status & 0x7F) != 0x7) /* Ignore Valid ILAS checksum */
+				pr_warning("Link%u deframerStatus 0x%X deframerLinkCondition 0x%X\n",
+					   lnk->link_id, deframerStatus.status, deframerLinkCondition);
+		} else {
+			if ((deframerStatus.status & 0x7) != 0x6)
+				pr_warning("Link%u deframerStatus 0x%X deframerLinkCondition 0x%X\n",
+					   lnk->link_id, deframerStatus.status, deframerLinkCondition);
+		}
 
 		/* Kick off SERDES tracking cal if lanes are up */
 		ret = adi_adrv9025_TrackingCalsEnableSet(
@@ -860,10 +889,8 @@ static int adrv9025_jesd204_link_running(struct jesd204_dev *jdev,
 			return adrv9025_dev_err(phy);
 	};
 
-
 	return JESD204_STATE_CHANGE_DONE;
 }
-
 
 static int adrv9025_jesd204_post_running_stage(struct jesd204_dev *jdev,
 		enum jesd204_state_op_reason reason)
@@ -892,6 +919,8 @@ static int adrv9025_jesd204_post_running_stage(struct jesd204_dev *jdev,
 		return adrv9025_dev_err(phy);
 
 	no_os_clk_set_rate(phy->clks[ADRV9025_RX_SAMPL_CLK], phy->rx_iqRate_kHz * 1000);
+	no_os_clk_set_rate(phy->clks[ADRV9025_ORX_SAMPL_CLK],
+			   phy->orx_iqRate_kHz * 1000);
 	no_os_clk_set_rate(phy->clks[ADRV9025_TX_SAMPL_CLK], phy->tx_iqRate_kHz * 1000);
 
 	ret = adi_adrv9025_AgcCfgSet(phy->madDevice, phy->agcConfig, 1);
@@ -1244,6 +1273,8 @@ int32_t adrv9025_init(struct adrv9025_rf_phy **dev,
 	phy->dev_clk = init_param->dev_clk;
 	phy->agcConfig = agcConfig;
 
+	memcpy(&phy->hal, init_param->adrv9025_device->common.devHalInfo, sizeof(struct adrv9025_hal_cfg));
+
 	ret = adrv9025_phy_parse_agc_params(phy, init_param);
 	if (ret)
 		goto error_agc_config;
@@ -1336,8 +1367,9 @@ static const struct no_os_clk_platform_ops adrv9025_bb_clk_ops = {
 int adrv9025_setup(struct adrv9025_rf_phy *phy)
 {
 	const char *names[NUM_ADRV9025_CLKS] = {
-		"-rx_sampl_clk", "-tx_sampl_clk"
+		"-rx_sampl_clk", "-tx_sampl_clk", "-orx_sampl_clk"
 	};
+	struct no_os_clk_desc *orx_sample_clk = NULL;
 	struct no_os_clk_desc *rx_sample_clk = NULL;
 	struct no_os_clk_desc *tx_sample_clk = NULL;
 	struct no_os_clk_init_param clk_init;
@@ -1432,6 +1464,19 @@ int adrv9025_setup(struct adrv9025_rf_phy *phy)
 
 	phy->clks[ADRV9025_TX_SAMPL_CLK] = tx_sample_clk;
 
+	orx_sample_clk = no_os_calloc(1, sizeof(orx_sample_clk));
+	if (!orx_sample_clk)
+		goto tx_out_clk_init_error;
+
+	/* Initialize clk component */
+	clk_init.name = names[ADRV9025_ORX_SAMPL_CLK];
+
+	ret = no_os_clk_init(&orx_sample_clk, &clk_init);
+	if (ret)
+		goto orx_out_clk_init_error;
+
+	phy->clks[ADRV9025_ORX_SAMPL_CLK] = orx_sample_clk;
+
 	adi_adrv9025_ApiVersionGet(phy->madDevice, &apiVersion);
 	adi_adrv9025_Shutdown(phy->madDevice);
 	adi_adrv9025_HwClose(phy->madDevice);
@@ -1443,6 +1488,8 @@ int adrv9025_setup(struct adrv9025_rf_phy *phy)
 
 	return 0;
 
+orx_out_clk_init_error:
+	no_os_free(orx_sample_clk);
 tx_out_clk_init_error:
 	no_os_free(tx_sample_clk);
 rx_out_clk_init_error:

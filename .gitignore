@@ -23,6 +23,7 @@ aducm_build
 .Xil
 .github/CODEOWNERS
 .github/PULL_REQUEST_TEMPLATE.md
+libraries/ftd2xx
 
 *.a
 *.o
@@ -32,6 +33,7 @@ aducm_build
 *.xsa
 *.sof
 *.sopcinfo
+__pycache__/
 
 local_variables.mk
 *generated*

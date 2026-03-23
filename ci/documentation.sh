@@ -62,26 +62,50 @@ check_sphinx_doc() {
         do
                 if [ $(basename "$file") = "README.rst" ]
                 then
-                        errors_found=0
                         local fn_dir=$(basename "$(dirname "$file")")
                         local sphinx_path="doc/sphinx/source"
                         local top_dir=$(echo "$file" | cut -d'/' -f1)
+                        local second_dir=$(echo "$file" | cut -d'/' -f2)
 
-                        if ! [ -f "$sphinx_path/$top_dir/$fn_dir.rst" ];
-                        then
-                                echo_red "Missing $fn_dir.rst file at $sphinx_path/$top_dir"
-                                erros_found=1
-                        fi
-
-                        if ! grep -q "$top_dir/$fn_dir" "$sphinx_path/${top_dir}_doc.rst"
-                        then
-                                echo_red "Missing $top_dir/$fn_dir link inside $sphinx_path/${top_dir}_doc.rst"
-                                erros_found=1
-                        fi
-
-                        if [ $erros_found -eq 1 ]
-                        then
-                                exit 1
+                        # Handle different directory structures for drivers vs projects
+                        if [ "$top_dir" = "projects" ]; then
+                                # Projects are directly under projects/ but docs are categorized
+                                # Find the .rst file anywhere under doc/sphinx/source/projects/
+                                if find "$sphinx_path/$top_dir" -name "$fn_dir.rst" -type f | grep -q .; then
+                                        # File exists, find its category and check if wildcard is in toctree
+                                        actual_location=$(find "$sphinx_path/$top_dir" -name "$fn_dir.rst" -type f | head -1)
+                                        category_dir=$(basename "$(dirname "$actual_location")")
+                                        wildcard_pattern="$top_dir/$category_dir/\*"
+                                        if ! grep -q "$wildcard_pattern" "$sphinx_path/${top_dir}_doc.rst"; then
+                                                echo_red "Missing wildcard pattern '$wildcard_pattern' in $sphinx_path/${top_dir}_doc.rst"
+                                                exit 1
+                                        fi
+                                else
+                                        # File doesn't exist at all
+                                        echo_red "Missing $fn_dir.rst file under $sphinx_path/$top_dir"
+                                        exit 1
+                                fi
+                        else
+                                # For drivers and other top-level directories, use the original logic
+                                # Check if the corresponding .rst file exists in the expected subdirectory
+                                if [ -f "$sphinx_path/$top_dir/$second_dir/$fn_dir.rst" ]; then
+                                        # File exists in the expected subdirectory, now check if category is in toctree
+                                        wildcard_pattern="$top_dir/$second_dir/\*"
+                                        if ! grep -q "$wildcard_pattern" "$sphinx_path/${top_dir}_doc.rst"; then
+                                                echo_red "Missing wildcard pattern '$wildcard_pattern' in $sphinx_path/${top_dir}_doc.rst"
+                                                exit 1
+                                        fi
+                                elif find "$sphinx_path/$top_dir" -name "$fn_dir.rst" -type f | grep -q .; then
+                                        # File exists but in wrong subdirectory
+                                        actual_location=$(find "$sphinx_path/$top_dir" -name "$fn_dir.rst" -type f | head -1)
+                                        expected_location="$sphinx_path/$top_dir/$second_dir/$fn_dir.rst"
+                                        echo_red "File $fn_dir.rst found at $actual_location but expected at $expected_location"
+                                        exit 1
+                                else
+                                        # File doesn't exist at all
+                                        echo_red "Missing $fn_dir.rst file under $sphinx_path/$top_dir"
+                                        exit 1
+                                fi
                         fi
                 fi
         done
@@ -92,7 +116,7 @@ check_sphinx_doc() {
 ############################################################################
 build_doxygen() {
         pushd ${TOP_DIR}/doc/doxygen
-        (cd build && ! make -j${NUM_JOBS} doc 2>&1 | grep -E "warning:|error:") || {
+        (cd build && ! make -j${NUM_JOBS} doc TOP_DIR=${TOP_DIR} 2>&1 | grep -E "warning:|error:") || {
                 echo_red "Documentation incomplete or errors in the generation of it have occured!"
                 exit 1
         }
@@ -140,7 +164,7 @@ update_gh_pages() {
 
                 # Create doxygen folder holding new build content
                 mkdir -p ${TOP_DIR}/doxygen
-                cp -R ${TOP_DIR}/doc/doxygen/build/doxygen_doc/html/* ${TOP_DIR}/doxygen/
+                rsync -a "${TOP_DIR}/doc/doxygen/build/doxygen_doc/html/" "${TOP_DIR}/doxygen/"
 
                 # Add sphinx build content to root folder
                 cp -R ${TOP_DIR}/doc/sphinx/build/html/* ${TOP_DIR}
@@ -172,8 +196,8 @@ update_gh_pages() {
 
 check_sphinx_doc
 
-build_sphinx
-
 build_doxygen
+
+build_sphinx
 
 update_gh_pages
